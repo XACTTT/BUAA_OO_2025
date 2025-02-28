@@ -1,21 +1,31 @@
 import java.util.ArrayList;
 
-public class Expr {
+public class Expr implements Factor {
     private final ArrayList<Term> terms = new ArrayList<>();
+    private int pow;
+
+    public Expr() {
+        this.pow = 1;
+    }
 
     public void addTerm(Term term) {
         terms.add(term);
     }
 
-    @Override
-    public String toString() {
-        /*TODO(1/8): 可以参考 Term.toString() 实现相应功能*/
-        StringBuilder sb = new StringBuilder();
-        for (Term term : terms) {
-            sb.append(term.toString());
-            sb.append("+");
+    public Poly cal() {
+        Poly poly = new Poly();
+        for (Term term : this.terms) {//不加this？
+            poly.add(term.cal());
         }
-        return sb.substring(0, sb.length() - 1); // remove the last "*"
+        poly=poly.powCal(this.pow);
+        return poly;
+    }
+
+
+
+    @Override
+    public void setPow(int pow) {
+        this.pow = pow;
     }
 
     public void print() {

@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class Term {
@@ -7,21 +8,16 @@ public class Term {
         factors.add(factor);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (Factor factor : factors) {
-            if (factor instanceof SubExpr) {
-                sb.append("(" + factor.toString() + ")");
-            } else {
-                sb.append(factor.toString());
-            }
-            sb.append("*");
+   public void addFactor(BigInteger num) {
+        Factor temp =new Num(num);
+        factors.add(temp);
+   }
+   public Poly cal(){
+        Poly poly = new Poly();
+        poly.init();
+        for (Factor factor : this.factors) {
+         poly=poly.mul(factor.cal());
         }
-        return sb.substring(0, sb.length() - 1); // remove the last "*"
-    }
-
-    public void print() {
-        System.out.println("Term " + this);
-    }
+        return poly;
+   }
 }

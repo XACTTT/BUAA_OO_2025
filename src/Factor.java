@@ -1,3 +1,4 @@
 public interface Factor {
-    void print();
+   void setPow(int pow);
+   Poly cal();
 }

@@ -1,20 +1,22 @@
-public class Num implements Factor {
-    private final int value;
+import java.math.BigInteger;
 
-    public Num(int value) {
-        this.value = value;
+public class Num implements Factor {
+    private final BigInteger num;
+    private int pow;
+    public Num(BigInteger num) {
+        this.num = num;
+        this.pow = 1;
     }
+
+    public void setPow(int k) {
+        pow = k;
+    }
+
 
     @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    public void print() {
-        System.out.println("Num " + this);
-    }
-
-    public int getValue() {
-        return value;
+    public Poly cal() {
+        Poly poly = new Poly();
+        poly.addMono(this.num);
+        return poly;
     }
 }

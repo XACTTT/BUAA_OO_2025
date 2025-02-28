@@ -4,23 +4,29 @@ public class Lexer {
     private final ArrayList<Token> tokens = new ArrayList<>();
     private int index = 0;
 
+
     public Lexer(String input) {
         int pos = 0;
         while (pos < input.length()) {
             if (input.charAt(pos) == '(') {
-                tokens.add(new Token(Token.Type.LPAREN, "("));
+                tokens.add(new Token(Token.Type.LP, "("));
                 pos++;
             } else if (input.charAt(pos) == ')') {
-                tokens.add(new Token(Token.Type.RPAREN, ")"));
+                tokens.add(new Token(Token.Type.RP, ")"));
                 pos++;
             } else if (input.charAt(pos) == '+') {
                 tokens.add(new Token(Token.Type.ADD, "+"));
                 pos++;
             } else if (input.charAt(pos) == '*') {
-                /*TODO(2/8)*/
                 tokens.add(new Token(Token.Type.MUL, "*"));
                 pos++;
-            } else if (input.charAt(pos) == 'x'/*TODO(3/8)*/) {
+            } else if (input.charAt(pos) == '-') {
+                tokens.add(new Token(Token.Type.SUB, "-"));
+                pos++;
+            } else if (input.charAt(pos) == '^') {
+                tokens.add(new Token(Token.Type.POW, "^"));
+                pos++;
+            } else if (input.charAt(pos) == 'x') {
                 tokens.add(new Token(Token.Type.VAR, "x"));
                 pos++;
             } else {

@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+
 public class Parser {
     private final Lexer lexer;
 
@@ -7,83 +9,109 @@ public class Parser {
 
     public Expr parseExpr() {
         Expr expr = new Expr();
-        /*TODO(4/8): 实现“表达式”的解析逻辑，可以参考 Parser.parseSubExpr() 的实现方式*/
-        expr.addTerm(parseTerm());
-        while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.ADD) {
-            lexer.nextToken();
-            expr.addTerm(parseTerm());
+        if (lexer.getCurToken().getType() == Token.Type.ADD || lexer.getCurToken().getType() == Token.Type.SUB) {
+            if (lexer.getCurToken().getType() == Token.Type.SUB) {
+                lexer.nextToken();
+                expr.addTerm(parseTerm(-1));
+            } else {
+                lexer.nextToken();
+                expr.addTerm(parseTerm(1));
+            }
+        } else {
+            expr.addTerm(parseTerm(1));
         }
-        expr.print();
+
+        while (!lexer.isEnd() && (lexer.getCurToken().getType() == Token.Type.ADD
+                || lexer.getCurToken().getType() == Token.Type.SUB)) {
+            if (lexer.getCurToken().getType() == Token.Type.SUB) {
+                lexer.nextToken();
+                expr.addTerm(parseTerm(-1));
+            } else {
+                lexer.nextToken();
+                expr.addTerm(parseTerm(1));
+            }
+        }
+
         return expr;
     }
 
-    public Term parseTerm() {
+    public Term parseTerm(int flag1) {
         Term term = new Term();
-        /*TODO(5/8): 实现“项”的解析逻辑，可以参考 Parser.parseSubTerm() 的实现方式*/
+        int flag2 = 1;
+        if (lexer.getCurToken().getType() == Token.Type.ADD || lexer.getCurToken().getType() == Token.Type.SUB) {
+            if (lexer.getCurToken().getType() == Token.Type.SUB) {
+                flag2 = -1;
+            }
+            lexer.nextToken();
+        }
+        int flag = flag1 * flag2;
         term.addFactor(parseFactor());
         while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.MUL) {
             lexer.nextToken();
             term.addFactor(parseFactor());
         }
-        term.print();
+        if (flag == -1) {
+            term.addFactor(BigInteger.valueOf(-1));
+        }
         return term;
     }
 
     public Factor parseFactor() {
         Token token = lexer.getCurToken();
-        if (token.getType() == Token.Type.NUM) {
-            return parseNum();
+        if (token.getType() == Token.Type.NUM ||
+                token.getType() == Token.Type.ADD ||
+                token.getType() == Token.Type.SUB) {
+            Num num = parseNum();
+            getPow(num);
+            return num;
         } else if (token.getType() == Token.Type.VAR) {
-            return parseVar();
+            Var var = parseVar();
+            getPow(var);
+            return var;
         } else {
-            /*TODO(6/8): 解析“因子”中的“表达式因子”这一情况，注意“表达式因子”的文法：表达式因子 → '(' 子表达式 ')'，因此请注意左右括号对解析的影响*/
-            /*你需要做的：跳过左括号；解析“子表达式”；跳过右括号；返回结果*/
-            SubExpr subExpr = new SubExpr();
+            Expr subExpr = new Expr();
             lexer.nextToken();
-            subExpr = parseSubExpr();
+            subExpr = parseExpr();
             lexer.nextToken();
+            getPow(subExpr);
             return subExpr;
         }
     }
 
-    public SubExpr parseSubExpr() {
-        SubExpr subExpression = new SubExpr();
-        subExpression.addTerm(parseSubTerm());
-        while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.ADD) {
-            lexer.nextToken();
-            subExpression.addTerm(parseSubTerm());
-        }
-        subExpression.print();
-        return subExpression;
+    private void getPow(Factor factor) {
+        if (!lexer.isEnd()) {
+            if (lexer.getCurToken().getType() == Token.Type.POW) {
+                lexer.nextToken();
+                factor.setPow(Integer.parseInt(lexer.getCurToken().getContent()));
+                lexer.nextToken();
+            } else {
+                factor.setPow(1);
+            }
+        }else {factor.setPow(1);}
     }
 
-    public SubTerm parseSubTerm() {
-        SubTerm subTerm = new SubTerm();
-        subTerm.addFactor(parseNum());
-        while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.MUL/*TODO(7/8)*/) {
-            lexer.nextToken();
-            subTerm.addFactor(parseNum());
-        }
-        subTerm.print();
-        return subTerm;
-    }
 
     public Num parseNum() {
         Num num;
-        /*TODO(8/8): 实现“常数因子”的解析逻辑，可以参考 Parser.parseVar() 的实现方式*/
+
         Token token = lexer.getCurToken();
+        if (token.getType() == Token.Type.NUM) {
+            num = new Num(new BigInteger(token.getContent()));
+        } else {
+            lexer.nextToken();
+            String s = token.getContent() + lexer.getCurToken().getContent();
+            num = new Num(new BigInteger(s));
+        }
         lexer.nextToken();
-        int value = Integer.parseInt(token.getContent());
-        num = new Num(value);
-        num.print();
         return num;
+
     }
 
     public Var parseVar() {
+        Var var;
         Token token = lexer.getCurToken();
         lexer.nextToken();
-        Var var = new Var(token.getContent());
-        var.print();
+        var = new Var(token.getContent());
         return var;
     }
 }

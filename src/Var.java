@@ -1,20 +1,21 @@
 public class Var implements Factor {
     private final String name;
+    private  int pow;
 
     public Var(String name) {
         this.name = name;
+        this.pow = 1;
     }
 
     @Override
-    public String toString() {
-        return name;
+    public void setPow(int pow) {
+        this.pow=pow;
     }
 
-    public void print() {
-        System.out.println("Var " + this);
-    }
-
-    public String getName() {
-        return name;
+    @Override
+    public Poly cal() {
+        Poly poly = new Poly();
+        poly.addMono(this.name, this.pow);
+        return poly;
     }
 }
