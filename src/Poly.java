@@ -6,10 +6,54 @@ public class Poly {
     private final ArrayList<Mono> poly = new ArrayList<>();
 
     public void print() {
+        int first=0;
         for (Mono mono : poly) {
-            System.out.println(mono.getCoe());
-          HashMap<String,Integer>a = mono.getHash();
-          a.forEach((k,v)->{System.out.println(k+":"+v);});
+            int sign = 0;
+            if (!mono.getCoe().equals(BigInteger.ZERO)) {
+                if (mono.getCoe().equals(BigInteger.ONE)) {
+                    if(first!=0){
+                        System.out.print('+');
+                    }
+                } else if (mono.getCoe().equals(BigInteger.valueOf(-1))) {
+                    System.out.print("-");
+                } else {
+                    if (first!=0) {
+                        if(mono.getCoe().compareTo(BigInteger.valueOf(0))>0) {
+                            System.out.print('+');
+                        }
+                    }
+                    System.out.print(mono.getCoe());
+                    sign = 1;
+                }
+                HashMap<String, Integer> a = mono.getHash();
+                if (!a.isEmpty()) {
+                    for (HashMap.Entry<String, Integer> entry : a.entrySet()) {
+                        String k = entry.getKey();
+                        Integer v = entry.getValue();
+
+                        if (sign == 1) {
+                            if (v > 1) {
+                                System.out.print("*" + k + "^" + v);
+                            } else if (v == 1) {
+                                System.out.print("*" + k);
+                            }
+                        } else {
+                            if (v > 1) {
+                                System.out.print(k + "^" + v);
+                            } else if (v == 1) {
+                                System.out.print(k);
+                            } else {
+                                System.out.print(1);
+                            }
+                        }
+                    }
+                } else {
+                    if (sign == 0) {
+                        System.out.print(1);
+                    }
+                }
+            }
+            first=1;
         }
     }
 
