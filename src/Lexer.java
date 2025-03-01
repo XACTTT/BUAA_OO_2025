@@ -4,7 +4,6 @@ public class Lexer {
     private final ArrayList<Token> tokens = new ArrayList<>();
     private int index = 0;
 
-
     public Lexer(String input) {
         int pos = 0;
         while (pos < input.length()) {

@@ -6,19 +6,21 @@ public class Poly {
     private final ArrayList<Mono> poly = new ArrayList<>();
 
     public void print() {
-        int first=0;
+        int first = 0;
+        int printSign = 0;
         for (Mono mono : poly) {
             int sign = 0;
             if (!mono.getCoe().equals(BigInteger.ZERO)) {
+                printSign = 1;
                 if (mono.getCoe().equals(BigInteger.ONE)) {
-                    if(first!=0){
+                    if (first != 0) {
                         System.out.print('+');
                     }
                 } else if (mono.getCoe().equals(BigInteger.valueOf(-1))) {
                     System.out.print("-");
                 } else {
-                    if (first!=0) {
-                        if(mono.getCoe().compareTo(BigInteger.valueOf(0))>0) {
+                    if (first != 0) {
+                        if (mono.getCoe().compareTo(BigInteger.valueOf(0)) > 0) {
                             System.out.print('+');
                         }
                     }
@@ -53,7 +55,10 @@ public class Poly {
                     }
                 }
             }
-            first=1;
+            first = 1;
+        }
+        if (printSign == 0) {
+            System.out.print("0");
         }
     }
 
@@ -89,7 +94,6 @@ public class Poly {
         }
     }
 
-
     public Poly mulMerge(Mono m) {
         Poly ans = new Poly();
         for (Mono mono : poly) {
@@ -101,8 +105,9 @@ public class Poly {
 
     public Poly add(Poly p) {
 
-        for (Mono mono : p.poly)
+        for (Mono mono : p.poly) {
             this.addMerge(mono);
+        }
         return this;
     }
 

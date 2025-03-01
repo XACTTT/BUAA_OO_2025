@@ -9,7 +9,8 @@ public class Parser {
 
     public Expr parseExpr() {
         Expr expr = new Expr();
-        if (lexer.getCurToken().getType() == Token.Type.ADD || lexer.getCurToken().getType() == Token.Type.SUB) {
+        if (lexer.getCurToken().getType() == Token.Type.ADD ||
+            lexer.getCurToken().getType() == Token.Type.SUB) {
             if (lexer.getCurToken().getType() == Token.Type.SUB) {
                 lexer.nextToken();
                 expr.addTerm(parseTerm(-1));
@@ -38,7 +39,8 @@ public class Parser {
     public Term parseTerm(int flag1) {
         Term term = new Term();
         int flag2 = 1;
-        if (lexer.getCurToken().getType() == Token.Type.ADD || lexer.getCurToken().getType() == Token.Type.SUB) {
+        if (lexer.getCurToken().getType() == Token.Type.ADD ||
+            lexer.getCurToken().getType() == Token.Type.SUB) {
             if (lexer.getCurToken().getType() == Token.Type.SUB) {
                 flag2 = -1;
             }
@@ -59,8 +61,8 @@ public class Parser {
     public Factor parseFactor() {
         Token token = lexer.getCurToken();
         if (token.getType() == Token.Type.NUM ||
-                token.getType() == Token.Type.ADD ||
-                token.getType() == Token.Type.SUB) {
+            token.getType() == Token.Type.ADD ||
+            token.getType() == Token.Type.SUB) {
             Num num = parseNum();
             getPow(num);
             return num;
@@ -82,14 +84,18 @@ public class Parser {
         if (!lexer.isEnd()) {
             if (lexer.getCurToken().getType() == Token.Type.POW) {
                 lexer.nextToken();
+                if (lexer.getCurToken().getType() == Token.Type.ADD) {
+                    lexer.nextToken();
+                }
                 factor.setPow(Integer.parseInt(lexer.getCurToken().getContent()));
                 lexer.nextToken();
             } else {
                 factor.setPow(1);
             }
-        }else {factor.setPow(1);}
+        } else {
+            factor.setPow(1);
+        }
     }
-
 
     public Num parseNum() {
         Num num;

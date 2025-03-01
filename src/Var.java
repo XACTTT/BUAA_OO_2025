@@ -1,6 +1,6 @@
 public class Var implements Factor {
     private final String name;
-    private  int pow;
+    private int pow;
 
     public Var(String name) {
         this.name = name;
@@ -9,7 +9,7 @@ public class Var implements Factor {
 
     @Override
     public void setPow(int pow) {
-        this.pow=pow;
+        this.pow = pow;
     }
 
     @Override

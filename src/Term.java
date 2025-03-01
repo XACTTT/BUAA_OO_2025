@@ -8,16 +8,17 @@ public class Term {
         factors.add(factor);
     }
 
-   public void addFactor(BigInteger num) {
-        Factor temp =new Num(num);
+    public void addFactor(BigInteger num) {
+        Factor temp = new Num(num);
         factors.add(temp);
-   }
-   public Poly cal(){
+    }
+
+    public Poly cal() {
         Poly poly = new Poly();
         poly.init();
         for (Factor factor : this.factors) {
-         poly=poly.mul(factor.cal());
+            poly = poly.mul(factor.cal());
         }
         return poly;
-   }
+    }
 }

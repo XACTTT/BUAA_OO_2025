@@ -14,14 +14,12 @@ public class Expr implements Factor {
 
     public Poly cal() {
         Poly poly = new Poly();
-        for (Term term : this.terms) {//不加this？
+        for (Term term : this.terms) {
             poly.add(term.cal());
         }
-        poly=poly.powCal(this.pow);
+        poly = poly.powCal(this.pow);
         return poly;
     }
-
-
 
     @Override
     public void setPow(int pow) {

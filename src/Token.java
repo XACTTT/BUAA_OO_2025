@@ -16,6 +16,6 @@ public class Token {
     }
 
     public enum Type {
-        ADD, MUL, LP, RP, NUM, VAR,POW,SUB
+        ADD, MUL, LP, RP, NUM, VAR, POW, SUB
     }
 }
