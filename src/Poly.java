@@ -32,7 +32,8 @@ public class Poly {
                             sb.append('+');
                         }
                     }
-                    System.out.print(unit.getCoe());
+                   // System.out.print(unit.getCoe());
+                    sb.append(unit.getCoe());
                     sign = 1;
                 }
                 HashMap<String, Integer> a = unit.getHash();
@@ -64,8 +65,8 @@ public class Poly {
                             }
                         }
                     }
-                    printSin(sinMap, sign);
-                    printCos(cosMap, sign);
+               sb.append(printSin(sinMap, sign))     ;
+                sb.append(printCos(cosMap, sign))    ;
                 } else {
                     if (sign == 0) {
                         //System.out.print(1);
@@ -135,7 +136,7 @@ public class Poly {
         return sb.toString();
     }
 
-    public void printCos(HashMap<Poly, Integer> cosMap, int sign) {
+    public String printCos(HashMap<Poly, Integer> cosMap, int sign) {
         StringBuilder sb = new StringBuilder();
         for (HashMap.Entry<Poly, Integer> entry : cosMap.entrySet()) {
             Poly p = entry.getKey();
@@ -184,6 +185,7 @@ public class Poly {
                 }
             }
         }
+        return sb.toString();
     }
 
     public void init() {

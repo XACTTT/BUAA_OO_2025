@@ -80,8 +80,8 @@ public class Parser {
             lexer.nextToken();
             Expr triExpr = new Expr();
             triExpr = parseExpr();
-            lexer.nextToken();
             getPow(triExpr);
+            lexer.nextToken();
             Factor tri = null;
             if (signSign == 1) {
                 tri = new Tri("sin", triExpr);
