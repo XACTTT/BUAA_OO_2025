@@ -5,7 +5,7 @@ public class MainClass {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<String> funcData = new ArrayList<>();
-    //    int funcNum = scanner.nextInt();
+        String funcNum = scanner.nextLine();
     //    if (funcNum != 0){
     //        for (int i = 0; i < 3; i++){
     //            funcData.add(scanner.next());

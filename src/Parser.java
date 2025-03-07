@@ -161,7 +161,11 @@ public class Parser {
     }
 
     public Expr parseFunc(ArrayList<Factor> factors, int num) {
+            if(factors.size() == 1) {
 
+            }else{
+
+            }
 
         return null;
     }
