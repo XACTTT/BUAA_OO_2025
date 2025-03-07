@@ -5,8 +5,12 @@ import java.util.HashMap;
 public class Poly {
     private final ArrayList<Unit> poly = new ArrayList<>();
 
+    public void print() {
+        System.out.println(this.toString1());
+    }
+
     public String toString1() {//print之前先化简，要求sin和cos里不能为空
-StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int first = 0;
         int printSign = 0;
         for (Unit unit : poly) {
@@ -50,7 +54,7 @@ StringBuilder sb = new StringBuilder();
                         } else {
                             if (v > 1) {
                                 //System.out.print(k + "^" + v);
-                                sb.append( k + "^" + v);
+                                sb.append(k + "^" + v);
                             } else if (v == 1) {
                                 //System.out.print(k);
                                 sb.append(k);
@@ -72,16 +76,15 @@ StringBuilder sb = new StringBuilder();
             first = 1;
         }
         if (printSign == 0) {
-           // System.out.print("0");
+            // System.out.print("0");
             sb.append("0");
         }
         return sb.toString();
     }
 
 
-
     public String printSin(HashMap<Poly, Integer> sinMap, int sign) {
-StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (HashMap.Entry<Poly, Integer> entry : sinMap.entrySet()) {
             Poly p = entry.getKey();
             Integer v = entry.getValue();
@@ -89,58 +92,7 @@ StringBuilder sb = new StringBuilder();
                 //System.out.print("*sin(");
                 sb.append("*sin(");
                 if (p.isFactor()) {
-                 sb.append(p.toString1())  ;
-                   // System.out.print(")");
-                    sb.append(")");
-                } else {
-                   // System.out.print("(");
-                    sb.append("(");
                     sb.append(p.toString1());
-                    //System.out.print("))");
-                    sb.append("))");
-                }
-                if (v > 1) {
-                    //System.out.print("^" + v);
-                    sb.append("^"+v);
-                }
-            } else {
-                if (v >= 1) {
-                    //System.out.print("sin(");
-                     sb.append("sin(");
-                    if (p.isFactor()) {
-                        sb.append(p.toString1());
-                       // System.out.print(")");
-                        sb.append(")");
-                    } else {
-                       // System.out.print("(");
-                        sb.append("(");
-                        sb.append(p.toString1());
-                        //System.out.print("))");
-                        sb.append("))");
-                    }
-                    if (v != 1) {
-                        //System.out.print("^" + v);
-                        sb.append("^"+v);
-                    }
-
-                } else {
-                   // System.out.print(1);
-                    sb.append("1");
-                }
-            }
-        }
-    }
-
-    public void printCos(HashMap<Poly, Integer> cosMap, int sign) {
-StringBuilder sb = new StringBuilder();
-        for (HashMap.Entry<Poly, Integer> entry : cosMap.entrySet()) {
-            Poly p = entry.getKey();
-            Integer v = entry.getValue();
-            if (sign == 1) {
-                //System.out.print("*sin(");
-                sb.append("*cos(");
-                if (p.isFactor()) {
-                    sb.append(p.toString1())  ;
                     // System.out.print(")");
                     sb.append(")");
                 } else {
@@ -152,7 +104,59 @@ StringBuilder sb = new StringBuilder();
                 }
                 if (v > 1) {
                     //System.out.print("^" + v);
-                    sb.append("^"+v);
+                    sb.append("^" + v);
+                }
+            } else {
+                if (v >= 1) {
+                    //System.out.print("sin(");
+                    sb.append("sin(");
+                    if (p.isFactor()) {
+                        sb.append(p.toString1());
+                        // System.out.print(")");
+                        sb.append(")");
+                    } else {
+                        // System.out.print("(");
+                        sb.append("(");
+                        sb.append(p.toString1());
+                        //System.out.print("))");
+                        sb.append("))");
+                    }
+                    if (v != 1) {
+                        //System.out.print("^" + v);
+                        sb.append("^" + v);
+                    }
+
+                } else {
+                    // System.out.print(1);
+                    sb.append("1");
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    public void printCos(HashMap<Poly, Integer> cosMap, int sign) {
+        StringBuilder sb = new StringBuilder();
+        for (HashMap.Entry<Poly, Integer> entry : cosMap.entrySet()) {
+            Poly p = entry.getKey();
+            Integer v = entry.getValue();
+            if (sign == 1) {
+                //System.out.print("*sin(");
+                sb.append("*cos(");
+                if (p.isFactor()) {
+                    sb.append(p.toString1());
+                    // System.out.print(")");
+                    sb.append(")");
+                } else {
+                    // System.out.print("(");
+                    sb.append("(");
+                    sb.append(p.toString1());
+                    //System.out.print("))");
+                    sb.append("))");
+                }
+                if (v > 1) {
+                    //System.out.print("^" + v);
+                    sb.append("^" + v);
                 }
             } else {
                 if (v >= 1) {
@@ -171,7 +175,7 @@ StringBuilder sb = new StringBuilder();
                     }
                     if (v != 1) {
                         //System.out.print("^" + v);
-                        sb.append("^"+v);
+                        sb.append("^" + v);
                     }
 
                 } else {
