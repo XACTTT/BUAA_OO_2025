@@ -1,10 +1,11 @@
-public class Var implements Factor {
-    private final String name;
+public class Tri implements Factor {
+    private String name;
+    private Expr expr;
     private int pow;
 
-    public Var(String name) {
+    public Tri(String name, Expr expr) {
         this.name = name;
-        this.pow = 1;
+        this.expr = expr;
     }
 
     @Override
@@ -12,10 +13,11 @@ public class Var implements Factor {
         this.pow = pow;
     }
 
-    @Override
     public Poly cal() {
         Poly poly = new Poly();
-        poly.addUnit(this.name, this.pow);
+        poly.addUnit(this.name,this.expr,this.pow);
         return poly;
     }
+
+    ;
 }

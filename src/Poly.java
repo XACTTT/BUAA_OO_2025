@@ -3,101 +3,232 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Poly {
-    private final ArrayList<Mono> poly = new ArrayList<>();
+    private final ArrayList<Unit> poly = new ArrayList<>();
 
-    public void print() {
+    public String toString1() {//print之前先化简，要求sin和cos里不能为空
+StringBuilder sb = new StringBuilder();
         int first = 0;
         int printSign = 0;
-        for (Mono mono : poly) {
+        for (Unit unit : poly) {
             int sign = 0;
-            if (!mono.getCoe().equals(BigInteger.ZERO)) {
+            if (!unit.getCoe().equals(BigInteger.ZERO)) {
                 printSign = 1;
-                if (mono.getCoe().equals(BigInteger.ONE)) {
+                if (unit.getCoe().equals(BigInteger.ONE)) {
                     if (first != 0) {
-                        System.out.print('+');
+                        //System.out.print('+');
+                        sb.append('+');
                     }
-                } else if (mono.getCoe().equals(BigInteger.valueOf(-1))) {
-                    System.out.print("-");
+                } else if (unit.getCoe().equals(BigInteger.valueOf(-1))) {
+                    //System.out.print("-");
+                    sb.append('-');
                 } else {
                     if (first != 0) {
-                        if (mono.getCoe().compareTo(BigInteger.valueOf(0)) > 0) {
-                            System.out.print('+');
+                        if (unit.getCoe().compareTo(BigInteger.valueOf(0)) > 0) {
+                            //System.out.print('+');
+                            sb.append('+');
                         }
                     }
-                    System.out.print(mono.getCoe());
+                    System.out.print(unit.getCoe());
                     sign = 1;
                 }
-                HashMap<String, Integer> a = mono.getHash();
-                if (!a.isEmpty()) {
+                HashMap<String, Integer> a = unit.getHash();
+                HashMap<Poly, Integer> sinMap = unit.getsinHash();
+                HashMap<Poly, Integer> cosMap = unit.getcosHash();
+                if (!(a.isEmpty() && sinMap.isEmpty() && cosMap.isEmpty())) {
                     for (HashMap.Entry<String, Integer> entry : a.entrySet()) {
                         String k = entry.getKey();
                         Integer v = entry.getValue();
 
                         if (sign == 1) {
                             if (v > 1) {
-                                System.out.print("*" + k + "^" + v);
+                                //System.out.print();
+                                sb.append("*" + k + "^" + v);
                             } else if (v == 1) {
-                                System.out.print("*" + k);
+                                //System.out.print("*" + k);
+                                sb.append("*" + k);
                             }
                         } else {
                             if (v > 1) {
-                                System.out.print(k + "^" + v);
+                                //System.out.print(k + "^" + v);
+                                sb.append( k + "^" + v);
                             } else if (v == 1) {
-                                System.out.print(k);
+                                //System.out.print(k);
+                                sb.append(k);
                             } else {
-                                System.out.print(1);
+                                //System.out.print(1);
+                                sb.append(1);
                             }
                         }
                     }
+                    printSin(sinMap, sign);
+                    printCos(cosMap, sign);
                 } else {
                     if (sign == 0) {
-                        System.out.print(1);
+                        //System.out.print(1);
+                        sb.append(1);
                     }
                 }
             }
             first = 1;
         }
         if (printSign == 0) {
-            System.out.print("0");
+           // System.out.print("0");
+            sb.append("0");
+        }
+        return sb.toString();
+    }
+
+
+
+    public String printSin(HashMap<Poly, Integer> sinMap, int sign) {
+StringBuilder sb = new StringBuilder();
+        for (HashMap.Entry<Poly, Integer> entry : sinMap.entrySet()) {
+            Poly p = entry.getKey();
+            Integer v = entry.getValue();
+            if (sign == 1) {
+                //System.out.print("*sin(");
+                sb.append("*sin(");
+                if (p.isFactor()) {
+                 sb.append(p.toString1())  ;
+                   // System.out.print(")");
+                    sb.append(")");
+                } else {
+                   // System.out.print("(");
+                    sb.append("(");
+                    sb.append(p.toString1());
+                    //System.out.print("))");
+                    sb.append("))");
+                }
+                if (v > 1) {
+                    //System.out.print("^" + v);
+                    sb.append("^"+v);
+                }
+            } else {
+                if (v >= 1) {
+                    //System.out.print("sin(");
+                     sb.append("sin(");
+                    if (p.isFactor()) {
+                        sb.append(p.toString1());
+                       // System.out.print(")");
+                        sb.append(")");
+                    } else {
+                       // System.out.print("(");
+                        sb.append("(");
+                        sb.append(p.toString1());
+                        //System.out.print("))");
+                        sb.append("))");
+                    }
+                    if (v != 1) {
+                        //System.out.print("^" + v);
+                        sb.append("^"+v);
+                    }
+
+                } else {
+                   // System.out.print(1);
+                    sb.append("1");
+                }
+            }
+        }
+    }
+
+    public void printCos(HashMap<Poly, Integer> cosMap, int sign) {
+StringBuilder sb = new StringBuilder();
+        for (HashMap.Entry<Poly, Integer> entry : cosMap.entrySet()) {
+            Poly p = entry.getKey();
+            Integer v = entry.getValue();
+            if (sign == 1) {
+                //System.out.print("*sin(");
+                sb.append("*cos(");
+                if (p.isFactor()) {
+                    sb.append(p.toString1())  ;
+                    // System.out.print(")");
+                    sb.append(")");
+                } else {
+                    // System.out.print("(");
+                    sb.append("(");
+                    sb.append(p.toString1());
+                    //System.out.print("))");
+                    sb.append("))");
+                }
+                if (v > 1) {
+                    //System.out.print("^" + v);
+                    sb.append("^"+v);
+                }
+            } else {
+                if (v >= 1) {
+                    //System.out.print("sin(");
+                    sb.append("cos(");
+                    if (p.isFactor()) {
+                        sb.append(p.toString1());
+                        // System.out.print(")");
+                        sb.append(")");
+                    } else {
+                        // System.out.print("(");
+                        sb.append("(");
+                        sb.append(p.toString1());
+                        //System.out.print("))");
+                        sb.append("))");
+                    }
+                    if (v != 1) {
+                        //System.out.print("^" + v);
+                        sb.append("^"+v);
+                    }
+
+                } else {
+                    // System.out.print(1);
+                    sb.append("1");
+                }
+            }
         }
     }
 
     public void init() {
-        poly.add(new Mono(BigInteger.valueOf(1)));
+        poly.add(new Unit(BigInteger.valueOf(1)));
     }
 
-    public void addMono(String var, int pow) {
-        Mono e = new Mono(var, pow);
+    public void addUnit(String var, int pow) {
+        Unit e = new Unit(var, pow);
         poly.add(e);
     }
 
-    public void addMono(BigInteger coe) {
-        Mono e = new Mono(coe);
+    public void addUnit(BigInteger coe) {
+        Unit e = new Unit(coe);
         poly.add(e);
     }
 
-    public void addMerge(Mono m) {
-        HashMap<String, Integer> hm = m.getHash();
+    public void addUnit(String name, Expr expr, int pow) {
+        Unit e = new Unit(name, expr, pow);
+        poly.add(e);
+    }
+
+    public void addMerge(Unit m) {
+
         int sign = 0;
-        Mono temp = null;
-        for (Mono mono : poly) {
-            if (mono.getHash().equals(hm)) {
+        Unit temp = null;
+        for (Unit unit : poly) {
+            if (unit.equals(m)) {
                 sign = 1;
-                temp = mono;
+                temp = unit;
             }
         }
         if (sign == 0) {
             poly.add(m);
         } else {
             BigInteger coe = temp.getCoe().add(m.getCoe());
-            temp.setCoe(coe);
+            if (coe != BigInteger.ZERO) {
+                temp.setCoe(coe);
+            } else {
+                poly.remove(temp);
+            }
+
         }
+        // 要重写，支持三角函数add合并
     }
 
-    public Poly mulMerge(Mono m) {
+    public Poly mulMerge(Unit m) {
         Poly ans = new Poly();
-        for (Mono mono : poly) {
-            Mono temp = new Mono(m, mono);
+        for (Unit unit : poly) {
+            Unit temp = new Unit(m, unit);
             ans.addMerge(temp);
         }
         return ans;
@@ -105,16 +236,16 @@ public class Poly {
 
     public Poly add(Poly p) {
 
-        for (Mono mono : p.poly) {
-            this.addMerge(mono);
+        for (Unit unit : p.poly) {
+            this.addMerge(unit);
         }
         return this;
     }
 
     public Poly mul(Poly p) {
         Poly ans = new Poly();
-        for (Mono mono : p.poly) {
-            ans = ans.add(this.mulMerge(mono));
+        for (Unit unit : p.poly) {
+            ans = ans.add(this.mulMerge(unit));
 
         }
         return ans;
@@ -134,4 +265,42 @@ public class Poly {
         }
         return ans;
     }
+
+    public boolean equals(Poly p) {
+        int sign1 = 1;
+        for (Unit unit : this.poly) {
+            int sign2 = 0;
+            for (Unit unit1 : p.poly) {
+                if (unit.equals(unit1)) {
+                    sign2 = 1;
+                }
+            }
+            if (sign2 != 1) {
+                sign1 = 0;
+            }
+        }
+
+        int sign3 = 1;
+        for (Unit unit : p.poly) {
+            int sign4 = 0;
+            for (Unit unit1 : this.poly) {
+                if (unit.equals(unit1)) {
+                    sign4 = 1;
+                }
+            }
+            if (sign4 != 1) {
+                sign3 = 0;
+            }
+        }
+        return sign1 == 1 && sign3 == 1;
+    }
+
+    public boolean isFactor() {
+        if (this.poly.size() == 1) {
+            return poly.get(0).isFactor();
+        } else {
+            return false;
+        }
+    }
+
 }

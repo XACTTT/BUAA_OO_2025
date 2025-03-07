@@ -16,7 +16,7 @@ public class Num implements Factor {
     @Override
     public Poly cal() {
         Poly poly = new Poly();
-        poly.addMono(this.num);
+        poly.addUnit(this.num);
         return poly;
     }
 }

@@ -28,7 +28,30 @@ public class Lexer {
             } else if (input.charAt(pos) == 'x') {
                 tokens.add(new Token(Token.Type.VAR, "x"));
                 pos++;
-            } else {
+            } else if (input.charAt(pos) == 's') {
+                tokens.add(new Token(Token.Type.SIN, "sin"));
+                pos = pos + 3;
+            } else if (input.charAt(pos) == 'c') {
+                tokens.add(new Token(Token.Type.COS, "cos"));
+                pos = pos + 3;
+            }
+            else if (input.charAt(pos) == 'f') {
+                tokens.add(new Token(Token.Type.FUN, "f"));
+                pos++;
+            }
+            else if (input.charAt(pos) == '{') {
+                tokens.add(new Token(Token.Type.LBP, "{"));
+                pos++;
+            }
+            else if (input.charAt(pos) == '}') {
+                tokens.add(new Token(Token.Type.RBP, "}"));
+                pos++;
+            }
+            else if (input.charAt(pos) == ',') {
+                tokens.add(new Token(Token.Type.COMMA, ","));
+                pos++;
+            }
+            else {
                 char now = input.charAt(pos);
                 StringBuilder sb = new StringBuilder();
                 while (now >= '0' && now <= '9') {

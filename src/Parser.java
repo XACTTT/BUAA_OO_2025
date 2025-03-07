@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class Parser {
     private final Lexer lexer;
@@ -9,8 +10,8 @@ public class Parser {
 
     public Expr parseExpr() {
         Expr expr = new Expr();
-        if (lexer.getCurToken().getType() == Token.Type.ADD ||
-            lexer.getCurToken().getType() == Token.Type.SUB) {
+        if (lexer.getCurToken().getType() == Token.Type.ADD
+                || lexer.getCurToken().getType() == Token.Type.SUB) {
             if (lexer.getCurToken().getType() == Token.Type.SUB) {
                 lexer.nextToken();
                 expr.addTerm(parseTerm(-1));
@@ -32,15 +33,13 @@ public class Parser {
                 expr.addTerm(parseTerm(1));
             }
         }
-
         return expr;
     }
-
     public Term parseTerm(int flag1) {
         Term term = new Term();
         int flag2 = 1;
         if (lexer.getCurToken().getType() == Token.Type.ADD ||
-            lexer.getCurToken().getType() == Token.Type.SUB) {
+                lexer.getCurToken().getType() == Token.Type.SUB) {
             if (lexer.getCurToken().getType() == Token.Type.SUB) {
                 flag2 = -1;
             }
@@ -61,8 +60,8 @@ public class Parser {
     public Factor parseFactor() {
         Token token = lexer.getCurToken();
         if (token.getType() == Token.Type.NUM ||
-            token.getType() == Token.Type.ADD ||
-            token.getType() == Token.Type.SUB) {
+                token.getType() == Token.Type.ADD ||
+                token.getType() == Token.Type.SUB) {
             Num num = parseNum();
             getPow(num);
             return num;
@@ -70,6 +69,46 @@ public class Parser {
             Var var = parseVar();
             getPow(var);
             return var;
+        } else if (token.getType() == Token.Type.SIN ||
+                token.getType() == Token.Type.COS) {
+
+            int signSign = 0;
+            if (token.getType() == Token.Type.SIN) {
+                signSign = 1;
+            }
+            lexer.nextToken();
+            lexer.nextToken();
+            Expr triExpr = new Expr();
+            triExpr = parseExpr();
+            lexer.nextToken();
+            getPow(triExpr);
+            Factor tri = null;
+            if (signSign == 1) {
+                tri = new Tri("sin", triExpr);
+            } else {
+                tri = new Tri("cos", triExpr);
+            }
+            getPow(tri);
+            return tri;
+        } else if (token.getType() == Token.Type.FUN) {
+            lexer.nextToken();
+            lexer.nextToken();
+            int num;
+            num = Integer.parseInt(lexer.getCurToken().getContent());
+            lexer.nextToken();
+            lexer.nextToken();
+            lexer.nextToken();
+            ArrayList<Factor> parameter = new ArrayList<>();
+            Factor factor = parseFactor();
+            getPow(factor);
+            parameter.add(factor);
+            while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.COMMA) {
+                lexer.nextToken();
+                Factor nextfactor = parseFactor();
+                getPow(nextfactor);
+                parameter.add(nextfactor);
+            }
+            return parseFunc(parameter, num);
         } else {
             Expr subExpr = new Expr();
             lexer.nextToken();
@@ -120,4 +159,11 @@ public class Parser {
         var = new Var(token.getContent());
         return var;
     }
+
+    public Expr parseFunc(ArrayList<Factor> factors, int num) {
+
+
+        return null;
+    }
+
 }

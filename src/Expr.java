@@ -26,8 +26,5 @@ public class Expr implements Factor {
         this.pow = pow;
     }
 
-    public void print() {
-        System.out.println("Expr " + this);
-    }
 
 }
