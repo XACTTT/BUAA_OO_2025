@@ -117,11 +117,41 @@ public class Unit {
     }
 
     public boolean equals(Unit unit) {
-        if (this.getHash().equals(unit.getHash())) {
+        if (this.varequals(this.vs, unit.vs)) {
             return hashEquals(this.sinMap, unit.sinMap) && hashEquals(this.cosMap, unit.cosMap);
         } else {
             return false;
         }
+    }
+
+    public boolean varequals(HashMap<String, Integer> map1, HashMap<String, Integer> map2) {
+        int sign1 = 1;
+        for (String string1 : map1.keySet()) {
+            int sign2 = 0;
+            for (String string2 : map2.keySet()) {
+                if (string1.equals(string2) && map1.get(string1).equals(map2.get(string2))) {
+                    sign2 = 1;
+                }
+            }
+            if (sign2 != 1) {
+                sign1 = 0;
+            }
+        }
+
+        int sign3 = 1;
+        for (String string1 : map2.keySet()) {
+            int sign4 = 0;
+            for (String string2 : map1.keySet()) {
+                if (string1.equals(string2) && map1.get(string1).equals(map2.get(string2))) {
+                    sign4 = 1;
+                }
+            }
+            if (sign4 != 1) {
+                sign3 = 0;
+            }
+        }
+        return sign1 == 1 && sign3 == 1;
+
     }
 
     public boolean hashEquals(HashMap<Poly, Integer> map1, HashMap<Poly, Integer> map2) {
@@ -129,7 +159,7 @@ public class Unit {
         for (Poly poly1 : map1.keySet()) {
             int sign2 = 0;
             for (Poly poly2 : map2.keySet()) {
-                if (poly1.equals(poly2)) {
+                if (poly1.equals(poly2) && map1.get(poly1).equals(map2.get(poly2))) {
                     sign2 = 1;
                 }
             }
@@ -143,7 +173,9 @@ public class Unit {
             int sign4 = 0;
             for (Poly poly2 : map1.keySet()) {
                 if (poly1.equals(poly2)) {
-                    sign4 = 1;
+                    if (map1.get(poly2).equals(map2.get(poly1))) {
+                        sign4 = 1;
+                    }
                 }
             }
             if (sign4 != 1) {

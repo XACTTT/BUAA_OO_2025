@@ -3,9 +3,16 @@ import java.util.ArrayList;
 
 public class Parser {
     private final Lexer lexer;
+    private Func function;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
+        this.function = null;
+    }
+
+    public Parser(Lexer lexer, Func function) {
+        this.lexer = lexer;
+        this.function = function;
     }
 
     public Expr parseExpr() {
@@ -35,6 +42,7 @@ public class Parser {
         }
         return expr;
     }
+
     public Term parseTerm(int flag1) {
         Term term = new Term();
         int flag2 = 1;
@@ -108,6 +116,7 @@ public class Parser {
                 getPow(nextfactor);
                 parameter.add(nextfactor);
             }
+            lexer.nextToken();
             return parseFunc(parameter, num);
         } else {
             Expr subExpr = new Expr();
@@ -161,13 +170,22 @@ public class Parser {
     }
 
     public Expr parseFunc(ArrayList<Factor> factors, int num) {
-            if(factors.size() == 1) {
+        ArrayList<String> factorParas = new ArrayList<>();
+        for (int i = 0; i < factors.size(); i++) {
+            String para = factors.get(i).cal().toString1();
+            factorParas.add(para);
+        }
 
-            }else{
+        Func function = this.function;
+        ArrayList<String> replacePara = function.getParas();
+        String funcExpr = function.getExpr(num);
+        for (int i = 0; i < replacePara.size(); i++) {
+            funcExpr = funcExpr.replaceAll(replacePara.get(i), factorParas.get(i));
+        }
+        Lexer tplexer = new Lexer(funcExpr);
+        Parser tpparser = new Parser(tplexer);
 
-            }
-
-        return null;
+        return tpparser.parseExpr();
     }
 
 }
