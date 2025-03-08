@@ -246,7 +246,7 @@ public class Poly {
     public Poly mulMerge(Unit m) {
         Poly ans = new Poly();
         for (Unit unit : poly) {
-            Unit temp = new Unit(unit,m);
+            Unit temp = new Unit(m,unit);
             ans.addMerge(temp);
         }
         return ans;
@@ -321,5 +321,12 @@ public class Poly {
             return false;
         }
     }
-
+    public Poly deepClone() {
+        Poly cloned = new Poly();
+        for (Unit unit : this.poly) {
+            // 递归克隆 Unit
+            cloned.poly.add(unit.deepClone());
+        }
+        return cloned;
+    }
 }

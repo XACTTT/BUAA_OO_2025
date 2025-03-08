@@ -1,11 +1,19 @@
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Unit {
     private BigInteger coe;
     private HashMap<String, Integer> vs;
     private HashMap<Poly, Integer> sinMap;
     private HashMap<Poly, Integer> cosMap;
+
+    public Unit() {
+        coe = new BigInteger("0");
+        vs = new HashMap<>();
+        sinMap = new HashMap<>();
+        cosMap = new HashMap<>();
+    }
 
     public Unit(BigInteger coe) {
         this.coe = coe;
@@ -34,7 +42,9 @@ public class Unit {
         this.cosMap = new HashMap<>();
     }
 
-    public Unit(Unit a, Unit b) {
+    public Unit(Unit m, Unit n) {
+        Unit a = m.deepClone();
+        Unit b = n.deepClone();
         this.coe = a.coe.multiply(b.coe);
         this.vs = mulHash(a.vs, b.vs);
         this.sinMap = multriHash(a.sinMap, b.sinMap);
@@ -200,5 +210,35 @@ public class Unit {
             return true;
         }
         return this.vs.isEmpty() && this.sinMap.isEmpty() && this.cosMap.isEmpty();
+    }
+
+    public Unit deepClone() {
+        Unit cloned = new Unit();
+
+        // 1. 克隆不可变对象 coe
+        cloned.coe = this.coe; // BigInteger 不可变，直接引用
+
+        // 2. 克隆 vs（String 和 Integer 均不可变）
+        cloned.vs = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : this.vs.entrySet()) {
+            cloned.vs.put(entry.getKey(), entry.getValue());
+        }
+
+        // 3. 深克隆 sinMap
+        cloned.sinMap = new HashMap<>();
+        for (Map.Entry<Poly, Integer> entry : this.sinMap.entrySet()) {
+            // 深克隆 Poly 作为 key
+            Poly clonedKey = entry.getKey().deepClone();
+            cloned.sinMap.put(clonedKey, entry.getValue());
+        }
+
+        // 4. 深克隆 cosMap
+        cloned.cosMap = new HashMap<>();
+        for (Map.Entry<Poly, Integer> entry : this.cosMap.entrySet()) {
+            Poly clonedKey = entry.getKey().deepClone();
+            cloned.cosMap.put(clonedKey, entry.getValue());
+        }
+
+        return cloned;
     }
 }
