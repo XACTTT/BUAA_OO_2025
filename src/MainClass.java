@@ -15,7 +15,6 @@ public class MainClass {
             func = funcparser.parseFunc();
         }
 
-
         String input = scanner.nextLine();
         input = input.replaceAll("[ \t]", "");
         Lexer lexer = new Lexer(input);
