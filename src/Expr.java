@@ -26,5 +26,4 @@ public class Expr implements Factor {
         this.pow = pow;
     }
 
-
 }
