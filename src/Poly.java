@@ -32,7 +32,7 @@ public class Poly {
                             sb.append('+');
                         }
                     }
-                   // System.out.print(unit.getCoe());
+                    // System.out.print(unit.getCoe());
                     sb.append(unit.getCoe());
                     sign = 1;
                 }
@@ -48,6 +48,7 @@ public class Poly {
                             if (v > 1) {
                                 //System.out.print();
                                 sb.append("*" + k + "^" + v);
+
                             } else if (v == 1) {
                                 //System.out.print("*" + k);
                                 sb.append("*" + k);
@@ -56,17 +57,20 @@ public class Poly {
                             if (v > 1) {
                                 //System.out.print(k + "^" + v);
                                 sb.append(k + "^" + v);
+                                sign = 1;
                             } else if (v == 1) {
                                 //System.out.print(k);
                                 sb.append(k);
+                                sign = 1;
                             } else {
                                 //System.out.print(1);
                                 sb.append(1);
+                                sign = 1;
                             }
                         }
                     }
-               sb.append(printSin(sinMap, sign))     ;
-                sb.append(printCos(cosMap, sign))    ;
+                    sb.append(printSin(sinMap, sign));
+                    sb.append(printCos(cosMap, sign));
                 } else {
                     if (sign == 0) {
                         //System.out.print(1);
@@ -115,12 +119,14 @@ public class Poly {
                         sb.append(p.toString1());
                         // System.out.print(")");
                         sb.append(")");
+                        sign = 1;
                     } else {
                         // System.out.print("(");
                         sb.append("(");
                         sb.append(p.toString1());
                         //System.out.print("))");
                         sb.append("))");
+                        sign = 1;
                     }
                     if (v != 1) {
                         //System.out.print("^" + v);
@@ -130,6 +136,7 @@ public class Poly {
                 } else {
                     // System.out.print(1);
                     sb.append("1");
+                    sign = 1;
                 }
             }
         }
@@ -167,12 +174,14 @@ public class Poly {
                         sb.append(p.toString1());
                         // System.out.print(")");
                         sb.append(")");
+                        sign = 1;
                     } else {
                         // System.out.print("(");
                         sb.append("(");
                         sb.append(p.toString1());
                         //System.out.print("))");
                         sb.append("))");
+                        sign = 1;
                     }
                     if (v != 1) {
                         //System.out.print("^" + v);
@@ -182,6 +191,7 @@ public class Poly {
                 } else {
                     // System.out.print(1);
                     sb.append("1");
+                    sign = 1;
                 }
             }
         }
