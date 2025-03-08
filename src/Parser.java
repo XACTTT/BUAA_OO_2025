@@ -108,12 +108,10 @@ public class Parser {
             lexer.nextToken();
             ArrayList<Factor> parameter = new ArrayList<>();
             Factor factor = parseFactor();
-            getPow(factor);
             parameter.add(factor);
             while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.COMMA) {
                 lexer.nextToken();
                 Factor nextfactor = parseFactor();
-                getPow(nextfactor);
                 parameter.add(nextfactor);
             }
             lexer.nextToken();
@@ -179,10 +177,25 @@ public class Parser {
         Func function = this.function;
         ArrayList<String> replacePara = function.getParas();
         String funcExpr = function.getExpr(num);
-        for (int i = 0; i < replacePara.size(); i++) {
-            funcExpr = funcExpr.replaceAll(replacePara.get(i), factorParas.get(i));
+        StringBuilder realFuncExpr = new StringBuilder();
+        for (int i = 0; i < funcExpr.length(); i++) {
+            int sign = 0;
+            for (int j = 0; j < replacePara.size(); j++) {
+                if (Character.toString(funcExpr.charAt(i)).equals(replacePara.get(j))) {
+                    sign = 1;
+                    realFuncExpr.append("(");
+                    realFuncExpr.append(factorParas.get(j));
+                    realFuncExpr.append(")");
+                }
+            }
+            if (sign == 0) {
+                realFuncExpr.append(funcExpr.charAt(i));
+
+            }
+
         }
-        Lexer tplexer = new Lexer(funcExpr);
+
+        Lexer tplexer = new Lexer(realFuncExpr.toString());
         Parser tpparser = new Parser(tplexer);
 
         return tpparser.parseExpr();

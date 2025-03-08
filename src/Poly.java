@@ -151,28 +151,10 @@ public class Poly {
         for (HashMap.Entry<Poly, Integer> entry : cosMap.entrySet()) {
             Poly p = entry.getKey();
             Integer v = entry.getValue();
-            if (sign == 1) {
-                //System.out.print("*sin(");
-                sb.append("*cos(");
-                if (p.isFactor()) {
-                    sb.append(p.toString1());
-                    // System.out.print(")");
-                    sb.append(")");
-                } else {
-                    // System.out.print("(");
-                    sb.append("(");
-                    sb.append(p.toString1());
-                    //System.out.print("))");
-                    sb.append("))");
-                }
-                if (v > 1) {
-                    //System.out.print("^" + v);
-                    sb.append("^").append(v);
-                }
-            } else {
-                if (v >= 1) {
-                    //System.out.print("sin(");
-                    sb.append("cos(");
+            if (!p.isZero()) {
+                if (sign == 1) {
+                    //System.out.print("*sin(");
+                    sb.append("*cos(");
                     if (p.isFactor()) {
                         sb.append(p.toString1());
                         // System.out.print(")");
@@ -184,18 +166,41 @@ public class Poly {
                         //System.out.print("))");
                         sb.append("))");
                     }
-                    sign = 1;
-                    if (v != 1) {
+                    if (v > 1) {
                         //System.out.print("^" + v);
                         sb.append("^").append(v);
                     }
-
                 } else {
-                    // System.out.print(1);
-                    sb.append("1");
-                    sign = 1;
+                    if (v >= 1) {
+                        //System.out.print("sin(");
+                        sb.append("cos(");
+                        if (p.isFactor()) {
+                            sb.append(p.toString1());
+                            // System.out.print(")");
+                            sb.append(")");
+                        } else {
+                            // System.out.print("(");
+                            sb.append("(");
+                            sb.append(p.toString1());
+                            //System.out.print("))");
+                            sb.append("))");
+                        }
+                        sign = 1;
+                        if (v != 1) {
+                            //System.out.print("^" + v);
+                            sb.append("^").append(v);
+                        }
+
+                    } else {
+                        // System.out.print(1);
+                        sb.append("1");
+                        sign = 1;
+                    }
                 }
             }
+        }
+        if (sign == 0) {
+            sb.append("1");
         }
         return sb.toString();
     }
@@ -246,7 +251,7 @@ public class Poly {
     public Poly mulMerge(Unit m) {
         Poly ans = new Poly();
         for (Unit unit : poly) {
-            Unit temp = new Unit(m,unit);
+            Unit temp = new Unit(m, unit);
             ans.addMerge(temp);
         }
         return ans;
@@ -321,12 +326,32 @@ public class Poly {
             return false;
         }
     }
+
     public Poly deepClone() {
         Poly cloned = new Poly();
         for (Unit unit : this.poly) {
-            // 递归克隆 Unit
             cloned.poly.add(unit.deepClone());
         }
         return cloned;
     }
+
+    public void simplify() {
+        for (Unit unit : poly) {
+            if (unit.isZero()) {
+                unit.setCoe(new BigInteger("0"));
+            }
+        }
+
+    }
+
+    public boolean isZero() {
+        int zerosin = 1;
+        for (Unit unit : poly) {
+            if (!unit.isZero()) {
+                zerosin = 0;
+            }
+        }
+        return zerosin == 1;
+    }
+
 }

@@ -214,25 +214,16 @@ public class Unit {
 
     public Unit deepClone() {
         Unit cloned = new Unit();
-
-        // 1. 克隆不可变对象 coe
-        cloned.coe = this.coe; // BigInteger 不可变，直接引用
-
-        // 2. 克隆 vs（String 和 Integer 均不可变）
+        cloned.coe = this.coe;
         cloned.vs = new HashMap<>();
         for (Map.Entry<String, Integer> entry : this.vs.entrySet()) {
             cloned.vs.put(entry.getKey(), entry.getValue());
         }
-
-        // 3. 深克隆 sinMap
         cloned.sinMap = new HashMap<>();
         for (Map.Entry<Poly, Integer> entry : this.sinMap.entrySet()) {
-            // 深克隆 Poly 作为 key
             Poly clonedKey = entry.getKey().deepClone();
             cloned.sinMap.put(clonedKey, entry.getValue());
         }
-
-        // 4. 深克隆 cosMap
         cloned.cosMap = new HashMap<>();
         for (Map.Entry<Poly, Integer> entry : this.cosMap.entrySet()) {
             Poly clonedKey = entry.getKey().deepClone();
@@ -240,5 +231,20 @@ public class Unit {
         }
 
         return cloned;
+    }
+
+    public Boolean isZero() {
+        if (this.coe.equals(BigInteger.valueOf(0))) {
+            return true;
+        } else {
+            int zerosign = 0;
+            for (Map.Entry<Poly, Integer> entry : this.sinMap.entrySet()) {
+                if (entry.getKey().isZero()) {
+                    zerosign = 1;
+                }
+            }
+            return zerosign == 1;
+        }
+
     }
 }
