@@ -9,7 +9,7 @@ public class Funcparser {
     private String para2;
 
     Funcparser(ArrayList<String> funcData) {
-        ArrayList<String>  funcpolys = new ArrayList<>();
+        ArrayList<String> funcpolys = new ArrayList<>();
         for (String func : funcData) {
             func = func.replaceAll("[ \t]", "");
             func = func.replaceAll("x", "u");
@@ -61,15 +61,19 @@ public class Funcparser {
         HashMap<String, String> define0 = parseDefine(this.define0);
         HashMap<String, String> define1 = parseDefine(this.define1);
         ArrayList<String> paras = new ArrayList<>();
-        ArrayList<String> funcs = new ArrayList<>();
+        //        for (String para : define0.keySet()) {
+        //       }
+        paras.add(this.para1);
+        if (this.para2 != null) {
+            paras.add(this.para2);
+        }
         String ffun0 = define0.get(this.para1);
         String ffun1 = define1.get(this.para1);
-        for (String para : define0.keySet()) {
-            paras.add(para);
-        }
+        ArrayList<String> funcs = new ArrayList<>();
         funcs.add(ffun0);
         funcs.add(ffun1);
         String recDfExpr = this.recursionDf.substring(this.recursionDf.indexOf("=") + 1);
+        recDfExpr = recDfExpr.replaceAll("\\+\\+", "+");
         String fun2 = recDfExpr.replaceAll("n-1", "1");
         fun2 = fun2.replaceAll("n-2", "0");
         String fun3 = recDfExpr.replaceAll("n-1", "2");
