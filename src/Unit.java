@@ -52,7 +52,7 @@ public class Unit {
     }
 
     public HashMap<String, Integer>
-    mulHash(HashMap<String, Integer> poly1, HashMap<String, Integer> poly2) {
+        mulHash(HashMap<String, Integer> poly1, HashMap<String, Integer> poly2) {
 
         HashMap<String, Integer> result = new HashMap<>();
 
@@ -81,7 +81,7 @@ public class Unit {
     }
 
     public HashMap<Poly, Integer>
-    multriHash(HashMap<Poly, Integer> poly1, HashMap<Poly, Integer> poly2) {
+        multriHash(HashMap<Poly, Integer> poly1, HashMap<Poly, Integer> poly2) {
         HashMap<Poly, Integer> result = new HashMap<>();
         Poly temp = null;
         for (Poly term1 : poly1.keySet()) {
@@ -239,7 +239,7 @@ public class Unit {
         } else {
             int zerosign = 0;
             for (Map.Entry<Poly, Integer> entry : this.sinMap.entrySet()) {
-                if (entry.getKey().isZero()&&entry.getValue()!=0) {
+                if (entry.getKey().isZero() && entry.getValue() != 0) {
                     zerosign = 1;
                 }
             }
