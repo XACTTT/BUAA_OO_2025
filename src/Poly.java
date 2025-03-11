@@ -292,7 +292,6 @@ public class Poly {
 
     public boolean equals(Poly p) {
         int sign1 = 1;
-        int sign3 = 1;
         if (this.poly.size() == p.poly.size()) {
             for (Unit unit : this.poly) {
                 int sign2 = 0;
@@ -305,23 +304,10 @@ public class Poly {
                     sign1 = 0;
                 }
             }
-
-
-            for (Unit unit : p.poly) {
-                int sign4 = 0;
-                for (Unit unit1 : this.poly) {
-                    if (unit.equals(unit1) && unit.getCoe().equals(unit1.getCoe())) {
-                        sign4 = 1;
-                    }
-                }
-                if (sign4 != 1) {
-                    sign3 = 0;
-                }
-            }
         } else {
             return false;
         }
-        return sign1 == 1 && sign3 == 1;
+        return sign1 == 1;
     }
 
     public boolean isFactor() {
