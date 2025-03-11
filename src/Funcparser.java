@@ -65,7 +65,9 @@ public class Funcparser {
         String ffun0 = define0.get(this.para1);
         String ffun1 = define1.get(this.para1);
         for (String para : define0.keySet()) {
-            paras.add(para);
+            paras.add(this.para1);
+            paras.add(this.para2);
+            break;
         }
         funcs.add(ffun0);
         funcs.add(ffun1);
