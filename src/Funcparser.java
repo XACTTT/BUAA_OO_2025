@@ -70,6 +70,7 @@ public class Funcparser {
         funcs.add(ffun0);
         funcs.add(ffun1);
         String recDfExpr = this.recursionDf.substring(this.recursionDf.indexOf("=") + 1);
+        recDfExpr = recDfExpr.replaceAll("\\+\\+", "+");
         String fun2 = recDfExpr.replaceAll("n-1", "1");
         fun2 = fun2.replaceAll("n-2", "0");
         String fun3 = recDfExpr.replaceAll("n-1", "2");

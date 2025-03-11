@@ -21,7 +21,6 @@ public class MainClass {
         Parser parser = new Parser(lexer, func);
         Expr expr = parser.parseExpr();
         Poly answer = expr.cal();
-        answer.simplify();
         answer.print();
     }
 }

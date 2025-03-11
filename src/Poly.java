@@ -110,7 +110,7 @@ public class Poly {
                     //System.out.print("))");
                     sb.append("))");
                 }
-                if (v > 1) {
+                if (v != 1) {
                     //System.out.print("^" + v);
                     sb.append("^").append(v);
                 }
@@ -295,7 +295,7 @@ public class Poly {
         for (Unit unit : this.poly) {
             int sign2 = 0;
             for (Unit unit1 : p.poly) {
-                if (unit.equals(unit1)) {
+                if (unit.equals(unit1) && unit.getCoe().equals(unit1.getCoe())) {
                     sign2 = 1;
                 }
             }
@@ -308,7 +308,7 @@ public class Poly {
         for (Unit unit : p.poly) {
             int sign4 = 0;
             for (Unit unit1 : this.poly) {
-                if (unit.equals(unit1)) {
+                if (unit.equals(unit1) && unit.getCoe().equals(unit1.getCoe())) {
                     sign4 = 1;
                 }
             }
