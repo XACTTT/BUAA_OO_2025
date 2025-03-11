@@ -239,7 +239,7 @@ public class Unit {
         } else {
             int zerosign = 0;
             for (Map.Entry<Poly, Integer> entry : this.sinMap.entrySet()) {
-                if (entry.getKey().isZero()) {
+                if (entry.getKey().isZero()&&entry.getValue()!=0) {
                     zerosign = 1;
                 }
             }
