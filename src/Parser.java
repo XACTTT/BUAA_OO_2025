@@ -1,18 +1,19 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Parser {
     private final Lexer lexer;
-    private Func function;
+    private HashMap<String,Func> functions;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
         this.function = null;
     }
 
-    public Parser(Lexer lexer, Func function) {
+    public Parser(Lexer lexer, HashMap<String,Func>  functions) {
         this.lexer = lexer;
-        this.function = function;
+        this.functions = functions;
     }
 
     public Expr parseExpr() {

@@ -4,14 +4,20 @@ import java.util.Scanner;
 public class MainClass {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        ArrayList<String> normalFuncData = new ArrayList<>();
         ArrayList<String> funcData = new ArrayList<>();
-        String funcNum = scanner.nextLine();
+        String funcNum1 = scanner.nextLine();
+        int num = Integer.parseInt(funcNum1);
+        for (int i = 0; i < num; i++) {
+            normalFuncData.add(scanner.nextLine());
+        }
         Func func = null;
-        if (funcNum.equals("1")) {
+        String funcNum2 = scanner.nextLine();
+        if (funcNum2.equals("1")) {
             for (int i = 0; i < 3; i++) {
                 funcData.add(scanner.nextLine());
             }
-            Funcparser funcparser = new Funcparser(funcData);
+            Funcparser funcparser = new Funcparser(normalFuncData,funcData);
             func = funcparser.parseFunc();
         }
 
