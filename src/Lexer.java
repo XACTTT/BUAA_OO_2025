@@ -37,7 +37,9 @@ public class Lexer {
             } else if (input.charAt(pos) == 'c') {
                 tokens.add(new Token(Token.Type.COS, "cos"));
                 pos = pos + 3;
-            } else if (input.charAt(pos) == 'f') {
+            } else if (input.charAt(pos) == 'f' ||
+                    input.charAt(pos) == 'g' ||
+                    input.charAt(pos) == 'h') {
                 tokens.add(new Token(Token.Type.FUN, "f"));
                 pos++;
             } else if (input.charAt(pos) == '{') {

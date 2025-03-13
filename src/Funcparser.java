@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Funcparser {
-    private ArrayList<String> customFunclist;
-    private ArrayList<String> recurFunclist;
+    private final ArrayList<String> customFunclist;
+    private final ArrayList<String> recurFunclist;
 
     Funcparser(ArrayList<String> cunstomFuncData, ArrayList<String> recurfuncData) {
         ArrayList<String> recurfunc = new ArrayList<>();
@@ -51,7 +51,7 @@ public class Funcparser {
 
     public HashMap<String, Func> parseFunc() {
         HashMap<String, Func> funclist = new HashMap<>();
-        HashMap<String, ArrayList<String>> funcMap = new HashMap<>();
+        HashMap<String, ArrayList<String>> funcMap;
         funcMap = parseFormalPara();
         for (int i = 0; i < customFunclist.size(); i++) {
             String func = customFunclist.get(i);

@@ -110,7 +110,7 @@ public class Poly {
                     //System.out.print("))");
                     sb.append("))");
                 }
-                if (v > 1) {
+                if (v != 1) {
                     //System.out.print("^" + v);
                     sb.append("^").append(v);
                 }
@@ -292,31 +292,22 @@ public class Poly {
 
     public boolean equals(Poly p) {
         int sign1 = 1;
-        for (Unit unit : this.poly) {
-            int sign2 = 0;
-            for (Unit unit1 : p.poly) {
-                if (unit.equals(unit1)&&unit1.getCoe().equals(unit.getCoe())) {
-                    sign2 = 1;
+        if (this.poly.size() == p.poly.size()) {
+            for (Unit unit : this.poly) {
+                int sign2 = 0;
+                for (Unit unit1 : p.poly) {
+                    if (unit.equals(unit1) && unit.getCoe().equals(unit1.getCoe())) {
+                        sign2 = 1;
+                    }
+                }
+                if (sign2 != 1) {
+                    sign1 = 0;
                 }
             }
-            if (sign2 != 1) {
-                sign1 = 0;
-            }
+        } else {
+            return false;
         }
-
-        int sign3 = 1;
-        for (Unit unit : p.poly) {
-            int sign4 = 0;
-            for (Unit unit1 : this.poly) {
-                if (unit.equals(unit1)&&unit1.getCoe().equals(unit.getCoe())) {
-                    sign4 = 1;
-                }
-            }
-            if (sign4 != 1) {
-                sign3 = 0;
-            }
-        }
-        return sign1 == 1 && sign3 == 1;
+        return sign1 == 1;
     }
 
     public boolean isFactor() {

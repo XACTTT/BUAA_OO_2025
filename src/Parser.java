@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 public class Parser {
     private final Lexer lexer;
-    private HashMap<String,Func> functions;
+    private final HashMap<String, Func> functions;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
-        this.function = null;
+        this.functions = null;
     }
 
-    public Parser(Lexer lexer, HashMap<String,Func>  functions) {
+    public Parser(Lexer lexer, HashMap<String, Func> functions) {
         this.lexer = lexer;
         this.functions = functions;
     }
@@ -100,13 +100,21 @@ public class Parser {
             getPow(tri);
             return tri;
         } else if (token.getType() == Token.Type.FUN) {
-            lexer.nextToken();
-            lexer.nextToken();
+            String name;
+            name = token.getContent();
             int num;
-            num = Integer.parseInt(lexer.getCurToken().getContent());
-            lexer.nextToken();
-            lexer.nextToken();
-            lexer.nextToken();
+            if (name.equals("f")) {
+                lexer.nextToken();
+                lexer.nextToken();
+                num = Integer.parseInt(lexer.getCurToken().getContent());
+                lexer.nextToken();
+                lexer.nextToken();
+                lexer.nextToken();
+            } else {
+                lexer.nextToken();
+                lexer.nextToken();
+                num = 0;
+            }
             ArrayList<Factor> parameter = new ArrayList<>();
             Factor factor = parseFactor();
             parameter.add(factor);
@@ -116,7 +124,7 @@ public class Parser {
                 parameter.add(nextfactor);
             }
             lexer.nextToken();
-            return parseFunc(parameter, num);
+            return parseFunc(parameter, num, name);
         } else {
             Expr subExpr = new Expr();
             lexer.nextToken();
@@ -168,14 +176,14 @@ public class Parser {
         return var;
     }
 
-    public Expr parseFunc(ArrayList<Factor> factors, int num) {
+    public Expr parseFunc(ArrayList<Factor> factors, int num, String name) {
         ArrayList<String> factorParas = new ArrayList<>();
         for (int i = 0; i < factors.size(); i++) {
             String para = factors.get(i).cal().toString1();
             factorParas.add(para);
         }
 
-        Func function = this.function;
+        Func function = this.functions.get(name);
         ArrayList<String> replacePara = function.getParas();
         String funcExpr = function.getExpr(num);
         StringBuilder realFuncExpr = new StringBuilder();
@@ -195,10 +203,8 @@ public class Parser {
             }
 
         }
-
         Lexer tplexer = new Lexer(realFuncExpr.toString());
         Parser tpparser = new Parser(tplexer);
-
         return tpparser.parseExpr();
     }
 
