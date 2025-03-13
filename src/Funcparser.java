@@ -99,7 +99,15 @@ public class Funcparser {
         HashMap<String, Func> functions) {
         ArrayList<String> funcs = new ArrayList<>();
         funcs.add(recurfuncExpr.get(0));
-        funcs.add(recurfuncExpr.get(1));
+        String fun1 = recurfuncExpr.get(1);
+        Func function1 = new Func(paras, funcs);
+        functions.put("f", function1);
+        Lexer lexer1 = new Lexer(fun1);
+        Parser parser1 = new Parser(lexer1, functions);
+        Expr expr1 = parser1.parseExpr();
+        String ffun1 = expr1.cal().toString1();
+        funcs.add(ffun1);
+        functions.remove("f");
         String recExpr = recurfuncExpr.get(2);
         recExpr = recExpr.replaceAll("\\+\\+", "+");
         recExpr = recExpr.replaceAll("--", "+");
