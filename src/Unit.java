@@ -52,7 +52,7 @@ public class Unit {
     }
 
     public HashMap<String, Integer>
-        mulHash(HashMap<String, Integer> poly1, HashMap<String, Integer> poly2) {
+    mulHash(HashMap<String, Integer> poly1, HashMap<String, Integer> poly2) {
 
         HashMap<String, Integer> result = new HashMap<>();
 
@@ -81,7 +81,7 @@ public class Unit {
     }
 
     public HashMap<Poly, Integer>
-        multriHash(HashMap<Poly, Integer> poly1, HashMap<Poly, Integer> poly2) {
+    multriHash(HashMap<Poly, Integer> poly1, HashMap<Poly, Integer> poly2) {
         HashMap<Poly, Integer> result = new HashMap<>();
         Poly temp = null;
         for (Poly term1 : poly1.keySet()) {
@@ -136,31 +136,23 @@ public class Unit {
 
     public boolean varequals(HashMap<String, Integer> map1, HashMap<String, Integer> map2) {
         int sign1 = 1;
-        for (String string1 : map1.keySet()) {
-            int sign2 = 0;
-            for (String string2 : map2.keySet()) {
-                if (string1.equals(string2) && map1.get(string1).equals(map2.get(string2))) {
-                    sign2 = 1;
+        if (map1.size() == map2.size()) {
+            for (String string1 : map1.keySet()) {
+                int sign2 = 0;
+                for (String string2 : map2.keySet()) {
+                    if (string1.equals(string2) && map1.get(string1).equals(map2.get(string2))) {
+                        sign2 = 1;
+                    }
+                }
+                if (sign2 != 1) {
+                    sign1 = 0;
                 }
             }
-            if (sign2 != 1) {
-                sign1 = 0;
-            }
+        } else {
+            return false;
         }
 
-        int sign3 = 1;
-        for (String string1 : map2.keySet()) {
-            int sign4 = 0;
-            for (String string2 : map1.keySet()) {
-                if (string1.equals(string2) && map1.get(string1).equals(map2.get(string2))) {
-                    sign4 = 1;
-                }
-            }
-            if (sign4 != 1) {
-                sign3 = 0;
-            }
-        }
-        return sign1 == 1 && sign3 == 1;
+        return sign1 == 1;
 
     }
 
@@ -239,7 +231,7 @@ public class Unit {
         } else {
             int zerosign = 0;
             for (Map.Entry<Poly, Integer> entry : this.sinMap.entrySet()) {
-                if (entry.getKey().isZero()) {
+                if (entry.getKey().isZero() && entry.getValue() != 0) {
                     zerosign = 1;
                 }
             }

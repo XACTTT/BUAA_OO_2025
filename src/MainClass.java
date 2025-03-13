@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class MainClass {
@@ -11,20 +12,20 @@ public class MainClass {
         for (int i = 0; i < num; i++) {
             normalFuncData.add(scanner.nextLine());
         }
-        Func func = null;
+        HashMap<String, Func> funcList = null;
         String funcNum2 = scanner.nextLine();
         if (funcNum2.equals("1")) {
             for (int i = 0; i < 3; i++) {
                 funcData.add(scanner.nextLine());
             }
             Funcparser funcparser = new Funcparser(normalFuncData,funcData);
-            func = funcparser.parseFunc();
+            funcList = funcparser.parseFunc();
         }
 
         String input = scanner.nextLine();
         input = input.replaceAll("[ \t]", "");
         Lexer lexer = new Lexer(input);
-        Parser parser = new Parser(lexer, func);
+        Parser parser = new Parser(lexer, funcList);
         Expr expr = parser.parseExpr();
         Poly answer = expr.cal();
         answer.simplify();

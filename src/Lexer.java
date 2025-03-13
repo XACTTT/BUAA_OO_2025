@@ -26,8 +26,7 @@ public class Lexer {
                 tokens.add(new Token(Token.Type.POW, "^"));
                 pos++;
             } else if (input.charAt(pos) == 'x' ||
-                    input.charAt(pos) == 'u' ||
-                    input.charAt(pos) == 'v') {
+                    input.charAt(pos) == 'y') {
                 String var = input.substring(pos, pos + 1);
                 tokens.add(new Token(Token.Type.VAR, var));
                 pos++;
@@ -40,7 +39,7 @@ public class Lexer {
             } else if (input.charAt(pos) == 'f' ||
                     input.charAt(pos) == 'g' ||
                     input.charAt(pos) == 'h') {
-                tokens.add(new Token(Token.Type.FUN, "f"));
+                tokens.add(new Token(Token.Type.FUN, Character.toString(input.charAt(pos))));
                 pos++;
             } else if (input.charAt(pos) == '{') {
                 tokens.add(new Token(Token.Type.LBP, "{"));
@@ -51,6 +50,9 @@ public class Lexer {
             } else if (input.charAt(pos) == ',') {
                 tokens.add(new Token(Token.Type.COMMA, ","));
                 pos++;
+            } else if (input.charAt(pos) == 'd') {
+                tokens.add(new Token(Token.Type.DIFF, "dx"));
+                pos = pos + 2;
             } else {
                 char now = input.charAt(pos);
                 StringBuilder sb = new StringBuilder();

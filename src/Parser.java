@@ -78,6 +78,14 @@ public class Parser {
             Var var = parseVar();
             getPow(var);
             return var;
+        } else if (token.getType() == Token.Type.DIFF) {
+            lexer.nextToken();
+            lexer.nextToken();
+            Expr diffExpr = new Expr();
+            diffExpr = parseExpr();
+            lexer.nextToken();
+          Factor diff = new Diff("diff", diffExpr);
+          return diff;
         } else if (token.getType() == Token.Type.SIN ||
                 token.getType() == Token.Type.COS) {
 

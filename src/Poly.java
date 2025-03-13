@@ -12,11 +12,9 @@ public class Poly {
     public String toString1() { //print之前先化简，要求sin和cos里不能为空
         StringBuilder sb = new StringBuilder();
         int first = 0;
-        int printSign = 0;
         for (Unit unit : poly) {
             int sign = 0;
             if (!unit.getCoe().equals(BigInteger.ZERO)) {
-                printSign = 1;
                 if (unit.getCoe().equals(BigInteger.ONE)) {
                     if (first != 0) {
                         sb.append('+');
@@ -56,7 +54,7 @@ public class Poly {
             }
             first = 1;
         }
-        if (printSign == 0) {
+        if (sb.length() == 0) {
             sb.append("0");
         }
         return sb.toString();
@@ -345,4 +343,8 @@ public class Poly {
         return zerosin == 1;
     }
 
+    public String diffcal(){
+
+        return null;
+    }
 }
