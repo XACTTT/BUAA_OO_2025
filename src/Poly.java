@@ -146,8 +146,8 @@ public class Poly {
         int sign = sign1;
         for (HashMap.Entry<Poly, Integer> entry : cosMap.entrySet()) {
             Poly p = entry.getKey();
-            Integer v = entry.getValue();
-            if (!p.isZero()) {
+            int v = entry.getValue();
+            if (!p.isZero() && v != 0) {
                 if (sign == 1) {
                     //System.out.print("*sin(");
                     sb.append("*cos(");
@@ -167,31 +167,26 @@ public class Poly {
                         sb.append("^").append(v);
                     }
                 } else {
-                    if (v >= 1) {
-                        //System.out.print("sin(");
-                        sb.append("cos(");
-                        if (p.isFactor()) {
-                            sb.append(p.toString1());
-                            // System.out.print(")");
-                            sb.append(")");
-                        } else {
-                            // System.out.print("(");
-                            sb.append("(");
-                            sb.append(p.toString1());
-                            //System.out.print("))");
-                            sb.append("))");
-                        }
-                        sign = 1;
-                        if (v != 1) {
-                            //System.out.print("^" + v);
-                            sb.append("^").append(v);
-                        }
-
+                    //System.out.print("sin(");
+                    sb.append("cos(");
+                    if (p.isFactor()) {
+                        sb.append(p.toString1());
+                        // System.out.print(")");
+                        sb.append(")");
                     } else {
-                        // System.out.print(1);
-                        sb.append("1");
-                        sign = 1;
+                        // System.out.print("(");
+                        sb.append("(");
+                        sb.append(p.toString1());
+                        //System.out.print("))");
+                        sb.append("))");
                     }
+                    sign = 1;
+                    if (v != 1) {
+                        //System.out.print("^" + v);
+                        sb.append("^").append(v);
+                    }
+
+
                 }
             }
         }
