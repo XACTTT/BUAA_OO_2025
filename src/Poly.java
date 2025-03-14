@@ -343,8 +343,11 @@ public class Poly {
         return zerosin == 1;
     }
 
-    public String diffcal(){
-
-        return null;
+    public Poly diffcal(){
+        Poly ans = new Poly();
+            for (Unit unit : poly) {
+                ans.add(unit.diffcal());
+            }
+        return ans;
     }
 }

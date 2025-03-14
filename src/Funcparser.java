@@ -36,16 +36,17 @@ public class Funcparser {
             funcMap.put(funcName, paras);
         }
         ArrayList<String> paras = new ArrayList<>();
-        String recurfunc = recurFunclist.get(0);
-        for (int i = 0; i < recurfunc.length(); i++) {
-            if (recurfunc.charAt(i) == '=') {
-                break;
+        if (!recurFunclist.isEmpty()) {String recurfunc = recurFunclist.get(0);
+            for (int i = 0; i < recurfunc.length(); i++) {
+                if (recurfunc.charAt(i) == '=') {
+                    break;
+                }
+                if (recurfunc.charAt(i) == 'x' || recurfunc.charAt(i) == 'y') {
+                    paras.add(Character.toString(recurfunc.charAt(i)));
+                }
             }
-            if (recurfunc.charAt(i) == 'x' || recurfunc.charAt(i) == 'y') {
-                paras.add(Character.toString(recurfunc.charAt(i)));
-            }
-        }
-        funcMap.put("f", paras);
+            funcMap.put("f", paras);}
+
         return funcMap;
     }
 

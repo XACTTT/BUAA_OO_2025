@@ -6,10 +6,11 @@ public class Diff implements Factor {
         this.expr = expr;
     }
     public void setPow(int num) {
-        return;
     }
 
     public Poly cal() {
-        return null;
+        Poly p = new Poly();
+        p=expr.cal();
+        return p.diffcal();
     }
 }

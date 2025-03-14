@@ -18,10 +18,9 @@ public class MainClass {
             for (int i = 0; i < 3; i++) {
                 funcData.add(scanner.nextLine());
             }
-            Funcparser funcparser = new Funcparser(normalFuncData,funcData);
-            funcList = funcparser.parseFunc();
         }
-
+        Funcparser funcparser = new Funcparser(normalFuncData,funcData);
+        funcList = funcparser.parseFunc();
         String input = scanner.nextLine();
         input = input.replaceAll("[ \t]", "");
         Lexer lexer = new Lexer(input);
