@@ -16,7 +16,7 @@ public class Unit {
     }
 
     public Unit(BigInteger coe, HashMap<String, Integer> vs,
-                HashMap<Poly, Integer> sinMap, HashMap<Poly, Integer> cosMap) {
+        HashMap<Poly, Integer> sinMap, HashMap<Poly, Integer> cosMap) {
         this.coe = coe;
         this.vs = vs;
         this.sinMap = sinMap;
@@ -61,10 +61,8 @@ public class Unit {
     }
 
     public HashMap<String, Integer>
-    mulHash(HashMap<String, Integer> poly1, HashMap<String, Integer> poly2) {
-
+        mulHash(HashMap<String, Integer> poly1, HashMap<String, Integer> poly2) {
         HashMap<String, Integer> result = new HashMap<>();
-
         for (String term1 : poly1.keySet()) {
             for (String term2 : poly2.keySet()) {
                 if (term1.equals(term2)) {
@@ -90,7 +88,7 @@ public class Unit {
     }
 
     public HashMap<Poly, Integer>
-    multriHash(HashMap<Poly, Integer> poly1, HashMap<Poly, Integer> poly2) {
+        multriHash(HashMap<Poly, Integer> poly1, HashMap<Poly, Integer> poly2) {
         HashMap<Poly, Integer> result = new HashMap<>();
         Poly temp = null;
         for (Poly term1 : poly1.keySet()) {
@@ -142,7 +140,7 @@ public class Unit {
             ans.add(this.difftri(poly, "sin"));
         }
         for (Poly poly : this.cosMap.keySet()) {
-            ans.add(this.difftri(poly, "sin"));
+            ans.add(this.difftri(poly, "cos"));
         }
         return ans;
     }
@@ -151,11 +149,14 @@ public class Unit {
         Poly p = new Poly();
         if (!this.vs.isEmpty()) {
             int num = this.vs.get("x");
-            BigInteger newCoe = this.coe.multiply(BigInteger.valueOf(num));
-            HashMap<String, Integer> vs = new HashMap<>();
-            vs.put("x", num - 1);
-            Unit u = new Unit(newCoe, vs, this.sinMap, this.cosMap);
-            p.addMerge(u);
+            if (num > 0) {
+                BigInteger newCoe = this.coe.multiply(BigInteger.valueOf(num));
+                HashMap<String, Integer> vs = new HashMap<>();
+                vs.put("x", num - 1);
+                Unit u = new Unit(newCoe, vs, this.sinMap, this.cosMap);
+                p.addMerge(u);
+            }
+
         }
         return p;
     }

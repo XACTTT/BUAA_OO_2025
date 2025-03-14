@@ -84,8 +84,8 @@ public class Parser {
             Expr diffExpr = new Expr();
             diffExpr = parseExpr();
             lexer.nextToken();
-          Factor diff = new Diff("diff", diffExpr);
-          return diff;
+            Factor diff = new Diff("diff", diffExpr);
+            return diff;
         } else if (token.getType() == Token.Type.SIN ||
                 token.getType() == Token.Type.COS) {
 
@@ -108,31 +108,7 @@ public class Parser {
             getPow(tri);
             return tri;
         } else if (token.getType() == Token.Type.FUN) {
-            String name;
-            name = token.getContent();
-            int num;
-            if (name.equals("f")) {
-                lexer.nextToken();
-                lexer.nextToken();
-                num = Integer.parseInt(lexer.getCurToken().getContent());
-                lexer.nextToken();
-                lexer.nextToken();
-                lexer.nextToken();
-            } else {
-                lexer.nextToken();
-                lexer.nextToken();
-                num = 0;
-            }
-            ArrayList<Factor> parameter = new ArrayList<>();
-            Factor factor = parseFactor();
-            parameter.add(factor);
-            while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.COMMA) {
-                lexer.nextToken();
-                Factor nextfactor = parseFactor();
-                parameter.add(nextfactor);
-            }
-            lexer.nextToken();
-            return parseFunc(parameter, num, name);
+            return handleFun(token);
         } else {
             Expr subExpr = new Expr();
             lexer.nextToken();
@@ -141,6 +117,34 @@ public class Parser {
             getPow(subExpr);
             return subExpr;
         }
+    }
+
+    public Expr handleFun(Token token) {
+        String name;
+        name = token.getContent();
+        int num;
+        if (name.equals("f")) {
+            lexer.nextToken();
+            lexer.nextToken();
+            num = Integer.parseInt(lexer.getCurToken().getContent());
+            lexer.nextToken();
+            lexer.nextToken();
+            lexer.nextToken();
+        } else {
+            lexer.nextToken();
+            lexer.nextToken();
+            num = 0;
+        }
+        ArrayList<Factor> parameter = new ArrayList<>();
+        Factor factor = parseFactor();
+        parameter.add(factor);
+        while (!lexer.isEnd() && lexer.getCurToken().getType() == Token.Type.COMMA) {
+            lexer.nextToken();
+            Factor nextfactor = parseFactor();
+            parameter.add(nextfactor);
+        }
+        lexer.nextToken();
+        return parseFunc(parameter, num, name);
     }
 
     private void getPow(Factor factor) {

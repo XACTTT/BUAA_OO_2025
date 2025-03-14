@@ -52,7 +52,9 @@ public class Poly {
                     }
                 }
             }
-            first = 1;
+            if (sb.length() != 0) {
+                first = 1;
+            }
         }
         if (sb.length() == 0) {
             sb.append("0");
@@ -93,27 +95,28 @@ public class Poly {
         int sign = sign1;
         for (HashMap.Entry<Poly, Integer> entry : sinMap.entrySet()) {
             Poly p = entry.getKey();
-            Integer v = entry.getValue();
-            if (sign == 1) {
-                //System.out.print("*sin(");
-                sb.append("*sin(");
-                if (p.isFactor()) {
-                    sb.append(p.toString1());
-                    // System.out.print(")");
-                    sb.append(")");
+            int v = entry.getValue();
+            if (v != 0) {
+                if (sign == 1) {
+                    //System.out.print("*sin(");
+                    sb.append("*sin(");
+                    if (p.isFactor()) {
+                        sb.append(p.toString1());
+                        // System.out.print(")");
+                        sb.append(")");
+                    } else {
+                        // System.out.print("(");
+                        sb.append("(");
+                        sb.append(p.toString1());
+                        //System.out.print("))");
+                        sb.append("))");
+                    }
+                    if (v != 1) {
+                        //System.out.print("^" + v);
+                        sb.append("^").append(v);
+                    }
                 } else {
-                    // System.out.print("(");
-                    sb.append("(");
-                    sb.append(p.toString1());
-                    //System.out.print("))");
-                    sb.append("))");
-                }
-                if (v != 1) {
-                    //System.out.print("^" + v);
-                    sb.append("^").append(v);
-                }
-            } else {
-                if (v >= 1) {
+
                     //System.out.print("sin(");
                     sb.append("sin(");
                     if (p.isFactor()) {
@@ -132,11 +135,6 @@ public class Poly {
                         //System.out.print("^" + v);
                         sb.append("^").append(v);
                     }
-
-                } else {
-                    // System.out.print(1);
-                    sb.append("1");
-                    sign = 1;
                 }
             }
         }
@@ -343,11 +341,11 @@ public class Poly {
         return zerosin == 1;
     }
 
-    public Poly diffcal(){
+    public Poly diffcal() {
         Poly ans = new Poly();
-            for (Unit unit : poly) {
-                ans.add(unit.diffcal());
-            }
+        for (Unit unit : poly) {
+            ans.add(unit.diffcal());
+        }
         return ans;
     }
 }
