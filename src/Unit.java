@@ -14,13 +14,14 @@ public class Unit {
         sinMap = new HashMap<>();
         cosMap = new HashMap<>();
     }
-    public Unit(BigInteger coe,String var ,int pow,
-    HashMap<Poly, Integer> sinMap, HashMap<Poly, Integer> cosMap) {
+
+    public Unit(BigInteger coe, HashMap<String, Integer> vs,
+                HashMap<Poly, Integer> sinMap, HashMap<Poly, Integer> cosMap) {
         this.coe = coe;
-        this.vs = new HashMap<>();
+        this.vs = vs;
         this.sinMap = sinMap;
         this.cosMap = cosMap;
-        vs.put(var, pow);
+
     }
 
     public Unit(BigInteger coe) {
@@ -134,66 +135,72 @@ public class Unit {
         return cosMap;
     }
 
-    public Poly diffcal(){
+    public Poly diffcal() {
         Poly ans = new Poly();
         ans.add(this.diffvs());
         for (Poly poly : this.sinMap.keySet()) {
-            ans.add(this.difftri(poly,"sin"));
+            ans.add(this.difftri(poly, "sin"));
         }
         for (Poly poly : this.cosMap.keySet()) {
-            ans.add(this.difftri(poly,"sin"));
+            ans.add(this.difftri(poly, "sin"));
         }
         return ans;
     }
 
     public Poly diffvs() {
         Poly p = new Poly();
-        if(!this.vs.isEmpty()){
-        int num = this.vs.get("x");
-        BigInteger newCoe = this.coe.multiply(BigInteger.valueOf(num));
-        Unit u = new Unit(newCoe,"x", num - 1 ,this.sinMap,this.cosMap);
-        p.addMerge(u);}
+        if (!this.vs.isEmpty()) {
+            int num = this.vs.get("x");
+            BigInteger newCoe = this.coe.multiply(BigInteger.valueOf(num));
+            HashMap<String, Integer> vs = new HashMap<>();
+            vs.put("x", num - 1);
+            Unit u = new Unit(newCoe, vs, this.sinMap, this.cosMap);
+            p.addMerge(u);
+        }
         return p;
     }
 
     public Poly difftri(Poly poly, String type) {
         Poly ans = new Poly();
-        if(type.equals("sin")) {
+        if (type.equals("sin")) {
             int pow = this.sinMap.get(poly);
-            HashMap<Poly,Integer>otherSinMap = new HashMap<>();
-            for (Poly poly1 :this.sinMap.keySet()) {
-                if(!poly.equals(poly1)) {
-                    otherSinMap.put(poly1,this.sinMap.get(poly1));
+            HashMap<Poly, Integer> otherSinMap = new HashMap<>();
+            for (Poly poly1 : this.sinMap.keySet()) {
+                if (!poly.equals(poly1)) {
+                    otherSinMap.put(poly1, this.sinMap.get(poly1));
                 }
             }
-            Unit unit = new Unit(this.coe,"x",this.vs.get("x")
-            ,otherSinMap,this.cosMap);
-            HashMap<Poly, Integer>newSinMap = new HashMap<>();
-            HashMap<Poly, Integer>newCosMap = new HashMap<>();
-            newSinMap.put(poly,pow-1);
-            newCosMap.put(poly,1);
-            Unit diffUnit = new Unit(BigInteger.valueOf(pow),"x",0,newSinMap,newCosMap);
+            Unit unit = new Unit(this.coe, this.vs
+                    , otherSinMap, this.cosMap);
+            HashMap<Poly, Integer> newSinMap = new HashMap<>();
+            HashMap<Poly, Integer> newCosMap = new HashMap<>();
+            newSinMap.put(poly, pow - 1);
+            newCosMap.put(poly, 1);
+            HashMap<String, Integer> emptyVS = new HashMap<>();
+            Unit diffUnit = new Unit(BigInteger.valueOf(pow), emptyVS, newSinMap, newCosMap);
             ans = poly.diffcal().mulMerge(unit).mulMerge(diffUnit);
-        }else {
+        } else {
             int pow = this.cosMap.get(poly);
-            HashMap<Poly,Integer>otherCosMap = new HashMap<>();
-            for (Poly poly1 :this.cosMap.keySet()) {
-                if(!poly.equals(poly1)) {
-                    otherCosMap.put(poly1,this.cosMap.get(poly1));
+            HashMap<Poly, Integer> otherCosMap = new HashMap<>();
+            for (Poly poly1 : this.cosMap.keySet()) {
+                if (!poly.equals(poly1)) {
+                    otherCosMap.put(poly1, this.cosMap.get(poly1));
                 }
             }
-            Unit unit = new Unit(this.coe,"x",this.vs.get("x")
-                    ,this.sinMap,otherCosMap);
-            HashMap<Poly, Integer>newSinMap = new HashMap<>();
-            HashMap<Poly, Integer>newCosMap = new HashMap<>();
-            newCosMap.put(poly,pow-1);
-            newSinMap.put(poly,1);
-            Unit diffUnit = new Unit(BigInteger.valueOf(-pow),"x",0,newSinMap,newCosMap);
+            Unit unit = new Unit(this.coe, this.vs
+                    , this.sinMap, otherCosMap);
+            HashMap<Poly, Integer> newSinMap = new HashMap<>();
+            HashMap<Poly, Integer> newCosMap = new HashMap<>();
+            newCosMap.put(poly, pow - 1);
+            newSinMap.put(poly, 1);
+            HashMap<String, Integer> emptyVS = new HashMap<>();
+            Unit diffUnit = new Unit(BigInteger.valueOf(-pow), emptyVS, newSinMap, newCosMap);
             ans = poly.diffcal().mulMerge(unit).mulMerge(diffUnit);
         }
 
         return ans;
     }
+
     public boolean equals(Unit unit) {
         if (this.varequals(this.vs, unit.vs)) {
             return hashEquals(this.sinMap, unit.sinMap) && hashEquals(this.cosMap, unit.cosMap);
