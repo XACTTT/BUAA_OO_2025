@@ -101,62 +101,37 @@ public class Funcparser {
     public Func geneRecFunc(ArrayList<String> recurfuncExpr, ArrayList<String> paras,
         HashMap<String, Func> functions) {
         ArrayList<String> funcs = new ArrayList<>();
-        funcs.add(recurfuncExpr.get(0));
-        String fun1 = recurfuncExpr.get(1);
-        Func function1 = new Func(paras, funcs);
-        functions.put("f", function1);
-        Lexer lexer1 = new Lexer(fun1);
-        Parser parser1 = new Parser(lexer1, functions);
-        Expr expr1 = parser1.parseExpr();
-        String ffun1 = expr1.cal().toString1();
-        funcs.add(ffun1);
-        functions.remove("f");
-        String recExpr = recurfuncExpr.get(2);
-        recExpr = recExpr.replaceAll("\\+\\+", "+");
-        recExpr = recExpr.replaceAll("--", "+");
-        recExpr = recExpr.replaceAll("\\+-", "-");
-        recExpr = recExpr.replaceAll("-\\+", "-");
-        String fun2 = recExpr.replaceAll("n-1", "1");
-        fun2 = fun2.replaceAll("n-2", "0");
-        String fun3 = recExpr.replaceAll("n-1", "2");
-        fun3 = fun3.replaceAll("n-2", "1");
-        String fun4 = recExpr.replaceAll("n-1", "3");
-        fun4 = fun4.replaceAll("n-2", "2");
-        String fun5 = recExpr.replaceAll("n-1", "4");
-        fun5 = fun5.replaceAll("n-2", "3");
-        Func function2 = new Func(paras, funcs);
-        functions.put("f", function2);
-        Lexer lexer2 = new Lexer(fun2);
-        Parser parser2 = new Parser(lexer2, functions);
-        Expr expr2 = parser2.parseExpr();
-        String ffun2 = expr2.cal().toString1();
-        funcs.add(ffun2);
-        functions.remove("f");
-        Func function3 = new Func(paras, funcs);
-        functions.put("f", function3);
-        Lexer lexer3 = new Lexer(fun3);
-        Parser parser3 = new Parser(lexer3, functions);
-        Expr expr3 = parser3.parseExpr();
-        String ffun3 = expr3.cal().toString1();
-        funcs.add(ffun3);
-        functions.remove("f");
-        Func function4 = new Func(paras, funcs);
-        functions.put("f", function4);
-        Lexer lexer4 = new Lexer(fun4);
-        Parser parser4 = new Parser(lexer4, functions);
-        Expr expr4 = parser4.parseExpr();
-        String ffun4 = expr4.cal().toString1();
-        funcs.add(ffun4);
-        functions.remove("f");
-        Func function5 = new Func(paras, funcs);
-        functions.put("f", function5);
-        Lexer lexer5 = new Lexer(fun5);
-        Parser parser5 = new Parser(lexer5, functions);
-        Expr expr5 = parser5.parseExpr();
-        String ffun5 = expr5.cal().toString1();
-        funcs.add(ffun5);
-        functions.remove("f");
+
+
+        for (int i = 0; i < 2; i++) {
+            processFunc(recurfuncExpr.get(i), paras, functions, funcs);
+        }
+
+        String recExpr = recurfuncExpr.get(2).replaceAll("\\+\\+", "+")
+            .replaceAll("\\+-", "-");
+
+        for (int offset = 0; offset < 4; offset++) {
+            String replacedExpr = recExpr.replaceAll("n-1", String.valueOf(offset + 1))
+                .replaceAll("n-2", String.valueOf(offset));
+            processFunc(replacedExpr, paras, functions, funcs);
+        }
+
         return new Func(paras, funcs);
+    }
+
+    private void processFunc(String expr, ArrayList<String> paras,
+        HashMap<String, Func> functions, ArrayList<String> funcs) {
+        Func func = new Func(paras, funcs);
+        functions.put("f", func);
+
+        Lexer lexer = new Lexer(expr);
+        Parser parser = new Parser(lexer, functions);
+        Expr parsedExpr = parser.parseExpr();
+
+        String result = parsedExpr.cal().toString1();
+        funcs.add(result);
+
+        functions.remove("f");
     }
 }
 
