@@ -61,11 +61,11 @@ public class Elevator implements Runnable {
                 curFloor = floors[floorIndex + 1];
                 this.dir = true;
             }
-            try {
-                sleep(400);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        }
+        try {
+            sleep(400);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         TimableOutput.println(String.format("ARRIVE-%s-%d", curFloor.name(), id));
     }
