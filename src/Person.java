@@ -1,4 +1,3 @@
-
 public class Person {
     private final int personId;
     private final int priority;
@@ -15,7 +14,6 @@ public class Person {
 
     }
 
-
     public Floor getFromFloor() {
         return this.fromFloor;
     }
@@ -28,16 +26,13 @@ public class Person {
         return this.personId;
     }
 
-
     public int getPriority() {
         return this.priority;
     }
 
-
     public int getElevatorId() {
         return this.elevatorId;
     }
-
 
     public boolean needIn(Floor curFloor, boolean dir) {
         int curFloorNum = curFloor.ordinal();
@@ -51,11 +46,10 @@ public class Person {
         Floor[] floors = Floor.values();
         int curFloorNum = curFloor.ordinal();
         int fromFloorNum = this.fromFloor.ordinal();
-        int toFloorNum = this.toFloor.ordinal();
-        if(dir){
-            return toFloorNum > fromFloorNum && fromFloorNum > curFloorNum;
-        }else {
-            return toFloorNum < fromFloorNum && fromFloorNum < curFloorNum;
+        if (dir) {
+            return curFloorNum < fromFloorNum;
+        } else {
+            return curFloorNum > fromFloorNum;
         }
     }
 }

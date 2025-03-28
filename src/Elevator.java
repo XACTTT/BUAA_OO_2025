@@ -25,7 +25,9 @@ public class Elevator implements Runnable {
     @Override
     public void run() {
         while (true) {
-            Advice.Type advice = strategy.getAdvice(curNum, maxNum, curFloor, dir, personsInElevator);
+            Advice.Type advice = strategy.getAdvice(curNum, maxNum, curFloor, dir,
+                    personsInElevator);
+
             if (advice.equals(Advice.Type.END)) {
                 break;
             } else if (advice.equals(Advice.Type.MOVE)) {
@@ -90,7 +92,8 @@ public class Elevator implements Runnable {
             }
         }
         for (Person person : outPersons) {
-            TimableOutput.println(String.format("OUT-%d-%s-%d", person.getPersonId(), curFloor.name(), id));
+            TimableOutput.println(String.format("OUT-%d-%s-%d", person.getPersonId(),
+                    curFloor.name(), id));
             personsInElevator.remove(person);
         }
     }
@@ -104,7 +107,8 @@ public class Elevator implements Runnable {
                         curNum++;
                         personsInElevator.add(person);
                         inPersons.add(person);
-                        TimableOutput.println(String.format("IN-%d-%s-%d", person.getPersonId(), curFloor.name(), id));
+                        TimableOutput.println(String.format("IN-%d-%s-%d", person.getPersonId()
+                                , curFloor.name(), id));
                         if (curNum == maxNum) {
                             break;
                         }

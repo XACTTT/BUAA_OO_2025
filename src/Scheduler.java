@@ -18,10 +18,10 @@ public class Scheduler implements Runnable {
                 break;
             }
             Person person = masterRequestTable.getRequestFromMasterTable();
-                if (person == null) {
-                    continue;
-                }
-             eleRequestTables.get(person.getElevatorId() - 1).addRequest(person);
+            if (person == null) {
+                continue;
+            }
+            eleRequestTables.get(person.getElevatorId() - 1).addRequest(person);
 
 
         }

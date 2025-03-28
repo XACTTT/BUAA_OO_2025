@@ -8,7 +8,8 @@ public class Strategy {
         this.requestTable = requestTable;
     }
 
-    public Advice.Type getAdvice(int curNum, int maxNum, Floor curFloor, boolean dir, HashSet<Person> personsInElevator) {
+    public Advice.Type getAdvice(int curNum, int maxNum, Floor curFloor, boolean dir,
+        HashSet<Person> personsInElevator) {
         if (ableToIn(curNum, maxNum, curFloor, dir) || ableToOut(curFloor, personsInElevator)) {
             return Advice.Type.OPEN;
         }
@@ -56,13 +57,10 @@ public class Strategy {
 
     public boolean hasSameDir(Floor curFloor, boolean dir) {
         synchronized (requestTable) {
-            Floor[] floors = Floor.values();
-            int curFloorNum = curFloor.ordinal();
-
-                    ArrayList<Person> persons = requestTable.getPersonRequests();
-                    for (Person person : persons) {
-                        if (person.willIn(curFloor, dir)) {
-                            return true;
+            ArrayList<Person> persons = requestTable.getPersonRequests();
+            for (Person person : persons) {
+                if (person.willIn(curFloor, dir)) {
+                    return true;
                 }
 
             }

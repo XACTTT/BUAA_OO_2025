@@ -17,12 +17,14 @@ public class InputThread implements Runnable {
             if (request == null) {
                 masterRequestTable.setEnd();
                 break;
-            }else{
-                if(request instanceof PersonRequest){
+            } else {
+                if (request instanceof PersonRequest) {
                     PersonRequest personRequest = (PersonRequest) request;
-                    Person person =new Person(personRequest.getPersonId(), personRequest.getPriority(),
-                       Floor.valueOf(personRequest.getFromFloor()) ,Floor.valueOf(personRequest.getToFloor()),
-                            personRequest.getElevatorId()) ;
+                    Person person = new Person(personRequest.getPersonId(),
+                            personRequest.getPriority(),
+                            Floor.valueOf(personRequest.getFromFloor())
+                            , Floor.valueOf(personRequest.getToFloor()),
+                            personRequest.getElevatorId());
                     masterRequestTable.addRequest(person);
                 }
 
