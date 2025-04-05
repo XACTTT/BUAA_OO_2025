@@ -76,36 +76,44 @@ public class Scheduler implements Runnable {
             return -1;
         }
 
-        int ansId=-1;
-        HashMap<Integer, Integer> values = new HashMap<>();
-        int properSign=0;
-        for (Integer eleId : availableEleId) {
-            ElevatorOperation elevator = elevators.get(eleId-1);
-            int value = elevator.judgeValues(person);
-            if(value > 0) {
-                properSign=1;
+        int bestElevatorId = -1;
+        int minScore = 7141027;
+
+        for (int i = 0; i < elevators.size(); i++) {
+            ElevatorOperation elevator = elevators.get(i);
+            int score = calculateMatchScore(elevator, person);
+            if (score < minScore) {
+                minScore = score;
+                bestElevatorId = i + 1;
             }
-            values.put(eleId, value);
         }
 
-        if (properSign == 0) {
-            int initValue = 1000;
-            for (Integer eleId : availableEleId) {
-                if(values.get(eleId) < initValue) {
-                    ansId=eleId;
-                    initValue=values.get(eleId);
-                }
+        return bestElevatorId;
+    }
+
+    private int calculateMatchScore(ElevatorOperation elevator, Person person) {
+        Floor fromFloor = person.getFromFloor();
+        Floor toFloor = person.getToFloor();
+        boolean passengerDirection = fromFloor.ordinal() < toFloor.ordinal();
+
+        Floor curFloor = elevator.getCurFloor();
+        boolean elevatorDirection = elevator.getDir();
+        int load = elevator.getCurNum();
+        int distance = Math.abs(curFloor.ordinal() - fromFloor.ordinal());
+
+        int directionScore = 0;
+        if (elevatorDirection == passengerDirection) {
+            if ((elevatorDirection && fromFloor.ordinal() >= curFloor.ordinal()) ||
+                    (!elevatorDirection && fromFloor.ordinal() <= curFloor.ordinal())) {
+                directionScore = 0;
+            } else {
+                directionScore = 5;
             }
+        } else {
+            directionScore = 10;
         }
-        else {int initValue = -1000;
-            for (Integer eleId : availableEleId) {
-                if(values.get(eleId) > initValue) {
-                    ansId=eleId;
-                    initValue=values.get(eleId);
-                }
-            }
-        }
-        return ansId;
+
+        return distance * 2 + directionScore  + load*3;
     }
 
     private void scheEle(ScheRequest scheRequest) {

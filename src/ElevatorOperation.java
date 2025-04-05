@@ -174,10 +174,7 @@ public class ElevatorOperation implements Runnable {
             }
             curNum--;
         }
-        for (Person person :requestTable.getPersonRequests()){
-            notArrivePersons.add(person);
 
-        }
         for (Person person : arrivePersons) {
             TimableOutput.println(String.format("OUT-S-%d-%s-%d", person.getPersonId(),
                              curFloor.name(), id));
@@ -190,6 +187,10 @@ public class ElevatorOperation implements Runnable {
                     curFloor.name(), id));
             person.setFromFloor(curFloor);
             personsInElevator.remove(person);
+        }
+        for (Person person :requestTable.getPersonRequests()){
+            notArrivePersons.add(person);
+
         }
         Scheduler.getMasterRequestTable().returnPerson(notArrivePersons);
         requestTable.getPersonRequests().clear();
@@ -213,4 +214,17 @@ public class ElevatorOperation implements Runnable {
     public boolean isEnd() {
         return requestTable.isEmpty()&&personsInElevator.isEmpty();
     }
+
+    public Floor getCurFloor() {
+        return curFloor;
+    }
+
+    public boolean getDir() {
+        return dir;
+    }
+
+    public int getCurNum() {
+        return curNum;
+    }
+
 }
