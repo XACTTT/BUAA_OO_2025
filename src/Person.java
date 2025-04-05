@@ -1,7 +1,7 @@
 public class Person {
     private final int personId;
     private final int priority;
-    private final Floor fromFloor;
+    private  Floor fromFloor;
     private final Floor toFloor;
 
     public Person(int id, int priority, Floor fromFloor, Floor toFloor) {
@@ -46,5 +46,9 @@ public class Person {
         } else {
             return curFloorNum > fromFloorNum;
         }
+    }
+
+    public void setFromFloor(Floor fromFloor) {
+        this.fromFloor = fromFloor;
     }
 }

@@ -100,12 +100,13 @@ public class ElevatorOperation implements Runnable {
         for (Person person : personsInElevator) {
             if (person.getToFloor().equals(curFloor)) {
                 outPersons.add(person);
-                curNum--;
+
             }
         }
         for (Person person : outPersons) {
             TimableOutput.println(String.format("OUT-S-%d-%s-%d", person.getPersonId(),
                     curFloor.name(), id));
+            curNum--;
             personsInElevator.remove(person);
         }
     }
@@ -171,22 +172,29 @@ public class ElevatorOperation implements Runnable {
             }else {
                 arrivePersons.add(person);
             }
+            curNum--;
+        }
+        for (Person person :requestTable.getPersonRequests()){
+            notArrivePersons.add(person);
+
         }
         for (Person person : arrivePersons) {
             TimableOutput.println(String.format("OUT-S-%d-%s-%d", person.getPersonId(),
-                    curFloor.name(), id));
+                             curFloor.name(), id));
             personsInElevator.remove(person);
-            curNum--;
         }
 
         for (Person person : notArrivePersons) {
 
             TimableOutput.println(String.format("OUT-F-%d-%s-%d", person.getPersonId(),
                     curFloor.name(), id));
+            person.setFromFloor(curFloor);
             personsInElevator.remove(person);
-            curNum--;
         }
         Scheduler.getMasterRequestTable().returnPerson(notArrivePersons);
+        requestTable.getPersonRequests().clear();
+        requestTable.getScheRequests().clear();
+        requestTable.getRequestMap().clear();
     }
 
     public int judgeValues(Person person) {
