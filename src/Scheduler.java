@@ -79,12 +79,12 @@ public class Scheduler implements Runnable {
         int bestElevatorId = -1;
         int minScore = 7141027;
 
-        for (int i = 0; i < elevators.size(); i++) {
-            ElevatorOperation elevator = elevators.get(i);
+        for (Integer eleId : availableEleId) {
+            ElevatorOperation elevator = elevators.get(eleId-1);
             int score = calculateMatchScore(elevator, person);
             if (score < minScore) {
                 minScore = score;
-                bestElevatorId = i + 1;
+                bestElevatorId = eleId;
             }
         }
 
