@@ -68,7 +68,7 @@ public class Scheduler implements Runnable {
         for (int i = 0; i < elevators.size(); i++) {
             if (elevators.get(i).couldReceiveRequest()) {
                 availableNum++;
-                availableEleId.add(i);
+                availableEleId.add(i+1);
             }
         }
         if (availableNum <= 3) {
