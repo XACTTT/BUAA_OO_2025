@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import com.oocourse.elevator2.TimableOutput;
 import com.oocourse.elevator2.ScheRequest;
 
 public class RequestTable {
@@ -18,7 +18,6 @@ public class RequestTable {
     }
 
     public synchronized boolean isEnd() {
-        notifyAll();
         return isEnd;
     }
 
@@ -28,7 +27,6 @@ public class RequestTable {
     }
 
     public synchronized boolean isEmpty() {
-        notifyAll();
         return personRequestMap.isEmpty() && personRequests.isEmpty() && scheRequests.isEmpty();
     }
 
@@ -111,6 +109,7 @@ public class RequestTable {
 
     public synchronized void waitForPerson() {
         try {
+        //    TimableOutput.println("nowtime3333333333333333333"+isEnd);
             wait();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

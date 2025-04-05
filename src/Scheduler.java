@@ -20,13 +20,14 @@ public class Scheduler implements Runnable {
         while (true) {
             if (masterRequestTable.isEmpty() && masterRequestTable.isEnd() ) {
                if(eleAllEnd()) {
+     //              TimableOutput.println("nowtime4444444444444444444444444444444444444");
                    for (RequestTable eleRequestTable : eleRequestTables) {
                    eleRequestTable.setEnd();
                }
                    return;
                }
                else {
-                   try {
+                 try {
                        sleep(300);
                    }catch (InterruptedException e) {
                        e.printStackTrace();
@@ -48,7 +49,7 @@ public class Scheduler implements Runnable {
                 int eleId = schedulerAnPerson(person);
                 if (eleId != -1) {
                     TimableOutput.println(String.format("RECEIVE-%d-%d", person.getPersonId(), eleId));
-                    eleRequestTables.get(eleId).addPersonRequest(person);
+                    eleRequestTables.get(eleId-1).addPersonRequest(person);
                     break;
                 }
                 try {
@@ -79,7 +80,7 @@ public class Scheduler implements Runnable {
         HashMap<Integer, Integer> values = new HashMap<>();
         int properSign=0;
         for (Integer eleId : availableEleId) {
-            ElevatorOperation elevator = elevators.get(eleId);
+            ElevatorOperation elevator = elevators.get(eleId-1);
             int value = elevator.judgeValues(person);
             if(value > 0) {
                 properSign=1;
@@ -116,8 +117,8 @@ public class Scheduler implements Runnable {
     }
 
     private boolean eleAllEnd() {
-        for (RequestTable eleRequestTable : eleRequestTables) {
-            if (!eleRequestTable.isEmpty()) {
+        for (ElevatorOperation elevatorOperation : elevators) {
+            if (!elevatorOperation.isEnd()) {
                 return false;
             }
         }

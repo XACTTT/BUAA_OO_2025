@@ -28,6 +28,7 @@ public class ElevatorOperation implements Runnable {
     @Override
     public void run() {
         while (true) {
+       //     TimableOutput.println("nowtime22222222222222222222222222222222222222");
             Advice.Type advice = strategy.getAdvice(curNum, maxNum, curFloor, dir,
                     personsInElevator);
             if (advice.equals(Advice.Type.SCHE)) {
@@ -39,13 +40,14 @@ public class ElevatorOperation implements Runnable {
             } else if (advice.equals(Advice.Type.WAIT)) {
                 requestTable.waitForPerson();
             } else if (advice.equals(Advice.Type.END)) {
+  //              TimableOutput.println("nowtime"+id);
                 break;
             } else if (advice.equals(Advice.Type.TURN)) {
                 this.dir = !this.dir;
             } else if (advice.equals(Advice.Type.OPEN)) {
                 exchangePerson();
             }
-
+    //        TimableOutput.println("nowtime11111111111111111111111111111111111111");
         }
 
 
@@ -200,4 +202,7 @@ public class ElevatorOperation implements Runnable {
         }
     }
 
+    public boolean isEnd() {
+        return requestTable.isEmpty()&&personsInElevator.isEmpty();
+    }
 }
