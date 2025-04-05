@@ -160,7 +160,6 @@ public class ElevatorOperation implements Runnable {
         }
         TimableOutput.println(String.format("CLOSE-%s-%d", curFloor.name(), id));
         TimableOutput.println(String.format("SCHE-END-%d",id));
-        requestTable.getScheRequests().remove(scheRequest);
     }
     private void flush() {
         TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
@@ -198,18 +197,6 @@ public class ElevatorOperation implements Runnable {
         requestTable.getRequestMap().clear();
     }
 
-    public int judgeValues(Person person) {
-        Floor floor = person.getFromFloor();
-        int curFloorNum = curFloor.ordinal();
-        int fromFloorNum = floor.ordinal();
-        if (dir&&(curFloorNum - fromFloorNum<0)) {
-            return requestTable.getPersonRequests().size()+curNum +fromFloorNum - curFloorNum;
-        } else if((!dir)&&(curFloorNum - fromFloorNum>0)) {
-            return requestTable.getPersonRequests().size()+curNum +curFloorNum - fromFloorNum;
-        }else{
-            return -requestTable.getPersonRequests().size()-curNum;
-        }
-    }
 
     public boolean isEnd() {
         return requestTable.isEmpty()&&personsInElevator.isEmpty();
