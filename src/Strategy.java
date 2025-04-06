@@ -11,7 +11,7 @@ public class Strategy {
     public Advice.Type getAdvice(int curNum, int maxNum, Floor curFloor, boolean dir,
         HashSet<Person> personsInElevator) {
 
-        if(!requestTable.getScheRequests().isEmpty()){
+        if (!requestTable.getScheRequests().isEmpty()) {
             return Advice.Type.SCHE;
         }
 
