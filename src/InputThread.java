@@ -2,6 +2,7 @@ import com.oocourse.elevator2.ElevatorInput;
 import com.oocourse.elevator2.PersonRequest;
 import com.oocourse.elevator2.Request;
 import com.oocourse.elevator2.ScheRequest;
+
 public class InputThread implements Runnable {
     private RequestTable masterRequestTable;
 

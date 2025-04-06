@@ -6,6 +6,6 @@ public class Advice {
     }
 
     public enum Type {
-        MOVE,WAIT,TURN,OPEN,END,SCHE
+        MOVE, WAIT, TURN, OPEN, END, SCHE
     }
 }

@@ -1,7 +1,7 @@
 import com.oocourse.elevator2.ScheRequest;
 import com.oocourse.elevator2.TimableOutput;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static java.lang.Thread.sleep;
 
@@ -10,29 +10,33 @@ public class Scheduler implements Runnable {
     private final ArrayList<RequestTable> eleRequestTables;
     private ArrayList<ElevatorOperation> elevators;
 
-    public Scheduler(RequestTable masterRequestTable, ArrayList<RequestTable> eleRequestTables, ArrayList<ElevatorOperation> elevators) {
+    public Scheduler(RequestTable masterRequestTable, ArrayList<RequestTable> eleRequestTables,
+        ArrayList<ElevatorOperation> elevators) {
         Scheduler.masterRequestTable = masterRequestTable;
         this.eleRequestTables = eleRequestTables;
         this.elevators = elevators;
     }
 
+    public static RequestTable getMasterRequestTable() {
+        return masterRequestTable;
+    }
+
     public void run() {
         while (true) {
-            if (masterRequestTable.isEmpty() && masterRequestTable.isEnd() ) {
-               if(eleAllEnd()) {
-     //              TimableOutput.println("nowtime4444444444444444444444444444444444444");
-                   for (RequestTable eleRequestTable : eleRequestTables) {
-                   eleRequestTable.setEnd();
-               }
-                   return;
-               }
-               else {
-                 try {
-                       sleep(300);
-                   }catch (InterruptedException e) {
-                       e.printStackTrace();
-                   }
-               }
+            if (masterRequestTable.isEmpty() && masterRequestTable.isEnd()) {
+                if (eleAllEnd()) {
+                    //TimableOutput.println("nowtime4444444444444444444444444444444444444");
+                    for (RequestTable eleRequestTable : eleRequestTables) {
+                        eleRequestTable.setEnd();
+                    }
+                    return;
+                } else {
+                    try {
+                        sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             ScheRequest scheRequest = masterRequestTable.getScheRequestFromMasterTable();
@@ -48,8 +52,9 @@ public class Scheduler implements Runnable {
             while (true) {
                 int eleId = schedulerAnPerson(person);
                 if (eleId != -1) {
-                    TimableOutput.println(String.format("RECEIVE-%d-%d", person.getPersonId(), eleId));
-                    eleRequestTables.get(eleId-1).addPersonRequest(person);
+                    TimableOutput.println(String.format("RECEIVE-%d-%d",
+                            person.getPersonId(), eleId));
+                    eleRequestTables.get(eleId - 1).addPersonRequest(person);
                     break;
                 }
                 try {
@@ -69,7 +74,7 @@ public class Scheduler implements Runnable {
         for (int i = 0; i < elevators.size(); i++) {
             if (elevators.get(i).couldReceiveRequest()) {
                 availableNum++;
-                availableEleId.add(i+1);
+                availableEleId.add(i + 1);
             }
         }
         if (availableNum <= 3) {
@@ -80,7 +85,7 @@ public class Scheduler implements Runnable {
         int minScore = 7141027;
 
         for (Integer eleId : availableEleId) {
-            ElevatorOperation elevator = elevators.get(eleId-1);
+            ElevatorOperation elevator = elevators.get(eleId - 1);
             int score = calculateMatchScore(elevator, person);
             if (score < minScore) {
                 minScore = score;
@@ -113,15 +118,15 @@ public class Scheduler implements Runnable {
             directionScore = 10;
         }
 
-        return distance * 2 + directionScore  + load*3;
+        return distance * 2 + directionScore + load * 3;
     }
 
     private void scheEle(ScheRequest scheRequest) {
-    int id = scheRequest.getElevatorId();
-    synchronized (eleRequestTables) {
-        ArrayList<Person> people = new ArrayList<>();
-        eleRequestTables.get(id-1).addScheRequest(scheRequest);
-    }
+        int id = scheRequest.getElevatorId();
+        synchronized (eleRequestTables) {
+            ArrayList<Person> people = new ArrayList<>();
+            eleRequestTables.get(id - 1).addScheRequest(scheRequest);
+        }
     }
 
     private boolean eleAllEnd() {
@@ -131,9 +136,5 @@ public class Scheduler implements Runnable {
             }
         }
         return true;
-    }
-
-    public static RequestTable getMasterRequestTable() {
-        return masterRequestTable;
     }
 }

@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import com.oocourse.elevator2.TimableOutput;
+
+//import com.oocourse.elevator2.TimableOutput;
 import com.oocourse.elevator2.ScheRequest;
 
 public class RequestTable {
@@ -38,10 +39,12 @@ public class RequestTable {
         notifyAll();
         return personRequestMap;
     }
+
     public synchronized ArrayList<ScheRequest> getScheRequests() {
         notifyAll();
         return scheRequests;
     }
+
     public synchronized void addPersonRequest(Person person) {
         personRequests.add(person);
         if (personRequestMap.containsKey(person.getFromFloor())) {
@@ -58,7 +61,6 @@ public class RequestTable {
         scheRequests.add(sche);
         notifyAll();
     }
-
 
     public synchronized void removeEleRequest(Person person) {
         personRequests.remove(person);
@@ -109,12 +111,13 @@ public class RequestTable {
 
     public synchronized void waitForPerson() {
         try {
-        //    TimableOutput.println("nowtime3333333333333333333"+isEnd);
+            //    TimableOutput.println("nowtime3333333333333333333"+isEnd);
             wait();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
     public synchronized void returnPerson(ArrayList<Person> person) {
         for (Person p : person) {
             this.addPersonRequest(p);

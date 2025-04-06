@@ -29,7 +29,6 @@ public class Person {
         return this.priority;
     }
 
-
     public boolean needIn(Floor curFloor, boolean dir) {
         int curFloorNum = curFloor.ordinal();
         int toFloorNum = this.toFloor.ordinal();
