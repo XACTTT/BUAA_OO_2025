@@ -42,27 +42,32 @@ public class Scheduler implements Runnable {
             ScheRequest scheRequest = masterRequestTable.getScheRequestFromMasterTable();
 
             if (scheRequest != null) {
+                //  TimableOutput.println(scheRequest.toString()+"333333333333333");
                 scheEle(scheRequest);
 
             }
             Person person = masterRequestTable.getRequestFromMasterTable();
+            ArrayList<Person> persons = new ArrayList<>();
             if (person == null) {
                 continue;
             }
-            while (true) {
-                int eleId = schedulerAnPerson(person);
-                if (eleId != -1) {
-                    TimableOutput.println(String.format("RECEIVE-%d-%d",
-                            person.getPersonId(), eleId));
-                    eleRequestTables.get(eleId - 1).addPersonRequest(person);
-                    break;
-                }
+
+            int eleId = schedulerAnPerson(person);
+            if (eleId != -1) {
+                TimableOutput.println(String.format("RECEIVE-%d-%d",
+                        person.getPersonId(), eleId));
+                eleRequestTables.get(eleId - 1).addPersonRequest(person);
+
+            } else {
+                persons.add(person);
+                masterRequestTable.returnPerson(persons);
                 try {
-                    sleep(1050);
+                    sleep(450);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
+
 
 
         }
@@ -130,6 +135,7 @@ public class Scheduler implements Runnable {
         synchronized (eleRequestTables) {
             ArrayList<Person> people = new ArrayList<>();
             eleRequestTables.get(id - 1).addScheRequest(scheRequest);
+            //TimableOutput.println(id + "deliver11111111111111ok");
         }
     }
 

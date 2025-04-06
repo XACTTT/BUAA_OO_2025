@@ -34,6 +34,7 @@ public class ElevatorOperation implements Runnable {
                     personsInElevator);
             if (advice.equals(Advice.Type.SCHE)) {
                 sche();
+                //TimableOutput.println(id+"receive22222222222222222222ok");
             } else if (advice.equals(Advice.Type.MOVE)) {
                 move(dir, 400.0);
             } else if (advice.equals(Advice.Type.WAIT)) {
