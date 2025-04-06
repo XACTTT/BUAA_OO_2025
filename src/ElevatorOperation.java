@@ -11,7 +11,8 @@ public class ElevatorOperation implements Runnable {
     private int id;
     private int maxNum = 6;
     private int curNum = 0; // 当前人数
-    private boolean couldReceive;
+    private volatile boolean couldReceive;
+    private boolean isInSche = false;
     private Floor curFloor = Floor.F1; //当前楼层
     private boolean dir = true; // true表示往上
     private Strategy strategy;
@@ -32,9 +33,7 @@ public class ElevatorOperation implements Runnable {
             Advice.Type advice = strategy.getAdvice(curNum, maxNum, curFloor, dir,
                     personsInElevator);
             if (advice.equals(Advice.Type.SCHE)) {
-                couldReceive = false;
                 sche();
-                couldReceive = true;
             } else if (advice.equals(Advice.Type.MOVE)) {
                 move(dir, 400.0);
             } else if (advice.equals(Advice.Type.WAIT)) {
@@ -92,7 +91,15 @@ public class ElevatorOperation implements Runnable {
     }
 
     public boolean couldReceiveRequest() {
-        return couldReceive;
+        synchronized (this) {
+            return couldReceive;
+        }
+    }
+
+    public boolean inSche() {
+        synchronized (this) {
+            return isInSche;
+        }
     }
 
     private void out() {
@@ -141,13 +148,23 @@ public class ElevatorOperation implements Runnable {
     }
 
     private void sche() {
+        synchronized (this) {
+            couldReceive = false;
+            isInSche = true; // 标记进入临时调度
+        }
         ScheRequest scheRequest = requestTable.getScheRequests().get(0);
         String toFloor = scheRequest.getToFloor();
         Floor floor = Floor.valueOf(toFloor);
-        double speed = scheRequest.getSpeed() * 1000;
+
         int curFloorNum = curFloor.ordinal();
         int toFloorNum = floor.ordinal();
         dir = curFloorNum < toFloorNum;
+        try {
+            sleep(11);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        double speed = scheRequest.getSpeed() * 1000;
         TimableOutput.println(String.format("SCHE-BEGIN-%d", id));
         while (!curFloor.equals(floor)) {
             move(dir, speed);
@@ -161,6 +178,10 @@ public class ElevatorOperation implements Runnable {
         }
         TimableOutput.println(String.format("CLOSE-%s-%d", curFloor.name(), id));
         TimableOutput.println(String.format("SCHE-END-%d", id));
+        synchronized (this) {
+            couldReceive = true;
+            isInSche = false; // 标记进入临时调度
+        }
     }
 
     private void flush() {
@@ -215,4 +236,7 @@ public class ElevatorOperation implements Runnable {
         return curNum;
     }
 
+    public int waittingSize() {
+        return requestTable.getPersonRequests().size();
+    }
 }

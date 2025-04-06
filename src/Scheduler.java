@@ -72,7 +72,9 @@ public class Scheduler implements Runnable {
         int availableNum = 0;
         ArrayList<Integer> availableEleId = new ArrayList<>();
         for (int i = 0; i < elevators.size(); i++) {
-            if (elevators.get(i).couldReceiveRequest()) {
+            if (elevators.get(i).couldReceiveRequest() && !
+                    elevators.get(i).inSche()
+            ) {
                 availableNum++;
                 availableEleId.add(i + 1);
             }
@@ -103,9 +105,11 @@ public class Scheduler implements Runnable {
 
         Floor curFloor = elevator.getCurFloor();
         boolean elevatorDirection = elevator.getDir();
-        int load = elevator.getCurNum();
+        int load = elevator.getCurNum() + elevator.waittingSize();
         int distance = Math.abs(curFloor.ordinal() - fromFloor.ordinal());
-
+        if (load == 0) {
+            load = -1000;
+        }
         int directionScore = 0;
         if (elevatorDirection == passengerDirection) {
             if ((elevatorDirection && fromFloor.ordinal() >= curFloor.ordinal()) ||
