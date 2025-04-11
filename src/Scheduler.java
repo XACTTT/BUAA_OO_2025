@@ -32,7 +32,7 @@ public class Scheduler implements Runnable {
                     return;
                 } else {
                     try {
-                        sleep(300);
+                        sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -62,12 +62,11 @@ public class Scheduler implements Runnable {
                 persons.add(person);
                 masterRequestTable.returnPerson(persons);
                 try {
-                    sleep(450);
+                    sleep(150);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-
 
 
         }
@@ -80,11 +79,13 @@ public class Scheduler implements Runnable {
             if (elevators.get(i).couldReceiveRequest() && !
                     elevators.get(i).inSche()
             ) {
-                availableNum++;
-                availableEleId.add(i + 1);
+                if (elevators.get(i).getRequestNum() <= 10) {
+                    availableNum++;
+                    availableEleId.add(i + 1);
+                }
             }
         }
-        if (availableNum <= 3) {
+        if (availableNum <= 0) {
             return -1;
         }
 

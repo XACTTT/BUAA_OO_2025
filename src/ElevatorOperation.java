@@ -240,4 +240,8 @@ public class ElevatorOperation implements Runnable {
     public int waittingSize() {
         return requestTable.getPersonRequests().size();
     }
+
+    public int getRequestNum() {
+        return requestTable.getPersonRequests().size();
+    }
 }
