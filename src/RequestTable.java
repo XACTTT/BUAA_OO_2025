@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 //import com.oocourse.elevator2.TimableOutput;
-import com.oocourse.elevator2.ScheRequest;
+import com.oocourse.elevator3.ScheRequest;
 
 public class RequestTable {
     private boolean isEnd;
