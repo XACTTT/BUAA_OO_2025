@@ -86,17 +86,17 @@ public class ElevatorOperation implements Runnable {
                 this.dir = true;
             }
         }
-        if(this.isUpdated){
+        if (this.isUpdated) {
             //TimableOutput.println(this.dir);
             //TimableOutput.println(personsInElevator.size());
-        if (shareData.isShareFloor(targetFloor)) {
-            try {
-                shareData.enterShareFloor();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
+            if (shareData.isShareFloor(targetFloor)) {
+                try {
+                    shareData.enterShareFloor();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
-        }
         }
 
         try {
@@ -109,10 +109,10 @@ public class ElevatorOperation implements Runnable {
         curFloor = targetFloor;
         TimableOutput.println(String.format("ARRIVE-%s-%d", curFloor.name(), id));
 
-        if (this.isUpdated&&shareData.isShareFloor(curFloor)) {
-                exchangePerson();
-                curFloor =floors[floorIndex] ;
-                this.dir = !this.dir;
+        if (this.isUpdated && shareData.isShareFloor(curFloor)) {
+            exchangePerson();
+            curFloor = floors[floorIndex];
+            this.dir = !this.dir;
             try {
                 sleep((long) speed);
             } catch (InterruptedException e) {
@@ -156,17 +156,16 @@ public class ElevatorOperation implements Runnable {
     private void out() {
         TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
         ArrayList<Person> outPersons = new ArrayList<>();
-        ArrayList<Person> fPersons = new ArrayList<>();
+        ArrayList<Person> f1Persons = new ArrayList<>();
         for (Person person : personsInElevator) {
             if (person.getToFloor().equals(curFloor)) {
                 outPersons.add(person);
             }
-            if(curFloor.equals(sharedFloor)){
-                if(isUp&&person.getToFloor().ordinal()<curFloor.ordinal()){
-                  fPersons.add(person);
-                }
-                else if (!isUp&&person.getToFloor().ordinal()>curFloor.ordinal()){
-                    fPersons.add(person);
+            if (curFloor.equals(sharedFloor)) {
+                if (isUp && person.getToFloor().ordinal() < curFloor.ordinal()) {
+                    f1Persons.add(person);
+                } else if (!isUp && person.getToFloor().ordinal() > curFloor.ordinal()) {
+                    f1Persons.add(person);
                 }
             }
         }
@@ -177,14 +176,14 @@ public class ElevatorOperation implements Runnable {
             personsInElevator.remove(person);
         }
 
-        for (Person person : fPersons) {
+        for (Person person : f1Persons) {
             TimableOutput.println(String.format("OUT-F-%d-%s-%d", person.getPersonId(),
                     curFloor.name(), id));
             curNum--;
             person.setFromFloor(curFloor);
             personsInElevator.remove(person);
         }
-        Scheduler.getMasterRequestTable().returnPerson(fPersons);
+        Scheduler.getMasterRequestTable().returnPerson(f1Persons);
     }
 
     private void in() {
@@ -232,7 +231,7 @@ public class ElevatorOperation implements Runnable {
         dir = curFloorNum < toFloorNum;
         try {
             sleep(11);
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         double speed = scheRequest.getSpeed() * 1000;
@@ -265,14 +264,15 @@ public class ElevatorOperation implements Runnable {
         requestTable.getRequestMap().clear();
     }
 
-    private ArrayList<Person> placePeopleInEle(int type) {// 0:sche,1Upd.
+    private ArrayList<Person> placePeopleInEle(int type) {
+        // 0:sche,1Upd.
         ArrayList<Person> notArrivePersons = new ArrayList<>();
         ArrayList<Person> arrivePersons = new ArrayList<>();
-        if(type == 0){
+        if (type == 0) {
             TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
         }
-        if(!personsInElevator.isEmpty()) {
-            if(type == 1){
+        if (!personsInElevator.isEmpty()) {
+            if (type == 1) {
                 TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
             }
 
@@ -311,13 +311,14 @@ public class ElevatorOperation implements Runnable {
         synchronized (this) {
             inUpdate = true;
         }
-        ArrayList<Person> putBackPersons = prepareUpdate();
+
         UpdateRequest updateRequest = requestTable.getUpdateRequests().get(0);
         int id1 = updateRequest.getElevatorAId();
         int id2 = updateRequest.getElevatorBId();
         Floor targetFloor = Floor.valueOf(updateRequest.getTransferFloor());
         sharedFloor = targetFloor;
         Floor[] floors = Floor.values();
+        ArrayList<Person> putBackPersons = prepareUpdate();
         int targetFloorNum = targetFloor.ordinal();
         if (this.id == id1) {
             this.minFloor = targetFloor;
@@ -357,7 +358,7 @@ public class ElevatorOperation implements Runnable {
 
     private ArrayList<Person> prepareUpdate() {
         ArrayList<Person> notArrivePersons = new ArrayList<>();
-        if(!personsInElevator.isEmpty()) {
+        if (!personsInElevator.isEmpty()) {
             notArrivePersons = placePeopleInEle(1);
             try {
                 sleep(400);
@@ -409,7 +410,5 @@ public class ElevatorOperation implements Runnable {
     public int waittingSize() {
         return requestTable.getPersonRequests().size();
     }
-
-
 
 }

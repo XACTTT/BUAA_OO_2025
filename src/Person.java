@@ -46,7 +46,7 @@ public class Person {
         if (curFloor.equals(minFloor) && !minFloor.equals(Floor.B4)) {
             if (toFloorNum < minFloor.ordinal()) {
                 return false;
-            }else {
+            } else {
                 return true;
             }
         }
@@ -56,7 +56,6 @@ public class Person {
     }
 
     public boolean willIn(Floor curFloor, boolean dir, Floor maxFloor, Floor minFloor) {
-        int curFloorNum = curFloor.ordinal();
         int fromFloorNum = this.fromFloor.ordinal();
         int toFloorNum = this.toFloor.ordinal();
         int maxFloorNum = maxFloor.ordinal();
@@ -64,12 +63,13 @@ public class Person {
         if (fromFloorNum > maxFloorNum || fromFloorNum < minFloorNum) {
             return false;
         }
-        if (fromFloorNum==maxFloorNum && toFloorNum>maxFloorNum) {
+        if (fromFloorNum == maxFloorNum && toFloorNum > maxFloorNum) {
             return false;
         }
-        if (fromFloorNum==minFloorNum && toFloorNum<minFloorNum) {
+        if (fromFloorNum == minFloorNum && toFloorNum < minFloorNum) {
             return false;
         }
+        int curFloorNum = curFloor.ordinal();
         if (dir) {
             return curFloorNum < fromFloorNum;
         } else {

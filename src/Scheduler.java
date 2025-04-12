@@ -39,11 +39,10 @@ public class Scheduler implements Runnable {
                     }
                 }
             }
-            //TimableOutput.println("nowtime4666666666666666666666666666666");
             UpdateRequest updateRequest = masterRequestTable.getUpdateFromMasterTable();
             if (updateRequest != null) {
-                //TimableOutput.println(updateRequest.toString()+"22222222222222222222");
                 updateEle(updateRequest);
+                //TimableOutput.println(updateRequest.toString()+"22222222222222222222fix1");
             }
 
             ScheRequest scheRequest = masterRequestTable.getScheRequestFromMasterTable();
@@ -53,6 +52,7 @@ public class Scheduler implements Runnable {
                 scheEle(scheRequest);
 
             }
+            //TimableOutput.println("22222222222222222222fix2");
             Person person = masterRequestTable.getRequestFromMasterTable();
             ArrayList<Person> persons = new ArrayList<>();
             if (person == null) {
@@ -74,7 +74,7 @@ public class Scheduler implements Runnable {
                     throw new RuntimeException(e);
                 }
             }
-
+            //TimableOutput.println("22222222222222222222fix3");
 
         }
     }
@@ -86,7 +86,7 @@ public class Scheduler implements Runnable {
             if (elevators.get(i).couldReceiveRequest() && !
                     elevators.get(i).inSche() && !
                     elevators.get(i).inUpdate() &&
-                    elevators.get(i).waittingSize()<=10
+                    elevators.get(i).waittingSize() <= 10
             ) {
                 if (elevators.get(i).canReceivePerson(person)) {
                     availableNum++;
@@ -150,12 +150,13 @@ public class Scheduler implements Runnable {
         int id2 = updateRequest.getElevatorBId();
         ShareData shareData = new ShareData(updateRequest);
         synchronized (eleRequestTables) {
-            elevators.get(id1-1).addShareData(shareData);
-            elevators.get(id2-1).addShareData(shareData);
-            eleRequestTables.get(id1-1).addUpdateRequest(updateRequest);
-            eleRequestTables.get(id2-1).addUpdateRequest(updateRequest);
+            elevators.get(id1 - 1).addShareData(shareData);
+            elevators.get(id2 - 1).addShareData(shareData);
+            eleRequestTables.get(id1 - 1).addUpdateRequest(updateRequest);
+            eleRequestTables.get(id2 - 1).addUpdateRequest(updateRequest);
             //TimableOutput.println(updateRequest.toString()+"44444444444444444444444444444");
         }
+        //TimableOutput.println(updateRequest.toString()+"22222222222222222222fix4");
     }
 
     private boolean eleAllEnd() {

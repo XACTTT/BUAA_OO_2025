@@ -1,4 +1,8 @@
-import com.oocourse.elevator3.*;
+import com.oocourse.elevator3.Request;
+import com.oocourse.elevator3.UpdateRequest;
+import com.oocourse.elevator3.ScheRequest;
+import com.oocourse.elevator3.ElevatorInput;
+import com.oocourse.elevator3.PersonRequest;
 
 public class InputThread implements Runnable {
     private RequestTable masterRequestTable;

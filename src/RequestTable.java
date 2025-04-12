@@ -11,7 +11,8 @@ public class RequestTable {
     private HashMap<Floor, HashSet<Person>> personRequestMap;
     private ArrayList<Person> personRequests;
     private ArrayList<ScheRequest> scheRequests;
-    private ArrayList<UpdateRequest>updateRequests;
+    private ArrayList<UpdateRequest> updateRequests;
+
     public RequestTable() {
         isEnd = false;
         personRequestMap = new HashMap<>();
@@ -21,6 +22,7 @@ public class RequestTable {
     }
 
     public synchronized boolean isEnd() {
+        notifyAll();
         return isEnd;
     }
 
@@ -87,7 +89,8 @@ public class RequestTable {
     }
 
     public synchronized Person getRequestFromMasterTable() {
-        if (personRequests.isEmpty() && !isEnd) {
+        if (scheRequests.isEmpty() && updateRequests.isEmpty()
+                && personRequests.isEmpty() && !isEnd) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -107,7 +110,8 @@ public class RequestTable {
     }
 
     public synchronized ScheRequest getScheRequestFromMasterTable() {
-        if (scheRequests.isEmpty() && !isEnd) {
+        if (scheRequests.isEmpty() && updateRequests.isEmpty()
+                && personRequests.isEmpty() && !isEnd) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -122,10 +126,11 @@ public class RequestTable {
     }
 
     public synchronized UpdateRequest getUpdateFromMasterTable() {
-        if (updateRequests.isEmpty() && !isEnd) {
+        if (scheRequests.isEmpty() && updateRequests.isEmpty()
+                && personRequests.isEmpty() && !isEnd) {
             try {
                 wait();
-            }catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
