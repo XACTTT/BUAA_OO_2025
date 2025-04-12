@@ -156,7 +156,7 @@ public class RequestTable {
         }
     }
 
-    public synchronized void clearAll(){
+    public synchronized void clearAll() {
         personRequestMap.clear();
         personRequests.clear();
         scheRequests.clear();

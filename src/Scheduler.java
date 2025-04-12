@@ -12,7 +12,7 @@ public class Scheduler implements Runnable {
     private ArrayList<ElevatorOperation> elevators;
 
     public Scheduler(RequestTable masterRequestTable, ArrayList<RequestTable> eleRequestTables,
-                     ArrayList<ElevatorOperation> elevators) {
+        ArrayList<ElevatorOperation> elevators) {
         Scheduler.masterRequestTable = masterRequestTable;
         this.eleRequestTables = eleRequestTables;
         this.elevators = elevators;
@@ -45,29 +45,23 @@ public class Scheduler implements Runnable {
                 //TimableOutput.println(updateRequest.toString()+"22222222222222222222fix1");
                 continue;
             }
-
             ScheRequest scheRequest = masterRequestTable.getScheRequestFromMasterTable();
-
             if (scheRequest != null) {
-                //  TimableOutput.println(scheRequest.toString()+"333333333333333");
                 scheEle(scheRequest);
                 continue;
 
             }
-            //TimableOutput.println("22222222222222222222fix2");
             Person person = masterRequestTable.getRequestFromMasterTable();
             ArrayList<Person> persons = new ArrayList<>();
             if (person == null) {
                 continue;
             }
-
             int eleId = schedulerAnPerson(person);
             if (eleId != -1) {
                 if (!elevators.get(eleId - 1).inUpdate()) {
                     TimableOutput.println(String.format("RECEIVE-%d-%d",
                             person.getPersonId(), eleId));
                     eleRequestTables.get(eleId - 1).addPersonRequest(person);
-                    //    TimableOutput.println(person.getPersonId());
                 } else {
                     persons.add(person);
                     masterRequestTable.returnPerson(persons);
@@ -86,8 +80,6 @@ public class Scheduler implements Runnable {
                     throw new RuntimeException(e);
                 }
             }
-            //TimableOutput.println("22222222222222222222fix3");
-
         }
     }
 
