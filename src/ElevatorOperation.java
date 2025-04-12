@@ -87,6 +87,8 @@ public class ElevatorOperation implements Runnable {
             }
         }
         if(this.isUpdated){
+            //TimableOutput.println(this.dir);
+            //TimableOutput.println(personsInElevator.size());
         if (shareData.isShareFloor(targetFloor)) {
             try {
                 shareData.enterShareFloor();
@@ -191,6 +193,9 @@ public class ElevatorOperation implements Runnable {
                 ArrayList<Person> inPersons = new ArrayList<>();
                 if (curNum < maxNum) {
                     for (Person person : requestTable.getRequestMap().get(curFloor)) {
+                        //TimableOutput.println(person.getPersonId());
+                        //TimableOutput.println(person.getFromFloor().name());
+                        //TimableOutput.println(person.getToFloor().name());
                         if (person.needIn(curFloor, dir, maxFloor, minFloor)) {
                             curNum++;
                             personsInElevator.add(person);

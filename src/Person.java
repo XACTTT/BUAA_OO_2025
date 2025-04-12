@@ -44,7 +44,7 @@ public class Person {
             }
         }
         if (curFloor.equals(minFloor) && !minFloor.equals(Floor.B4)) {
-            if (toFloorNum < maxFloor.ordinal()) {
+            if (toFloorNum < minFloor.ordinal()) {
                 return false;
             }else {
                 return true;
