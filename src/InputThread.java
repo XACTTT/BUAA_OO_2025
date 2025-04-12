@@ -26,7 +26,7 @@ public class InputThread implements Runnable {
                             personRequest.getPriority(),
                             Floor.valueOf(personRequest.getFromFloor())
                             , Floor.valueOf(personRequest.getToFloor()));
-                    masterRequestTable.addPersonRequest(person);
+                    masterRequestTable.addMasterPersonRequest(person);
                 } else if (request instanceof ScheRequest) {
                     ScheRequest scheRequest = (ScheRequest) request;
                     masterRequestTable.addScheRequest(scheRequest);

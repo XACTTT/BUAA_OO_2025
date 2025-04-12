@@ -1,5 +1,4 @@
 import com.oocourse.elevator3.ScheRequest;
-import com.oocourse.elevator3.TimableOutput;
 import com.oocourse.elevator3.UpdateRequest;
 
 import java.util.ArrayList;
@@ -59,9 +58,7 @@ public class Scheduler implements Runnable {
             int eleId = schedulerAnPerson(person);
             if (eleId != -1) {
                 if (!elevators.get(eleId - 1).inUpdate()) {
-                    TimableOutput.println(String.format("RECEIVE-%d-%d",
-                            person.getPersonId(), eleId));
-                    eleRequestTables.get(eleId - 1).addPersonRequest(person);
+                    eleRequestTables.get(eleId - 1).addPersonRequest(person,eleId);
                 } else {
                     persons.add(person);
                     masterRequestTable.returnPerson(persons);
@@ -85,7 +82,7 @@ public class Scheduler implements Runnable {
 
     private int schedulerAnPerson(Person person) {
         try {
-            sleep(16);
+            sleep(46);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

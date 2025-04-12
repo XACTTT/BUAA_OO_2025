@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 //import com.oocourse.elevator2.TimableOutput;
 import com.oocourse.elevator3.ScheRequest;
+import com.oocourse.elevator3.TimableOutput;
 import com.oocourse.elevator3.UpdateRequest;
 
 public class RequestTable {
@@ -54,7 +55,21 @@ public class RequestTable {
         return updateRequests;
     }
 
-    public synchronized void addPersonRequest(Person person) {
+    public synchronized void addMasterPersonRequest(Person person) {
+        personRequests.add(person);
+        if (personRequestMap.containsKey(person.getFromFloor())) {
+            personRequestMap.get(person.getFromFloor()).add(person);
+        } else {
+            HashSet<Person> persons = new HashSet<>();
+            persons.add(person);
+            personRequestMap.put(person.getFromFloor(), persons);
+        }
+        notifyAll();
+    }
+
+    public synchronized void addPersonRequest(Person person,int eleId) {
+        TimableOutput.println(String.format("RECEIVE-%d-%d",
+                person.getPersonId(), eleId));
         personRequests.add(person);
         if (personRequestMap.containsKey(person.getFromFloor())) {
             personRequestMap.get(person.getFromFloor()).add(person);
@@ -152,7 +167,7 @@ public class RequestTable {
 
     public synchronized void returnPerson(ArrayList<Person> person) {
         for (Person p : person) {
-            this.addPersonRequest(p);
+            this.addMasterPersonRequest(p);
         }
     }
 
