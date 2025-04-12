@@ -33,7 +33,7 @@ public class Scheduler implements Runnable {
                     return;
                 } else {
                     try { //TimableOutput.println("nowtime4444444444444444444444444444444444444");
-                        sleep(200);
+                        sleep(210);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -69,7 +69,7 @@ public class Scheduler implements Runnable {
                 persons.add(person);
                 masterRequestTable.returnPerson(persons);
                 try {
-                    sleep(150);
+                    sleep(250);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

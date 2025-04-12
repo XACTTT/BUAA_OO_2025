@@ -225,11 +225,11 @@ public class ElevatorOperation implements Runnable {
         int curFloorNum = curFloor.ordinal();
         int toFloorNum = floor.ordinal();
         dir = curFloorNum < toFloorNum;
-/*        try {
+        try {
             sleep(11);
         }catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }*/
+        }
         double speed = scheRequest.getSpeed() * 1000;
         TimableOutput.println(String.format("SCHE-BEGIN-%d", id));
         while (!curFloor.equals(floor)) {
@@ -251,7 +251,7 @@ public class ElevatorOperation implements Runnable {
     }
 
     private void flush() {
-        ArrayList<Person> notArrivePersons = placePeopleInEle();
+        ArrayList<Person> notArrivePersons = placePeopleInEle(0);
         notArrivePersons.addAll(requestTable.getPersonRequests());
         Scheduler.getMasterRequestTable().returnPerson(notArrivePersons);
         requestTable.getPersonRequests().clear();
@@ -260,11 +260,16 @@ public class ElevatorOperation implements Runnable {
         requestTable.getRequestMap().clear();
     }
 
-    private ArrayList<Person> placePeopleInEle() {
+    private ArrayList<Person> placePeopleInEle(int type) {// 0:sche,1Upd.
         ArrayList<Person> notArrivePersons = new ArrayList<>();
         ArrayList<Person> arrivePersons = new ArrayList<>();
-        if(!personsInElevator.isEmpty()) {
+        if(type == 0){
             TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
+        }
+        if(!personsInElevator.isEmpty()) {
+            if(type == 1){
+                TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
+            }
 
             for (Person person : personsInElevator) {
                 if (!person.getToFloor().equals(curFloor)) {
@@ -348,7 +353,7 @@ public class ElevatorOperation implements Runnable {
     private ArrayList<Person> prepareUpdate() {
         ArrayList<Person> notArrivePersons = new ArrayList<>();
         if(!personsInElevator.isEmpty()) {
-            notArrivePersons = placePeopleInEle();
+            notArrivePersons = placePeopleInEle(1);
             try {
                 sleep(400);
             } catch (InterruptedException e) {
