@@ -1,5 +1,6 @@
 import com.oocourse.elevator3.ScheRequest;
 import com.oocourse.elevator3.TimableOutput;
+import com.oocourse.elevator3.UpdateRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,12 +12,20 @@ public class ElevatorOperation implements Runnable {
     private int id;
     private int maxNum = 6;
     private int curNum = 0; // 当前人数
+    private double speed = 400.0;
     private volatile boolean couldReceive;
     private boolean isInSche = false;
     private Floor curFloor = Floor.F1; //当前楼层
+    private Floor maxFloor = Floor.F7;
+    private Floor minFloor = Floor.B4;
+    private boolean isUpdated = false;
+    private boolean inUpdate = false;
     private boolean dir = true; // true表示往上
     private Strategy strategy;
     private HashSet<Person> personsInElevator;
+    private ShareData shareData;
+    private Floor sharedFloor;
+    private boolean isUp;
 
     public ElevatorOperation(int id, RequestTable eleRequestTable) {
         this.id = id;
@@ -24,19 +33,20 @@ public class ElevatorOperation implements Runnable {
         this.strategy = new Strategy(eleRequestTable);
         this.personsInElevator = new HashSet<>();
         this.couldReceive = true;
+        this.shareData = null;
     }
 
     @Override
     public void run() {
         while (true) {
             //     TimableOutput.println("nowtime22222222222222222222222222222222222222");
-            Advice.Type advice = strategy.getAdvice(curNum, maxNum, curFloor, dir,
-                    personsInElevator);
+            Advice.Type advice = strategy.getAdvice(maxFloor, minFloor, curNum,
+                    maxNum, curFloor, dir, personsInElevator);
             if (advice.equals(Advice.Type.SCHE)) {
                 sche();
                 //TimableOutput.println(id+"receive22222222222222222222ok");
             } else if (advice.equals(Advice.Type.MOVE)) {
-                move(dir, 400.0);
+                move(dir, speed);
             } else if (advice.equals(Advice.Type.WAIT)) {
                 requestTable.waitForPerson();
             } else if (advice.equals(Advice.Type.END)) {
@@ -46,6 +56,8 @@ public class ElevatorOperation implements Runnable {
                 this.dir = !this.dir;
             } else if (advice.equals(Advice.Type.OPEN)) {
                 exchangePerson();
+            } else if (advice.equals(Advice.Type.UPDATE)) {
+                this.update();
             }
             //        TimableOutput.println("nowtime11111111111111111111111111111111111111");
         }
@@ -55,30 +67,58 @@ public class ElevatorOperation implements Runnable {
 
     private void move(boolean dir, double speed) {
         int floorIndex = curFloor.ordinal();
-
+        int maxFloorIndex = maxFloor.ordinal();
+        int minFloorIndex = minFloor.ordinal();
         Floor[] floors = Floor.values();
+        Floor targetFloor;
         if (dir) {
-            if (floorIndex < floors.length - 1) {
-                curFloor = floors[floorIndex + 1];
+            if (floorIndex < maxFloorIndex) {
+                targetFloor = floors[floorIndex + 1];
             } else {
-                curFloor = floors[floorIndex - 1];
+                targetFloor = floors[floorIndex - 1];
                 this.dir = false;
             }
-
         } else {
-            if (floorIndex > 0) {
-                curFloor = floors[floorIndex - 1];
+            if (floorIndex > minFloorIndex) {
+                targetFloor = floors[floorIndex - 1];
             } else {
-                curFloor = floors[floorIndex + 1];
+                targetFloor = floors[floorIndex + 1];
                 this.dir = true;
             }
         }
+        if (shareData.isShareFloor(targetFloor)) {
+            try {
+                shareData.enterShareFloor();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
         try {
             sleep((long) speed);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            return;
         }
+
+        curFloor = targetFloor;
         TimableOutput.println(String.format("ARRIVE-%s-%d", curFloor.name(), id));
+
+        if (shareData.isShareFloor(curFloor)) {
+                exchangePerson();
+                curFloor =floors[floorIndex] ;
+                this.dir = !this.dir;
+            try {
+                sleep((long) speed);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            TimableOutput.println(String.format("ARRIVE-%s-%d", curFloor.name(), id));
+            shareData.exitShareFloor();
+        }
+
+
     }
 
     public void exchangePerson() {
@@ -103,13 +143,27 @@ public class ElevatorOperation implements Runnable {
         }
     }
 
+    public boolean inUpdate() {
+        synchronized (this) {
+            return inUpdate;
+        }
+    }
+
     private void out() {
         TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
         ArrayList<Person> outPersons = new ArrayList<>();
+        ArrayList<Person> fPersons = new ArrayList<>();
         for (Person person : personsInElevator) {
             if (person.getToFloor().equals(curFloor)) {
                 outPersons.add(person);
-
+            }
+            if(curFloor.equals(sharedFloor)){
+                if(isUp&&person.getToFloor().ordinal()<curFloor.ordinal()){
+                  fPersons.add(person);
+                }
+                else if (!isUp&&person.getToFloor().ordinal()>curFloor.ordinal()){
+                    fPersons.add(person);
+                }
             }
         }
         for (Person person : outPersons) {
@@ -118,6 +172,15 @@ public class ElevatorOperation implements Runnable {
             curNum--;
             personsInElevator.remove(person);
         }
+
+        for (Person person : fPersons) {
+            TimableOutput.println(String.format("OUT-F-%d-%s-%d", person.getPersonId(),
+                    curFloor.name(), id));
+            curNum--;
+            person.setFromFloor(curFloor);
+            personsInElevator.remove(person);
+        }
+        Scheduler.getMasterRequestTable().returnPerson(fPersons);
     }
 
     private void in() {
@@ -126,7 +189,7 @@ public class ElevatorOperation implements Runnable {
                 ArrayList<Person> inPersons = new ArrayList<>();
                 if (curNum < maxNum) {
                     for (Person person : requestTable.getRequestMap().get(curFloor)) {
-                        if (person.needIn(curFloor, dir)) {
+                        if (person.needIn(curFloor, dir, maxFloor, minFloor)) {
                             curNum++;
                             personsInElevator.add(person);
                             inPersons.add(person);
@@ -160,11 +223,11 @@ public class ElevatorOperation implements Runnable {
         int curFloorNum = curFloor.ordinal();
         int toFloorNum = floor.ordinal();
         dir = curFloorNum < toFloorNum;
-        try {
+/*        try {
             sleep(11);
-        } catch (InterruptedException e) {
+        }catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         double speed = scheRequest.getSpeed() * 1000;
         TimableOutput.println(String.format("SCHE-BEGIN-%d", id));
         while (!curFloor.equals(floor)) {
@@ -186,39 +249,135 @@ public class ElevatorOperation implements Runnable {
     }
 
     private void flush() {
-        TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
-        ArrayList<Person> notArrivePersons = new ArrayList<>();
-        ArrayList<Person> arrivePersons = new ArrayList<>();
-        for (Person person : personsInElevator) {
-            if (!person.getToFloor().equals(curFloor)) {
-                notArrivePersons.add(person);
-            } else {
-                arrivePersons.add(person);
-            }
-            curNum--;
-        }
-
-        for (Person person : arrivePersons) {
-            TimableOutput.println(String.format("OUT-S-%d-%s-%d", person.getPersonId(),
-                    curFloor.name(), id));
-            personsInElevator.remove(person);
-        }
-
-        for (Person person : notArrivePersons) {
-
-            TimableOutput.println(String.format("OUT-F-%d-%s-%d", person.getPersonId(),
-                    curFloor.name(), id));
-            person.setFromFloor(curFloor);
-            personsInElevator.remove(person);
-        }
-        for (Person person : requestTable.getPersonRequests()) {
-            notArrivePersons.add(person);
-
-        }
+        ArrayList<Person> notArrivePersons = placePeople();
         Scheduler.getMasterRequestTable().returnPerson(notArrivePersons);
         requestTable.getPersonRequests().clear();
         requestTable.getScheRequests().clear();
+        requestTable.getUpdateRequests().clear();
         requestTable.getRequestMap().clear();
+    }
+
+    private ArrayList<Person> placePeople() {
+        ArrayList<Person> notArrivePersons = new ArrayList<>();
+        ArrayList<Person> arrivePersons = new ArrayList<>();
+        if(!personsInElevator.isEmpty()) {
+            TimableOutput.println(String.format("OPEN-%s-%d", curFloor.name(), id));
+
+            for (Person person : personsInElevator) {
+                if (!person.getToFloor().equals(curFloor)) {
+                    notArrivePersons.add(person);
+                } else {
+                    arrivePersons.add(person);
+                }
+                curNum--;
+            }
+
+            for (Person person : arrivePersons) {
+                TimableOutput.println(String.format("OUT-S-%d-%s-%d", person.getPersonId(),
+                        curFloor.name(), id));
+                personsInElevator.remove(person);
+            }
+
+            for (Person person : notArrivePersons) {
+
+                TimableOutput.println(String.format("OUT-F-%d-%s-%d", person.getPersonId(),
+                        curFloor.name(), id));
+                person.setFromFloor(curFloor);
+                personsInElevator.remove(person);
+            }
+            for (Person person : requestTable.getPersonRequests()) {
+                notArrivePersons.add(person);
+
+            }
+        }
+        return notArrivePersons;
+    }
+
+    public void addShareData(ShareData shareData) {
+        this.shareData = shareData;
+    }
+
+    private void update() {
+        synchronized (this) {
+            inUpdate = true;
+        }
+        ArrayList<Person> putBackPersons = prepareUpdate();
+        UpdateRequest updateRequest = requestTable.getUpdateRequests().get(0);
+        int id1 = updateRequest.getElevatorAId();
+        int id2 = updateRequest.getElevatorBId();
+        Floor targetFloor = Floor.valueOf(updateRequest.getTransferFloor());
+        sharedFloor = targetFloor;
+        Floor[] floors = Floor.values();
+        int targetFloorNum = targetFloor.ordinal();
+        if (this.id == id1) {
+            this.minFloor = targetFloor;
+            curFloor = floors[targetFloorNum + 1];
+            isUp = true;
+        } else if (this.id == id2) {
+            this.maxFloor = targetFloor;
+            curFloor = floors[targetFloorNum - 1];
+            isUp = false;
+        }
+        try {
+            this.shareData.isReady();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Scheduler.getMasterRequestTable().returnPerson(putBackPersons);
+        requestTable.getPersonRequests().clear();
+        requestTable.getScheRequests().clear();
+        requestTable.getUpdateRequests().clear();
+        requestTable.getRequestMap().clear();
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            this.shareData.updateEnd();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        synchronized (this) {
+            inUpdate = false;
+            isUpdated = true;
+            speed = 200.0;
+        }
+    }
+
+    private ArrayList<Person> prepareUpdate() {
+        ArrayList<Person> notArrivePersons = new ArrayList<>();
+        if(!personsInElevator.isEmpty()) {
+            notArrivePersons = placePeople();
+            try {
+                sleep(400);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            TimableOutput.println(String.format("CLOSE-%s-%d", curFloor.name(), id));
+        }
+
+        return notArrivePersons;
+    }
+
+    public boolean canReceivePerson(Person person) {
+        int maxFloorNum = maxFloor.ordinal();
+        int minFloorNum = minFloor.ordinal();
+        int fromFloorNum = person.getFromFloor().ordinal();
+        int toFloorNum = person.getToFloor().ordinal();
+        if (isUpdated) {
+            if (fromFloorNum > maxFloorNum || fromFloorNum < minFloorNum) {
+                return false;
+            }
+            if (isUp && fromFloorNum == minFloorNum) {
+                return toFloorNum >= minFloorNum;
+            }
+            if (!isUp && fromFloorNum == maxFloorNum) {
+                return toFloorNum <= maxFloorNum;
+            }
+        }
+        return true;
+
     }
 
     public boolean isEnd() {
@@ -241,7 +400,6 @@ public class ElevatorOperation implements Runnable {
         return requestTable.getPersonRequests().size();
     }
 
-    public int getRequestNum() {
-        return requestTable.getPersonRequests().size();
-    }
+
+
 }

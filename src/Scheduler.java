@@ -1,5 +1,6 @@
 import com.oocourse.elevator3.ScheRequest;
 import com.oocourse.elevator3.TimableOutput;
+import com.oocourse.elevator3.UpdateRequest;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,11 @@ public class Scheduler implements Runnable {
                         e.printStackTrace();
                     }
                 }
+            }
+
+            UpdateRequest updateRequest = masterRequestTable.getUpdateFromMasterTable();
+            if (updateRequest != null) {
+                updateEle(updateRequest);
             }
 
             ScheRequest scheRequest = masterRequestTable.getScheRequestFromMasterTable();
@@ -77,9 +83,11 @@ public class Scheduler implements Runnable {
         ArrayList<Integer> availableEleId = new ArrayList<>();
         for (int i = 0; i < elevators.size(); i++) {
             if (elevators.get(i).couldReceiveRequest() && !
-                    elevators.get(i).inSche()
+                    elevators.get(i).inSche() && !
+                    elevators.get(i).inUpdate() &&
+                    elevators.get(i).waittingSize()<=10
             ) {
-                if (elevators.get(i).getRequestNum() <= 10) {
+                if (elevators.get(i).canReceivePerson(person)) {
                     availableNum++;
                     availableEleId.add(i + 1);
                 }
@@ -113,9 +121,6 @@ public class Scheduler implements Runnable {
         boolean elevatorDirection = elevator.getDir();
         int load = elevator.getCurNum() + elevator.waittingSize();
         int distance = Math.abs(curFloor.ordinal() - fromFloor.ordinal());
-        if (load == 0) {
-            load = -1000;
-        }
         int directionScore = 0;
         if (elevatorDirection == passengerDirection) {
             if ((elevatorDirection && fromFloor.ordinal() >= curFloor.ordinal()) ||
@@ -134,9 +139,20 @@ public class Scheduler implements Runnable {
     private void scheEle(ScheRequest scheRequest) {
         int id = scheRequest.getElevatorId();
         synchronized (eleRequestTables) {
-            ArrayList<Person> people = new ArrayList<>();
             eleRequestTables.get(id - 1).addScheRequest(scheRequest);
             //TimableOutput.println(id + "deliver11111111111111ok");
+        }
+    }
+
+    private void updateEle(UpdateRequest updateRequest) {
+        int id1 = updateRequest.getElevatorAId();
+        int id2 = updateRequest.getElevatorBId();
+        ShareData shareData = new ShareData(updateRequest);
+        synchronized (eleRequestTables) {
+            elevators.get(id1-1).addShareData(shareData);
+            elevators.get(id2-1).addShareData(shareData);
+            eleRequestTables.get(id1-1).addUpdateRequest(updateRequest);
+            eleRequestTables.get(id2-1).addUpdateRequest(updateRequest);
         }
     }
 

@@ -4,18 +4,20 @@ import java.util.HashSet;
 
 //import com.oocourse.elevator2.TimableOutput;
 import com.oocourse.elevator3.ScheRequest;
+import com.oocourse.elevator3.UpdateRequest;
 
 public class RequestTable {
     private boolean isEnd;
     private HashMap<Floor, HashSet<Person>> personRequestMap;
     private ArrayList<Person> personRequests;
     private ArrayList<ScheRequest> scheRequests;
-
+    private ArrayList<UpdateRequest>updateRequests;
     public RequestTable() {
         isEnd = false;
         personRequestMap = new HashMap<>();
         personRequests = new ArrayList<>();
         scheRequests = new ArrayList<>();
+        updateRequests = new ArrayList<>();
     }
 
     public synchronized boolean isEnd() {
@@ -45,6 +47,11 @@ public class RequestTable {
         return scheRequests;
     }
 
+    public synchronized ArrayList<UpdateRequest> getUpdateRequests() {
+        notifyAll();
+        return updateRequests;
+    }
+
     public synchronized void addPersonRequest(Person person) {
         personRequests.add(person);
         if (personRequestMap.containsKey(person.getFromFloor())) {
@@ -59,6 +66,11 @@ public class RequestTable {
 
     public synchronized void addScheRequest(ScheRequest sche) {
         scheRequests.add(sche);
+        notifyAll();
+    }
+
+    public synchronized void addUpdateRequest(UpdateRequest update) {
+        updateRequests.add(update);
         notifyAll();
     }
 
@@ -107,6 +119,21 @@ public class RequestTable {
         }
         notifyAll();
         return scheRequests.remove(0);
+    }
+
+    public synchronized UpdateRequest getUpdateFromMasterTable() {
+        if (updateRequests.isEmpty() && !isEnd) {
+            try {
+                wait();
+            }catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (updateRequests.isEmpty()) {
+            return null;
+        }
+        notifyAll();
+        return updateRequests.remove(0);
     }
 
     public synchronized void waitForPerson() {

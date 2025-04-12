@@ -1,7 +1,4 @@
-import com.oocourse.elevator3.ElevatorInput;
-import com.oocourse.elevator3.PersonRequest;
-import com.oocourse.elevator3.Request;
-import com.oocourse.elevator3.ScheRequest;
+import com.oocourse.elevator3.*;
 
 public class InputThread implements Runnable {
     private RequestTable masterRequestTable;
@@ -29,7 +26,9 @@ public class InputThread implements Runnable {
                 } else if (request instanceof ScheRequest) {
                     ScheRequest scheRequest = (ScheRequest) request;
                     masterRequestTable.addScheRequest(scheRequest);
-
+                } else if (request instanceof UpdateRequest) {
+                    UpdateRequest updateRequest = (UpdateRequest) request;
+                    masterRequestTable.addUpdateRequest(updateRequest);
                 }
 
             }
