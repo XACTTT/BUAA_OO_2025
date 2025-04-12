@@ -12,7 +12,7 @@ public class Scheduler implements Runnable {
     private ArrayList<ElevatorOperation> elevators;
 
     public Scheduler(RequestTable masterRequestTable, ArrayList<RequestTable> eleRequestTables,
-        ArrayList<ElevatorOperation> elevators) {
+                     ArrayList<ElevatorOperation> elevators) {
         Scheduler.masterRequestTable = masterRequestTable;
         this.eleRequestTables = eleRequestTables;
         this.elevators = elevators;
@@ -63,10 +63,20 @@ public class Scheduler implements Runnable {
 
             int eleId = schedulerAnPerson(person);
             if (eleId != -1) {
-                TimableOutput.println(String.format("RECEIVE-%d-%d",
-                        person.getPersonId(), eleId));
-                eleRequestTables.get(eleId - 1).addPersonRequest(person);
-            //    TimableOutput.println(person.getPersonId());
+                if (!elevators.get(eleId - 1).inUpdate()) {
+                    TimableOutput.println(String.format("RECEIVE-%d-%d",
+                            person.getPersonId(), eleId));
+                    eleRequestTables.get(eleId - 1).addPersonRequest(person);
+                    //    TimableOutput.println(person.getPersonId());
+                } else {
+                    persons.add(person);
+                    masterRequestTable.returnPerson(persons);
+                    try {
+                        sleep(250);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             } else {
                 persons.add(person);
                 masterRequestTable.returnPerson(persons);
@@ -82,6 +92,11 @@ public class Scheduler implements Runnable {
     }
 
     private int schedulerAnPerson(Person person) {
+        try {
+            sleep(16);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         int availableNum = 0;
         ArrayList<Integer> availableEleId = new ArrayList<>();
         for (int i = 0; i < elevators.size(); i++) {

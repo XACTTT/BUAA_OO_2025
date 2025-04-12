@@ -258,10 +258,7 @@ public class ElevatorOperation implements Runnable {
         ArrayList<Person> notArrivePersons = placePeopleInEle(0);
         notArrivePersons.addAll(requestTable.getPersonRequests());
         Scheduler.getMasterRequestTable().returnPerson(notArrivePersons);
-        requestTable.getPersonRequests().clear();
-        requestTable.getScheRequests().clear();
-        requestTable.getUpdateRequests().clear();
-        requestTable.getRequestMap().clear();
+        requestTable.clearAll();
     }
 
     private ArrayList<Person> placePeopleInEle(int type) {
@@ -342,10 +339,7 @@ public class ElevatorOperation implements Runnable {
             //   TimableOutput.println("ZERO!!!!!!");
         }
         Scheduler.getMasterRequestTable().returnPerson(putBackPersons);
-        requestTable.getPersonRequests().clear();
-        requestTable.getScheRequests().clear();
-        requestTable.getUpdateRequests().clear();
-        requestTable.getRequestMap().clear();
+        requestTable.clearAll();
         try {
             sleep(1000);
         } catch (InterruptedException e) {
@@ -375,9 +369,6 @@ public class ElevatorOperation implements Runnable {
             TimableOutput.println(String.format("CLOSE-%s-%d", curFloor.name(), id));
         }
         synchronized (requestTable.getPersonRequests()) {
-            if (requestTable.getPersonRequests().size() == 0) {
-                //    TimableOutput.println("EMPTY!!!!!!");
-            }
             notArrivePersons.addAll(requestTable.getPersonRequests());
         }
         return notArrivePersons;

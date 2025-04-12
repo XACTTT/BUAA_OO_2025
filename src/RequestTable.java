@@ -155,4 +155,17 @@ public class RequestTable {
             this.addPersonRequest(p);
         }
     }
+
+    public synchronized void clearAll(){
+        personRequestMap.clear();
+        personRequests.clear();
+        scheRequests.clear();
+        updateRequests.clear();
+    }
+
+    public synchronized ArrayList<Person> getAndClearPersonRequests() {
+        ArrayList<Person> copy = new ArrayList<>(personRequests);
+        personRequests.clear(); // 清空操作与获取合并为原子操作
+        return copy;
+    }
 }
