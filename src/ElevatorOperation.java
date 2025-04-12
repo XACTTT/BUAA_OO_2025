@@ -334,6 +334,13 @@ public class ElevatorOperation implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        for (Person person : putBackPersons) {
+            //TimableOutput.println(person.toString());
+            //TimableOutput.println(person.getPersonId());
+        }
+        if (putBackPersons.size() == 0) {
+            //   TimableOutput.println("ZERO!!!!!!");
+        }
         Scheduler.getMasterRequestTable().returnPerson(putBackPersons);
         requestTable.getPersonRequests().clear();
         requestTable.getScheRequests().clear();
@@ -367,7 +374,12 @@ public class ElevatorOperation implements Runnable {
             }
             TimableOutput.println(String.format("CLOSE-%s-%d", curFloor.name(), id));
         }
-        notArrivePersons.addAll(requestTable.getPersonRequests());
+        synchronized (requestTable.getPersonRequests()) {
+            if (requestTable.getPersonRequests().size() == 0) {
+                //    TimableOutput.println("EMPTY!!!!!!");
+            }
+            notArrivePersons.addAll(requestTable.getPersonRequests());
+        }
         return notArrivePersons;
     }
 

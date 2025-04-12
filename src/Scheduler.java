@@ -43,6 +43,7 @@ public class Scheduler implements Runnable {
             if (updateRequest != null) {
                 updateEle(updateRequest);
                 //TimableOutput.println(updateRequest.toString()+"22222222222222222222fix1");
+                continue;
             }
 
             ScheRequest scheRequest = masterRequestTable.getScheRequestFromMasterTable();
@@ -50,6 +51,7 @@ public class Scheduler implements Runnable {
             if (scheRequest != null) {
                 //  TimableOutput.println(scheRequest.toString()+"333333333333333");
                 scheEle(scheRequest);
+                continue;
 
             }
             //TimableOutput.println("22222222222222222222fix2");
@@ -64,7 +66,7 @@ public class Scheduler implements Runnable {
                 TimableOutput.println(String.format("RECEIVE-%d-%d",
                         person.getPersonId(), eleId));
                 eleRequestTables.get(eleId - 1).addPersonRequest(person);
-
+            //    TimableOutput.println(person.getPersonId());
             } else {
                 persons.add(person);
                 masterRequestTable.returnPerson(persons);
