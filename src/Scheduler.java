@@ -26,22 +26,23 @@ public class Scheduler implements Runnable {
         while (true) {
             if (masterRequestTable.isEmpty() && masterRequestTable.isEnd()) {
                 if (eleAllEnd()) {
-                    //TimableOutput.println("nowtime4444444444444444444444444444444444444");
+
                     for (RequestTable eleRequestTable : eleRequestTables) {
                         eleRequestTable.setEnd();
                     }
                     return;
                 } else {
-                    try {
+                    try { //TimableOutput.println("nowtime4444444444444444444444444444444444444");
                         sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
-
+            //TimableOutput.println("nowtime4666666666666666666666666666666");
             UpdateRequest updateRequest = masterRequestTable.getUpdateFromMasterTable();
             if (updateRequest != null) {
+                //TimableOutput.println(updateRequest.toString()+"22222222222222222222");
                 updateEle(updateRequest);
             }
 
@@ -153,6 +154,7 @@ public class Scheduler implements Runnable {
             elevators.get(id2-1).addShareData(shareData);
             eleRequestTables.get(id1-1).addUpdateRequest(updateRequest);
             eleRequestTables.get(id2-1).addUpdateRequest(updateRequest);
+            //TimableOutput.println(updateRequest.toString()+"44444444444444444444444444444");
         }
     }
 
