@@ -82,7 +82,7 @@ public class Scheduler implements Runnable {
 
     private int schedulerAnPerson(Person person) {
         try {
-            sleep(46);
+            sleep(146);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
