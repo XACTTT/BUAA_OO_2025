@@ -5,74 +5,69 @@ import java.util.HashMap;
 
 public class Tag implements TagInterface {
     private int id;
-    private HashMap<Integer, Person> persons= new HashMap<>();
-    public Tag(int id){
+    private HashMap<Integer, Person> persons = new HashMap<>();
+
+    public Tag(int id) {
         this.id = id;
     }
+
     @Override
     public int getId() {
         return id;
     }
 
     public boolean equals(Tag tag) {
-        if(tag!=null){
-            return this.id==tag.getId();
-        }else{
-        return false;
+        if (tag != null) {
+            return this.id == tag.getId();
+        } else {
+            return false;
         }
     }
 
     @Override
     public void addPerson(PersonInterface person) {
-    if(!hasPerson(person)){
-        persons.put(person.getId(),(Person) person);
+        if (!hasPerson(person)) {
+            persons.put(person.getId(), (Person) person);
+        }
     }
-    }
-
 
     @Override
     public boolean hasPerson(PersonInterface person) {
-      return persons.containsKey(person.getId());
+        return persons.containsKey(person.getId());
     }
-
 
     @Override
     public int getAgeMean() {
-        if(persons.isEmpty()){
+        if (persons.isEmpty()) {
             return 0;
-        }
-        else {
-            int sum=0;
-            for(Person person:persons.values()){
-                sum+=person.getAge();
+        } else {
+            int sum = 0;
+            for (Person person : persons.values()) {
+                sum += person.getAge();
             }
-            return sum/persons.size();
+            return sum / persons.size();
         }
     }
-
 
     @Override
     public int getAgeVar() {
-        if(persons.isEmpty()){
+        if (persons.isEmpty()) {
             return 0;
-        }
-        else {
-            int sum=0;
-            for(Person person:persons.values()){
-                sum+=person.getAge()*person.getAge();
+        } else {
+            int sum = 0;
+            for (Person person : persons.values()) {
+                sum += person.getAge() * person.getAge();
             }
-            return sum/persons.size()-getAgeMean()*getAgeMean();
+            return sum / persons.size() - getAgeMean() * getAgeMean();
         }
     }
-
 
     @Override
     public void delPerson(PersonInterface person) {
-    if(hasPerson(person)){
-        persons.remove(person.getId());
+        if (hasPerson(person)) {
+            persons.remove(person.getId());
+        }
     }
-    }
-
 
     @Override
     public int getSize() {

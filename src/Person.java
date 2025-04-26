@@ -7,20 +7,21 @@ public class Person implements PersonInterface {
     private int id;
     private String name;
     private int age;
-    private HashMap<Integer,Person> acquaintance=new HashMap<>();
-    private HashMap<Integer,Integer> value=new HashMap<>();
-    private HashMap<Integer,Tag> tags=new HashMap<>();
+    private HashMap<Integer, Person> acquaintance = new HashMap<>();
+    private HashMap<Integer, Integer> value = new HashMap<>();
+    private HashMap<Integer, Tag> tags = new HashMap<>();
+
     public Person(int id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
     }
 
-    public boolean strictEquals(PersonInterface person){
-        if(person instanceof Person){
-            if(((Person) person).id == this.id){
-                if(((Person) person).name.equals(this.name)){
-                    if(((Person) person).age == this.age){
+    public boolean strictEquals(PersonInterface person) {
+        if (person instanceof Person) {
+            if (((Person) person).id == this.id) {
+                if (((Person) person).name.equals(this.name)) {
+                    if (((Person) person).age == this.age) {
                         return true;//todo
                     }
                 }
@@ -33,6 +34,7 @@ public class Person implements PersonInterface {
     public int getId() {
         return id;
     }
+
     @Override
     public String getName() {
         return name;
@@ -44,17 +46,15 @@ public class Person implements PersonInterface {
     }
 
     public void addAcquaintance(Person person) {
-        if(!acquaintance.containsKey(person.getId())) {
+        if (!acquaintance.containsKey(person.getId())) {
             acquaintance.put(person.getId(), person);
         }
     }
-
 
     @Override
     public boolean containsTag(int id) {
         return tags.containsKey(id);
     }
-
 
     @Override
     public TagInterface getTag(int id) {
@@ -63,11 +63,10 @@ public class Person implements PersonInterface {
 
     @Override
     public void addTag(TagInterface tag) {
-    if (!tags.containsKey(tag.getId())) {
-        tags.put(tag.getId(),(Tag)tag);
+        if (!tags.containsKey(tag.getId())) {
+            tags.put(tag.getId(), (Tag) tag);
+        }
     }
-    }
-
 
     @Override
     public void delTag(int id) {
@@ -75,10 +74,10 @@ public class Person implements PersonInterface {
     }
 
     public boolean equals(Person person) {
-        if(person==null){
+        if (person == null) {
             return false;
-        }else {
-            return id==person.getId();
+        } else {
+            return id == person.getId();
         }
     }
 
@@ -88,19 +87,18 @@ public class Person implements PersonInterface {
                 id == person.getId();
     }
 
-
     @Override
     public int queryValue(PersonInterface person) {
-        if(acquaintance.containsKey(person.getId())){
+        if (acquaintance.containsKey(person.getId())) {
             return value.get(person.getId());
-        }else {
+        } else {
             return 0;
         }
     }
 
     public void changeValue(int id, int newValue) {
         value.remove(id);
-        value.put(id,newValue);
+        value.put(id, newValue);
     }
 
     public void delAcquaintance(int id) {
@@ -111,15 +109,15 @@ public class Person implements PersonInterface {
         value.remove(id);
     }
 
-    public int getAcquaintenceSize(){
+    public int getAcquaintenceSize() {
         return acquaintance.size();
     }
 
-    public int chooseMaxValueId(){
+    public int chooseMaxValueId() {
         int max = 0;
         int ansId = -1;
         for (Integer i : value.keySet()) {
-            if( value.get(i)>max){
+            if (value.get(i) > max) {
                 max = value.get(i);
                 ansId = i;
             }
@@ -127,13 +125,13 @@ public class Person implements PersonInterface {
         return ansId;
     }
 
-    public HashMap<Integer,Person> getAcquaintance() {
+    public HashMap<Integer, Person> getAcquaintance() {
         return acquaintance;
     }
 
     public void delRelatedTags(int personId) {
-        for(TagInterface tag : tags.values()){
-            if(tag.hasPerson(acquaintance.get(personId))){
+        for (TagInterface tag : tags.values()) {
+            if (tag.hasPerson(acquaintance.get(personId))) {
                 tag.delPerson(acquaintance.get(personId));
             }
         }
