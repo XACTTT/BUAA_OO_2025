@@ -109,7 +109,6 @@ public class Network implements NetworkInterface {
                 ((Person) getPerson(id1)).delValue(id2);
                 ((Person) getPerson(id2)).delValue(id1);
 
-
             }
 
         } else {

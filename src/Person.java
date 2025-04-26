@@ -131,8 +131,10 @@ public class Person implements PersonInterface {
 
     public void delRelatedTags(int personId) {
         for (TagInterface tag : tags.values()) {
-            if (tag.hasPerson(acquaintance.get(personId))) {
-                tag.delPerson(acquaintance.get(personId));
+            if (acquaintance.containsKey(personId)) {
+                if (tag.hasPerson(acquaintance.get(personId))) {
+                    tag.delPerson(acquaintance.get(personId));
+                }
             }
         }
     }
