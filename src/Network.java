@@ -50,82 +50,72 @@ public class Network implements NetworkInterface {
     @Override
     public void addRelation(int id1, int id2, int value) throws PersonIdNotFoundException,
             EqualRelationException {
-        if ((containsPerson(id1) && containsPerson(id2))
-                && !getPerson(id1).isLinked(getPerson(id2))) {
-            ((Person) getPerson(id1)).addAcquaintance((Person) getPerson(id2));
-            ((Person) getPerson(id2)).addAcquaintance((Person) getPerson(id1));
-            ((Person) getPerson(id1)).changeValue(id2, value);
-            ((Person) getPerson(id2)).changeValue(id1, value);
+        if (!containsPerson(id1)) {
+            throw new PersonIdNotFoundException(id1);
+        }
+        if (!containsPerson(id2)) {
+            throw new PersonIdNotFoundException(id2);
+        }
+        if (getPerson(id1).isLinked(getPerson(id2))) {
+            throw new EqualRelationException(id1, id2);
+        }
+        ((Person) getPerson(id1)).addAcquaintance((Person) getPerson(id2));
+        ((Person) getPerson(id2)).addAcquaintance((Person) getPerson(id1));
+        ((Person) getPerson(id1)).changeValue(id2, value);
+        ((Person) getPerson(id2)).changeValue(id1, value);
 
-            for (PersonInterface person : persons.values()) {
-                if (person.getId() != id1 && person.getId() != id2) {
-                    if (getPerson(id1).isLinked(person) &&
-                            getPerson(id2).isLinked(person)) {
-                        tripleNum++;
-                    }
+        for (PersonInterface person : persons.values()) {
+            if (person.getId() != id1 && person.getId() != id2) {
+                if (getPerson(id1).isLinked(person) &&
+                        getPerson(id2).isLinked(person)) {
+                    tripleNum++;
                 }
             }
-
-        } else {
-            if (!containsPerson(id1)) {
-                throw new PersonIdNotFoundException(id1);
-            }
-            if (!containsPerson(id2) && containsPerson(id1)) {
-                throw new PersonIdNotFoundException(id2);
-            }
-            if (containsPerson(id1) && containsPerson(id2) &&
-                    getPerson(id1).isLinked(getPerson(id2))) {
-                throw new EqualRelationException(id1, id2);
-            }
         }
+
     }
 
     @Override
     public void modifyRelation(int id1, int id2, int value) throws PersonIdNotFoundException,
             EqualPersonIdException, RelationNotFoundException {
-        if ((containsPerson(id1) && containsPerson(id2))
-                && id1 != id2 && getPerson(id1).isLinked(getPerson(id2))
-        ) {
-            if (getPerson(id1).queryValue(getPerson(id2)) + value > 0) {
-                int oldValue1 = getPerson(id1).queryValue(getPerson(id2));
-                int oldValue2 = getPerson(id2).queryValue(getPerson(id1));
-                ((Person) getPerson(id1)).changeValue(id2, value + oldValue1);
 
-                ((Person) getPerson(id2)).changeValue(id1, value + oldValue2);
-            } else {
-                for (PersonInterface person : persons.values()) {
-                    if (person.getId() != id1 && person.getId() != id2) {
-                        if (getPerson(id1).isLinked(person) &&
-                                getPerson(id2).isLinked(person)) {
-                            tripleNum--;
-                        }
+        if (!containsPerson(id1)) {
+            throw new PersonIdNotFoundException(id1);
+        }
+        if (!containsPerson(id2)) {
+            throw new PersonIdNotFoundException(id2);
+        }
+        if (id1 == id2) {
+            throw new EqualPersonIdException(id1);
+        }
+        if (!getPerson(id1).isLinked(getPerson(id2))) {
+            throw new RelationNotFoundException(id1, id2);
+        }
+        if (getPerson(id1).queryValue(getPerson(id2)) + value > 0) {
+            int oldValue1 = getPerson(id1).queryValue(getPerson(id2));
+            int oldValue2 = getPerson(id2).queryValue(getPerson(id1));
+            ((Person) getPerson(id1)).changeValue(id2, value + oldValue1);
+
+            ((Person) getPerson(id2)).changeValue(id1, value + oldValue2);
+        } else {
+            for (PersonInterface person : persons.values()) {
+                if (person.getId() != id1 && person.getId() != id2) {
+                    if (getPerson(id1).isLinked(person) &&
+                            getPerson(id2).isLinked(person)) {
+                        tripleNum--;
                     }
                 }
-
-                ((Person) getPerson(id1)).delRelatedTags(id2);
-                ((Person) getPerson(id2)).delRelatedTags(id1);
-                ((Person) getPerson(id1)).delAcquaintance(id2);
-                ((Person) getPerson(id2)).delAcquaintance(id1);
-                ((Person) getPerson(id1)).delValue(id2);
-                ((Person) getPerson(id2)).delValue(id1);
-
             }
 
-        } else {
-            if (!containsPerson(id1)) {
-                throw new PersonIdNotFoundException(id1);
-            }
-            if (!containsPerson(id2) && containsPerson(id1)) {
-                throw new PersonIdNotFoundException(id2);
-            }
-            if (containsPerson(id1) && containsPerson(id2) && id1 == id2) {
-                throw new EqualPersonIdException(id1);
-            }
-            if (containsPerson(id1) && containsPerson(id2) && id2 != id1 &&
-                    !getPerson(id1).isLinked(getPerson(id2))) {
-                throw new RelationNotFoundException(id1, id2);
-            }
+            ((Person) getPerson(id1)).delRelatedTags(id2);
+            ((Person) getPerson(id2)).delRelatedTags(id1);
+            ((Person) getPerson(id1)).delAcquaintance(id2);
+            ((Person) getPerson(id2)).delAcquaintance(id1);
+            ((Person) getPerson(id1)).delValue(id2);
+            ((Person) getPerson(id2)).delValue(id1);
+
         }
+
     }
 
     @Override
@@ -210,7 +200,7 @@ public class Network implements NetworkInterface {
         if (!containsPerson(personId1)) {
             throw new PersonIdNotFoundException(personId1);
         }
-        if (!containsPerson(personId2) && !containsPerson(personId1)) {
+        if (!containsPerson(personId2) && containsPerson(personId1)) {
             throw new PersonIdNotFoundException(personId2);
         }
         if (personId1 == personId2) {
