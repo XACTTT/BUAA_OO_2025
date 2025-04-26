@@ -134,7 +134,7 @@ public class Network implements NetworkInterface {
         if (!containsPerson(id1)) {
             throw new PersonIdNotFoundException(id1);
         }
-        if (!containsPerson(id2) && !containsPerson(id1)) {
+        if (!containsPerson(id2) && containsPerson(id1)) {
             throw new PersonIdNotFoundException(id2);
         }
         if (containsPerson(id1) && containsPerson(id2) &&
