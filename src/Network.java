@@ -147,6 +147,7 @@ public class Network implements NetworkInterface {
             return true;
         }
 
+
         Queue<Person> queuePersons = new LinkedList<>();
         HashSet<Integer> visitedId = new HashSet<>();
 
