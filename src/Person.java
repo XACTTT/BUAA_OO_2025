@@ -117,9 +117,13 @@ public class Person implements PersonInterface {
         int max = -Integer.MAX_VALUE;
         int ansId = -1;
         for (Integer i : value.keySet()) {
-            if (value.get(i) >= max) {
+            if (value.get(i) > max) {
                 max = value.get(i);
                 ansId = i;
+            } else if (value.get(i) == max) {
+                if (i < ansId) {
+                    ansId = i;
+                }
             }
         }
         return ansId;
