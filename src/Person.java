@@ -114,10 +114,10 @@ public class Person implements PersonInterface {
     }
 
     public int chooseMaxValueId() {
-        int max = 0;
+        int max = -Integer.MAX_VALUE;
         int ansId = -1;
         for (Integer i : value.keySet()) {
-            if (value.get(i) > max) {
+            if (value.get(i) >= max) {
                 max = value.get(i);
                 ansId = i;
             }
