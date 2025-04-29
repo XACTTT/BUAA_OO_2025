@@ -143,9 +143,6 @@ public class Network implements NetworkInterface {
         if (!containsPerson(id2)) {
             throw new PersonIdNotFoundException(id2);
         }
-        if (id1 == id2) {
-            return false;
-        }
 
 
         Queue<Person> queuePersons = new LinkedList<>();
