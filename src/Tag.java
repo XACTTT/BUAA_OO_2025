@@ -56,9 +56,9 @@ public class Tag implements TagInterface {
         } else {
             int sum = 0;
             for (Person person : persons.values()) {
-                sum += person.getAge() * person.getAge();
+                sum += (person.getAge()-getAgeMean())*(person.getAge()-getAgeMean())/persons.size();
             }
-            return sum / persons.size() - getAgeMean() * getAgeMean();
+            return sum;
         }
     }
 
