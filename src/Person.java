@@ -14,7 +14,8 @@ public class Person implements PersonInterface {
     private HashMap<Integer, Integer> value = new HashMap<>();
     private HashMap<Integer, Tag> tags = new HashMap<>();
     private LinkedList<Integer> receivedArticles = new LinkedList<>();
-
+    private int bestValueId = 0;//用堆维护
+    private int bestValue = Integer.MIN_VALUE;
     public Person(int id, String name, int age) {
         this.id = id;
         this.name = name;
@@ -107,11 +108,10 @@ public class Person implements PersonInterface {
 
     @Override
     public List<Integer> queryReceivedArticles() {
-        List<Integer> ans = new ArrayList<>();
         if (receivedArticles.size() < 5) {
             return receivedArticles;
         } else {
-            ans = receivedArticles.subList(0, 5);
+            List<Integer> ans = receivedArticles.subList(0, 5);
             return ans;
         }
     }

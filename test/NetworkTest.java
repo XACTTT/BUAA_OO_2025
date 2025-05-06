@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import java.util.*;
-
+import java.util.Random;
 @RunWith(Parameterized.class)
 public class NetworkTest {
     private static class TestData {
@@ -88,15 +88,16 @@ public class NetworkTest {
     private void initNetworks() throws Exception {
         network = new Network();
         oldNetwork = new Network();
-
+        Random random = new Random();
         // 自动推断需要添加的节点（根据关系中的最大ID）
         int maxId = Arrays.stream(testData.relations)
                 .flatMapToInt(arr -> Arrays.stream(arr).limit(2))
                 .max().orElse(10);
 
         for (int i = 0; i <= maxId; i++) {
-            network.addPerson(new Person(i, "P"+i, 20));
-            oldNetwork.addPerson(new Person(i, "P"+i, 20));
+            int age = random.nextInt(50);
+            network.addPerson(new Person(i, "P"+i, age));
+            oldNetwork.addPerson(new Person(i, "P"+i, age));
         }
     }
 

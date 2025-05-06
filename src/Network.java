@@ -29,7 +29,7 @@ import java.util.LinkedList;
 public class Network implements NetworkInterface {
     private HashMap<Integer, PersonInterface> persons = new HashMap<>();
     private HashMap<Integer, OfficialAccountInterface> accounts = new HashMap<>();
-    private HashSet<Integer> articles = new HashSet<>();
+    private HashMap<Integer,Integer> articles = new HashMap<>();//文章id——贡献者id
     private HashMap<Integer, Integer> articleContributors = new HashMap<>();
     private int tripleNum = 0;
     private int length = -1;
@@ -169,19 +169,24 @@ public class Network implements NetworkInterface {
 
         queuePersons.add((Person) getPerson(id1));
         visitedId.add(id1);
+        int level = 0; // 初始化层级为0
 
         while (!queuePersons.isEmpty()) {
-            Person current = queuePersons.poll();
-            length++;
-            for (Person person : current.getAcquaintance().values()) {
+            int levelSize = queuePersons.size(); // 当前层的节点数
+            level++; // 进入下一层
 
-                if (person.getId() == id2) {
-                    return true;
-                }
+            for (int i = 0; i < levelSize; i++) {
+                Person current = queuePersons.poll();
 
-                if (!visitedId.contains(person.getId())) {
-                    visitedId.add(person.getId());
-                    queuePersons.add(person);
+                for (Person person : current.getAcquaintance().values()) {
+                    if (person.getId() == id2) {
+                        length = level;
+                        return true;
+                    }
+                    if (!visitedId.contains(person.getId())) {
+                        visitedId.add(person.getId());
+                        queuePersons.add(person);
+                    }
                 }
             }
         }
@@ -309,16 +314,10 @@ public class Network implements NetworkInterface {
     public int queryCoupleSum() {
         int ans = 0;
         for (PersonInterface person1 : persons.values()) {
-            for (PersonInterface person2 : persons.values()) {
-                if (person1.getId() != person2.getId()) {
                     if (!((Person) person1).getAcquaintance().isEmpty() &&
-                            !((Person) person2).getAcquaintance().isEmpty() &&
-                            ((Person) person1).chooseMaxValueId() == person2.getId()
-                            && ((Person) person2).chooseMaxValueId() == person1.getId()) {
+                            !((Person)getPerson(((Person) person1).chooseMaxValueId())).getAcquaintance().isEmpty() &&
+                             person1.getId() == ((Person)getPerson(((Person) person1).chooseMaxValueId())).chooseMaxValueId()) {
                         ans++;
-                    }
-
-                }
             }
         }
         return ans / 2;
@@ -378,7 +377,7 @@ public class Network implements NetworkInterface {
 
     @Override
     public boolean containsArticle(int id) {
-        return articles.contains(id);
+        return articles.containsKey(id);
     }
 
     @Override
@@ -398,7 +397,7 @@ public class Network implements NetworkInterface {
             throw new ContributePermissionDeniedException(personId, articleId);
         }
 
-        articles.add(articleId);//ensure1
+        articles.put(articleId,personId);//ensure1
         accounts.get(accountId).addArticle(getPerson(personId), articleId);//ensure1
         ((OfficialAccount) accounts.get(accountId)).addContribution(personId, 1);//ensure2
         articleContributors.put(articleId, personId);//ensure3
@@ -425,7 +424,7 @@ public class Network implements NetworkInterface {
         }
 
         accounts.get(accountId).removeArticle(articleId);
-        ((OfficialAccount) accounts.get(accountId)).addContribution(personId, -1);
+        ((OfficialAccount) accounts.get(accountId)).addContribution(articles.get(articleId), -1);
         for (Person person : ((OfficialAccount) accounts.get(accountId)).getFlowers().values()) {
             person.removeArticle(articleId);
         }

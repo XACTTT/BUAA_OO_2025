@@ -66,13 +66,13 @@ public class OfficialAccount implements OfficialAccountInterface {
 
     @Override
     public int getBestContributor() {
-        int min = 0;
+        int max = Integer.MIN_VALUE;
         int bestId = Integer.MAX_VALUE;
         for (Integer key : contributions.keySet()) {
-            if (contributions.get(key) > min) {
+            if (contributions.get(key) > max) {
                 bestId = key;
-                min = contributions.get(key);
-            } else if (contributions.get(key) == min) {
+                max = contributions.get(key);
+            } else if (contributions.get(key) == max) {
                 if (bestId > key) {
                     bestId = key;
                 }
