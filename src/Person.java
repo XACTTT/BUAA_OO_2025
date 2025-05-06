@@ -1,7 +1,6 @@
 import com.oocourse.spec2.main.PersonInterface;
 import com.oocourse.spec2.main.TagInterface;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +15,7 @@ public class Person implements PersonInterface {
     private LinkedList<Integer> receivedArticles = new LinkedList<>();
     private int bestValueId = 0;//用堆维护
     private int bestValue = Integer.MIN_VALUE;
+
     public Person(int id, String name, int age) {
         this.id = id;
         this.name = name;

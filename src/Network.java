@@ -29,7 +29,7 @@ import java.util.LinkedList;
 public class Network implements NetworkInterface {
     private HashMap<Integer, PersonInterface> persons = new HashMap<>();
     private HashMap<Integer, OfficialAccountInterface> accounts = new HashMap<>();
-    private HashMap<Integer,Integer> articles = new HashMap<>();//文章id——贡献者id
+    private HashMap<Integer, Integer> articles = new HashMap<>();//文章id——贡献者id
     private HashMap<Integer, Integer> articleContributors = new HashMap<>();
     private int tripleNum = 0;
     private int length = -1;
@@ -314,10 +314,12 @@ public class Network implements NetworkInterface {
     public int queryCoupleSum() {
         int ans = 0;
         for (PersonInterface person1 : persons.values()) {
-                    if (!((Person) person1).getAcquaintance().isEmpty() &&
-                            !((Person)getPerson(((Person) person1).chooseMaxValueId())).getAcquaintance().isEmpty() &&
-                             person1.getId() == ((Person)getPerson(((Person) person1).chooseMaxValueId())).chooseMaxValueId()) {
-                        ans++;
+            if (!((Person) person1).getAcquaintance().isEmpty() &&
+                    !((Person) getPerson(((Person) person1).chooseMaxValueId())).
+                getAcquaintance().isEmpty() &&
+                    person1.getId() == ((Person) getPerson(((Person) person1).
+                chooseMaxValueId())).chooseMaxValueId()) {
+                ans++;
             }
         }
         return ans / 2;
@@ -396,10 +398,9 @@ public class Network implements NetworkInterface {
         if (!accounts.get(accountId).containsFollower(getPerson(personId))) {
             throw new ContributePermissionDeniedException(personId, articleId);
         }
-
-        articles.put(articleId,personId);//ensure1
+        articles.put(articleId, personId);//ensure1
         accounts.get(accountId).addArticle(getPerson(personId), articleId);//ensure1
-        ((OfficialAccount) accounts.get(accountId)).addContribution(personId, 1);//ensure2
+        // ((OfficialAccount) accounts.get(accountId)).addContribution(personId, 1);
         articleContributors.put(articleId, personId);//ensure3
         for (Person person : ((OfficialAccount) accounts.get(accountId)).getFlowers().values()) {
             person.insertArticle(articleId);
