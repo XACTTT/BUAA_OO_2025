@@ -1,7 +1,6 @@
 import com.oocourse.spec2.main.OfficialAccountInterface;
 import com.oocourse.spec2.main.PersonInterface;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -9,9 +8,9 @@ public class OfficialAccount implements OfficialAccountInterface {
     private int ownerId;
     private int id;
     private String name;
-    private HashMap<Integer, Person> flowers=new HashMap<>();
-    private HashSet<Integer> articles=new HashSet<>();
-    private HashMap<Integer, Integer> contributions=new HashMap<>();
+    private HashMap<Integer, Person> flowers = new HashMap<>();
+    private HashSet<Integer> articles = new HashSet<>();
+    private HashMap<Integer, Integer> contributions = new HashMap<>();
 
     public OfficialAccount(int ownerId, int id, String name) {
         this.ownerId = ownerId;
@@ -82,13 +81,13 @@ public class OfficialAccount implements OfficialAccountInterface {
         return bestId;
     }
 
-    public void addContribution(int followerId,int value) {
+    public void addContribution(int followerId, int value) {
         int old = contributions.get(followerId);
         contributions.remove(followerId);
         contributions.put(followerId, old + value);
     }
 
-    public HashMap<Integer,Person> getFlowers() {
+    public HashMap<Integer, Person> getFlowers() {
         return flowers;
     }
 }

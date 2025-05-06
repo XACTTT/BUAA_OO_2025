@@ -1,11 +1,30 @@
-import com.oocourse.spec2.exceptions.*;
+import com.oocourse.spec2.exceptions.EqualRelationException;
+import com.oocourse.spec2.exceptions.EqualPersonIdException;
+import com.oocourse.spec2.exceptions.PersonIdNotFoundException;
+import com.oocourse.spec2.exceptions.DeleteArticlePermissionDeniedException;
+import com.oocourse.spec2.exceptions.ContributePermissionDeniedException;
+import com.oocourse.spec2.exceptions.DeleteOfficialAccountPermissionDeniedException;
+import com.oocourse.spec2.exceptions.OfficialAccountIdNotFoundException;
+import com.oocourse.spec2.exceptions.TagIdNotFoundException;
+import com.oocourse.spec2.exceptions.RelationNotFoundException;
+import com.oocourse.spec2.exceptions.PathNotFoundException;
+import com.oocourse.spec2.exceptions.EqualOfficialAccountIdException;
+import com.oocourse.spec2.exceptions.EqualTagIdException;
+import com.oocourse.spec2.exceptions.AcquaintanceNotFoundException;
+import com.oocourse.spec2.exceptions.EqualArticleIdException;
+import com.oocourse.spec2.exceptions.ArticleIdNotFoundException;
 
 import com.oocourse.spec2.main.NetworkInterface;
 import com.oocourse.spec2.main.OfficialAccountInterface;
 import com.oocourse.spec2.main.PersonInterface;
 import com.oocourse.spec2.main.TagInterface;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class Network implements NetworkInterface {
     private HashMap<Integer, PersonInterface> persons = new HashMap<>();
@@ -140,7 +159,6 @@ public class Network implements NetworkInterface {
         }
         length = 0;
         if (id1 == id2) {
-            length = 0;
             return true;
         }
 
@@ -220,7 +238,8 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public int queryTagValueSum(int personId, int tagId) throws PersonIdNotFoundException, TagIdNotFoundException {
+    public int queryTagValueSum(int personId, int tagId) throws PersonIdNotFoundException,
+            TagIdNotFoundException {
         if (!containsPerson(personId)) {
             throw new PersonIdNotFoundException(personId);
         }
@@ -292,8 +311,8 @@ public class Network implements NetworkInterface {
         for (PersonInterface person1 : persons.values()) {
             for (PersonInterface person2 : persons.values()) {
                 if (person1.getId() != person2.getId()) {
-                    if (((Person) person1).getAcquaintance().size() > 0 &&
-                            ((Person) person2).getAcquaintance().size() > 0 &&
+                    if (!((Person) person1).getAcquaintance().isEmpty() &&
+                            !((Person) person2).getAcquaintance().isEmpty() &&
                             ((Person) person1).chooseMaxValueId() == person2.getId()
                             && ((Person) person2).chooseMaxValueId() == person1.getId()) {
                         ans++;
@@ -302,11 +321,12 @@ public class Network implements NetworkInterface {
                 }
             }
         }
-        return ans/2;
+        return ans / 2;
     }
 
     @Override
-    public int queryShortestPath(int id1, int id2) throws PersonIdNotFoundException, PathNotFoundException {
+    public int queryShortestPath(int id1, int id2) throws PersonIdNotFoundException,
+            PathNotFoundException {
         if (!containsPerson(id1)) {
             throw new PersonIdNotFoundException(id1);
         }
@@ -326,7 +346,8 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void createOfficialAccount(int personId, int accountId, String name) throws PersonIdNotFoundException, EqualOfficialAccountIdException {
+    public void createOfficialAccount(int personId, int accountId, String name) throws
+            PersonIdNotFoundException, EqualOfficialAccountIdException {
         if (!containsPerson(personId)) {
             throw new PersonIdNotFoundException(personId);
         }
@@ -339,7 +360,9 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void deleteOfficialAccount(int personId, int accountId) throws PersonIdNotFoundException, OfficialAccountIdNotFoundException, DeleteOfficialAccountPermissionDeniedException {
+    public void deleteOfficialAccount(int personId, int accountId) throws
+            PersonIdNotFoundException, OfficialAccountIdNotFoundException,
+            DeleteOfficialAccountPermissionDeniedException {
         if (!containsPerson(personId)) {
             throw new PersonIdNotFoundException(personId);
         }
@@ -359,7 +382,9 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void contributeArticle(int personId, int accountId, int articleId) throws PersonIdNotFoundException, OfficialAccountIdNotFoundException, EqualArticleIdException, ContributePermissionDeniedException {
+    public void contributeArticle(int personId, int accountId, int articleId) throws
+            PersonIdNotFoundException, OfficialAccountIdNotFoundException,
+            EqualArticleIdException, ContributePermissionDeniedException {
         if (!containsPerson(personId)) {
             throw new PersonIdNotFoundException(personId);
         }
@@ -383,7 +408,9 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void deleteArticle(int personId, int accountId, int articleId) throws PersonIdNotFoundException, OfficialAccountIdNotFoundException, ArticleIdNotFoundException, DeleteArticlePermissionDeniedException {
+    public void deleteArticle(int personId, int accountId, int articleId) throws
+            PersonIdNotFoundException, OfficialAccountIdNotFoundException,
+            ArticleIdNotFoundException, DeleteArticlePermissionDeniedException {
         if (!containsPerson(personId)) {
             throw new PersonIdNotFoundException(personId);
         }
@@ -406,7 +433,8 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void followOfficialAccount(int personId, int accountId) throws PersonIdNotFoundException, OfficialAccountIdNotFoundException, EqualPersonIdException {
+    public void followOfficialAccount(int personId, int accountId) throws
+            PersonIdNotFoundException, OfficialAccountIdNotFoundException, EqualPersonIdException {
         if (!containsPerson(personId)) {
             throw new PersonIdNotFoundException(personId);
         }

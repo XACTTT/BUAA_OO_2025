@@ -1,7 +1,10 @@
 import com.oocourse.spec2.main.PersonInterface;
 import com.oocourse.spec2.main.TagInterface;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Person implements PersonInterface {
     private int id;
@@ -99,7 +102,7 @@ public class Person implements PersonInterface {
 
     @Override
     public List<Integer> getReceivedArticles() {
-    return receivedArticles;
+        return receivedArticles;
     }
 
     @Override
@@ -107,7 +110,7 @@ public class Person implements PersonInterface {
         List<Integer> ans = new ArrayList<>();
         if (receivedArticles.size() < 5) {
             return receivedArticles;
-        }else {
+        } else {
             ans = receivedArticles.subList(0, 5);
             return ans;
         }
@@ -165,7 +168,7 @@ public class Person implements PersonInterface {
     }
 
     public void removeArticle(int id) {
-        receivedArticles.remove((Integer)id);
+        receivedArticles.remove((Integer) id);
     }
 
 }

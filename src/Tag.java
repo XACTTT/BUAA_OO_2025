@@ -7,6 +7,7 @@ public class Tag implements TagInterface {
     private int id;
     private HashMap<Integer, Person> persons = new HashMap<>();
     private int valueSum;
+
     public Tag(int id) {
         this.id = id;
     }
@@ -41,7 +42,7 @@ public class Tag implements TagInterface {
         int sum = 0;//todo dongtai
         for (Person person : persons.values()) {
             for (Person person2 : persons.values()) {
-                if(person.isLinked(person2)){
+                if (person.isLinked(person2)) {
                     sum += person.queryValue(person2);
                 }
             }
