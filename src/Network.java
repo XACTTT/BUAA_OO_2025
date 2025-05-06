@@ -370,7 +370,7 @@ public class Network implements NetworkInterface {
             throw new EqualArticleIdException(articleId);
         }
         if (!accounts.get(accountId).containsFollower(getPerson(personId))) {
-            throw new ContributePermissionDeniedException(personId, accountId);
+            throw new ContributePermissionDeniedException(personId, articleId);
         }
 
         articles.add(articleId);//ensure1
@@ -394,7 +394,7 @@ public class Network implements NetworkInterface {
             throw new ArticleIdNotFoundException(articleId);
         }
         if (accounts.get(accountId).getOwnerId() != personId) {
-            throw new DeleteArticlePermissionDeniedException(personId, accountId);
+            throw new DeleteArticlePermissionDeniedException(personId, articleId);
         }
 
         accounts.get(accountId).removeArticle(articleId);
