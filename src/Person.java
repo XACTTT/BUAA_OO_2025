@@ -13,7 +13,7 @@ public class Person implements PersonInterface {
     private HashMap<Integer, Integer> value = new HashMap<>();
     private HashMap<Integer, Tag> tags = new HashMap<>();
     private LinkedList<Integer> receivedArticles = new LinkedList<>();
-    private int bestValueId = 0;//用堆维护
+    private int bestValueId = id;
     private int bestValue = Integer.MIN_VALUE;
 
     public Person(int id, String name, int age) {
@@ -119,6 +119,20 @@ public class Person implements PersonInterface {
     public void changeValue(int id, int newValue) {
         value.remove(id);
         value.put(id, newValue);
+
+        if (id == bestValueId) {
+            if (newValue > bestValue) {
+                bestValue = newValue;
+            } else if (newValue < bestValue) {
+                buildMaxValueId();
+            }
+        } else if (newValue > bestValue) {
+            bestValue = newValue;
+            bestValueId = id;
+        } else if (newValue == bestValue && id < bestValueId) {
+            bestValueId = id;
+        }
+
     }
 
     public void delAcquaintance(int id) {
@@ -127,6 +141,10 @@ public class Person implements PersonInterface {
 
     public void delValue(int id) {
         value.remove(id);
+        if (id == bestValueId) {
+            buildMaxValueId();
+        }
+
     }
 
     public int getAcquaintenceSize() {
@@ -134,8 +152,12 @@ public class Person implements PersonInterface {
     }
 
     public int chooseMaxValueId() {
+        return bestValueId;
+    }
+
+    public void buildMaxValueId() {
         int max = -Integer.MAX_VALUE;
-        int ansId = -1;
+        int ansId = id;
         for (Integer i : value.keySet()) {
             if (value.get(i) > max) {
                 max = value.get(i);
@@ -146,7 +168,8 @@ public class Person implements PersonInterface {
                 }
             }
         }
-        return ansId;
+        bestValueId = ansId;
+        bestValue = max;
     }
 
     public HashMap<Integer, Person> getAcquaintance() {
