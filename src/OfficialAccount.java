@@ -2,7 +2,6 @@ import com.oocourse.spec2.main.OfficialAccountInterface;
 import com.oocourse.spec2.main.PersonInterface;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class OfficialAccount implements OfficialAccountInterface {
     private int ownerId;
@@ -54,7 +53,7 @@ public class OfficialAccount implements OfficialAccountInterface {
 
     @Override
     public boolean containsArticle(int id) {
-        return articles.containsKey( id);
+        return articles.containsKey(id);
     }
 
     @Override
