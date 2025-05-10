@@ -111,7 +111,8 @@ public class Network implements NetworkInterface {
             int oldValue2 = getPerson(id2).queryValue(getPerson(id1));
             for (TagInterface tag : Tags) {
                 if(tag.hasPerson(getPerson(id2))&&tag.hasPerson(getPerson(id1))){
-                    ((Tag)tag).changeValueSum(getPerson(id1),getPerson(id2),value);
+                    ((Tag)tag).changeValueSum(getPerson(id1),getPerson(id2),
+                            value + oldValue1);
                 }
             }
             ((Person) getPerson(id1)).changeValue(id2, value + oldValue1);

@@ -46,15 +46,6 @@ public class Tag implements TagInterface {
     @Override
     public int getValueSum() {
         return valueSum;
- //       int sum = 0;//todo dongtai
-  //      for (Person person : persons.values()) {
-   //         for (Person person2 : persons.values()) {
-   //             if (person.isLinked(person2)) {
-   //                 sum += person.queryValue(person2);
-   //             }
-   //         }
-   //     }
-   //     return sum;
     }
 
     @Override
