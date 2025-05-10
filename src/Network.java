@@ -31,6 +31,7 @@ public class Network implements NetworkInterface {
     private HashMap<Integer, OfficialAccountInterface> accounts = new HashMap<>();
     private HashMap<Integer, Integer> articles = new HashMap<>();//文章id——贡献者id
     private HashMap<Integer, Integer> articleContributors = new HashMap<>();
+    private HashSet<TagInterface> Tags = new HashSet<>();
     private int tripleNum = 0;
     private int length = -1;
 
@@ -108,9 +109,15 @@ public class Network implements NetworkInterface {
         if (getPerson(id1).queryValue(getPerson(id2)) + value > 0) {
             int oldValue1 = getPerson(id1).queryValue(getPerson(id2));
             int oldValue2 = getPerson(id2).queryValue(getPerson(id1));
+            for (TagInterface tag : Tags) {
+                if(tag.hasPerson(getPerson(id2))&&tag.hasPerson(getPerson(id1))){
+                    ((Tag)tag).changeValueSum(getPerson(id1),getPerson(id2),value);
+                }
+            }
             ((Person) getPerson(id1)).changeValue(id2, value + oldValue1);
 
             ((Person) getPerson(id2)).changeValue(id1, value + oldValue2);
+
         } else {
             for (PersonInterface person : persons.values()) {
                 if (person.getId() != id1 && person.getId() != id2) {
@@ -211,6 +218,9 @@ public class Network implements NetworkInterface {
             throw new EqualTagIdException(tag.getId());
         }
         getPerson(personId).addTag(tag);
+        if (!Tags.contains(tag)){
+            Tags.add(tag);
+        }
     }
 
     @Override

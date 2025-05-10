@@ -28,7 +28,13 @@ public class Tag implements TagInterface {
     @Override
     public void addPerson(PersonInterface person) {
         if (!hasPerson(person)) {
+            for (Person p : persons.values()) {
+                if (p.isLinked(person)) {
+                    valueSum += 2*p.queryValue(person);
+                }
+            }
             persons.put(person.getId(), (Person) person);
+
         }
     }
 
@@ -39,15 +45,16 @@ public class Tag implements TagInterface {
 
     @Override
     public int getValueSum() {
-        int sum = 0;//todo dongtai
-        for (Person person : persons.values()) {
-            for (Person person2 : persons.values()) {
-                if (person.isLinked(person2)) {
-                    sum += person.queryValue(person2);
-                }
-            }
-        }
-        return sum;
+        return valueSum;
+ //       int sum = 0;//todo dongtai
+  //      for (Person person : persons.values()) {
+   //         for (Person person2 : persons.values()) {
+   //             if (person.isLinked(person2)) {
+   //                 sum += person.queryValue(person2);
+   //             }
+   //         }
+   //     }
+   //     return sum;
     }
 
     @Override
@@ -79,6 +86,11 @@ public class Tag implements TagInterface {
     @Override
     public void delPerson(PersonInterface person) {
         if (hasPerson(person)) {
+            for (Person p : persons.values()) {
+                if (p.isLinked(person)) {
+                    valueSum -= 2*p.queryValue(person);
+                }
+            }
             persons.remove(person.getId());
         }
     }
@@ -86,5 +98,12 @@ public class Tag implements TagInterface {
     @Override
     public int getSize() {
         return persons.size();
+    }
+
+    public void changeValueSum(PersonInterface person1,PersonInterface person2, int newValue) {
+    if (person1.isLinked(person2)){
+        valueSum -= 2*person1.queryValue(person2);
+        valueSum += 2*newValue;
+        }
     }
 }
