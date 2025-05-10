@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Tag implements TagInterface {
     private int id;
     private HashMap<Integer, Person> persons = new HashMap<>();
-    private int valueSum;
+    private int valueSum = 0;
 
     public Tag(int id) {
         this.id = id;
@@ -30,7 +30,7 @@ public class Tag implements TagInterface {
         if (!hasPerson(person)) {
             for (Person p : persons.values()) {
                 if (p.isLinked(person)) {
-                    valueSum += 2*p.queryValue(person);
+                    valueSum += 2 * p.queryValue(person);
                 }
             }
             persons.put(person.getId(), (Person) person);
@@ -79,7 +79,7 @@ public class Tag implements TagInterface {
         if (hasPerson(person)) {
             for (Person p : persons.values()) {
                 if (p.isLinked(person)) {
-                    valueSum -= 2*p.queryValue(person);
+                    valueSum -= 2 * p.queryValue(person);
                 }
             }
             persons.remove(person.getId());
@@ -91,10 +91,11 @@ public class Tag implements TagInterface {
         return persons.size();
     }
 
-    public void changeValueSum(PersonInterface person1,PersonInterface person2, int newValue) {
-    if (person1.isLinked(person2)){
-        valueSum -= 2*person1.queryValue(person2);
-        valueSum += 2*newValue;
+    public void changeValueSum(PersonInterface person1, PersonInterface person2,
+        int oldValue, int newValue) {
+        if (person1.isLinked(person2)) {
+            valueSum -= 2 * oldValue;
+            valueSum += 2 * newValue;
         }
     }
 }
