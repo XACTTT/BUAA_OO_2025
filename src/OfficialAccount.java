@@ -9,7 +9,7 @@ public class OfficialAccount implements OfficialAccountInterface {
     private int id;
     private String name;
     private HashMap<Integer, Person> flowers = new HashMap<>();
-    private HashSet<Integer> articles = new HashSet<>();
+    private HashMap<Integer,Integer> articles = new HashMap<>();
     private HashMap<Integer, Integer> contributions = new HashMap<>();
 
     public OfficialAccount(int ownerId, int id, String name) {
@@ -45,7 +45,7 @@ public class OfficialAccount implements OfficialAccountInterface {
     @Override
     public void addArticle(PersonInterface person, int id) {
         if (!containsArticle(id)) {
-            articles.add(id);
+            articles.put(id,id);
             int old = contributions.get(person.getId());
             contributions.remove(person.getId());
             contributions.put(person.getId(), old + 1);
@@ -54,7 +54,7 @@ public class OfficialAccount implements OfficialAccountInterface {
 
     @Override
     public boolean containsArticle(int id) {
-        return articles.contains(id);
+        return articles.containsKey( id);
     }
 
     @Override

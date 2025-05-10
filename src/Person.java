@@ -1,8 +1,8 @@
 import com.oocourse.spec2.main.PersonInterface;
 import com.oocourse.spec2.main.TagInterface;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Person implements PersonInterface {
@@ -12,7 +12,7 @@ public class Person implements PersonInterface {
     private HashMap<Integer, Person> acquaintance = new HashMap<>();
     private HashMap<Integer, Integer> value = new HashMap<>();
     private HashMap<Integer, Tag> tags = new HashMap<>();
-    private LinkedList<Integer> receivedArticles = new LinkedList<>();
+    private ArrayList<Integer> receivedArticles = new ArrayList<>();
     private int bestValueId = id;
     private int bestValue = Integer.MIN_VALUE;
 
@@ -187,7 +187,7 @@ public class Person implements PersonInterface {
     }
 
     public void insertArticle(int id) {
-        receivedArticles.addFirst(id);
+        receivedArticles.add(0,id);
     }
 
     public void removeArticle(int id) {
