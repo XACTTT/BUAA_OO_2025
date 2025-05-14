@@ -356,16 +356,17 @@ public class Network implements NetworkInterface {
         if ((message instanceof ForwardMessageInterface) &&
                 containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
                 !(message.getPerson1().getReceivedArticles().
-                        contains(((ForwardMessageInterface) message).getArticleId()))) {
+            contains(((ForwardMessageInterface) message).getArticleId()))) {
             throw new ArticleIdNotFoundException(((ForwardMessageInterface) message).
                     getArticleId());
         }
         if ((!(message instanceof EmojiMessageInterface) ||
                 containsEmojiId(((EmojiMessageInterface) message).getEmojiId())) &&
                 (!(message instanceof ForwardMessageInterface) ||
-                        (containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
-                                (message.getPerson1().getReceivedArticles().
-                                        contains(((ForwardMessageInterface) message).getArticleId()))))
+            (containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
+            (message.getPerson1().getReceivedArticles().
+            contains(((ForwardMessageInterface) message).getArticleId())
+            )))
                 && message.getType() == 0 && message.getPerson1().equals(message.getPerson2())
         ) {
             throw new EqualPersonIdException(message.getPerson1().getId());
@@ -538,9 +539,9 @@ public class Network implements NetworkInterface {
         for (PersonInterface person1 : persons.values()) {
             if (!((Person) person1).getAcquaintance().isEmpty() &&
                     !((Person) getPerson(((Person) person1).chooseMaxValueId())).
-                            getAcquaintance().isEmpty() &&
+                getAcquaintance().isEmpty() &&
                     person1.getId() == ((Person) getPerson(((Person) person1).
-                            chooseMaxValueId())).chooseMaxValueId()) {
+                chooseMaxValueId())).chooseMaxValueId()) {
                 ans++;
             }
         }
