@@ -117,7 +117,7 @@ public class Tag implements TagInterface {
     }
 
     public void changeValueSum(PersonInterface person1, PersonInterface person2,
-                               int oldValue, int newValue) {
+        int oldValue, int newValue) {
         if (person1.isLinked(person2)) {
             valueSum -= 2 * oldValue;
             valueSum += 2 * newValue;

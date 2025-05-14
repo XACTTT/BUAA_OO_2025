@@ -12,7 +12,8 @@ public class RedEnvelopeMessage extends Message implements RedEnvelopeMessageInt
           @ ensures person2 == messagePerson2;
           @ ensures money == luckyMoney;
           @*/
-    public RedEnvelopeMessage(int messageId, int luckyMoney, PersonInterface messagePerson1, PersonInterface messagePerson2) {
+    public RedEnvelopeMessage(int messageId, int luckyMoney, PersonInterface messagePerson1,
+        PersonInterface messagePerson2) {
         super(messageId, luckyMoney * 5, messagePerson1, messagePerson2);
         this.money = luckyMoney;
     }
@@ -24,7 +25,8 @@ public class RedEnvelopeMessage extends Message implements RedEnvelopeMessageInt
       @ ensures tag == messageTag;
       @ ensures money == luckyMoney;
       @*/
-    public RedEnvelopeMessage(int messageId, int luckyMoney, PersonInterface messagePerson1, TagInterface messageTag) {
+    public RedEnvelopeMessage(int messageId, int luckyMoney, PersonInterface messagePerson1,
+        TagInterface messageTag) {
         super(messageId, luckyMoney * 5, messagePerson1, messageTag);
         this.money = luckyMoney;
     }

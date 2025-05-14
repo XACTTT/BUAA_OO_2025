@@ -12,7 +12,8 @@ public class ForwardMessage extends Message implements ForwardMessageInterface {
       @ ensures person2 == messagePerson2;
       @ ensures articleId == article;
       @*/
-    public ForwardMessage(int messageId, int article, PersonInterface messagePerson1, PersonInterface messagePerson2) {
+    public ForwardMessage(int messageId, int article, PersonInterface messagePerson1
+        , PersonInterface messagePerson2) {
         super(messageId, Math.abs(article) % 200, messagePerson1, messagePerson2);
         this.articleId = article;
     }
@@ -24,12 +25,12 @@ public class ForwardMessage extends Message implements ForwardMessageInterface {
       @ ensures tag == messageTag;
       @ ensures articleId == article;
       @*/
-    public ForwardMessage(int messageId, int article, PersonInterface messagePerson1, TagInterface messageTag) {
+    public ForwardMessage(int messageId, int article, PersonInterface messagePerson1
+        , TagInterface messageTag) {
         super(messageId, Math.abs(article) % 200, messagePerson1, messageTag);
         this.articleId = article;
 
     }
-
 
     @Override
     public int getArticleId() {

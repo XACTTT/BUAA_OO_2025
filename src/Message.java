@@ -17,7 +17,8 @@ public class Message implements MessageInterface {
      @ ensures person1 == messagePerson1;
      @ ensures person2 == messagePerson2;
      @*/
-    public Message(int messageId, int messageSocialValue, PersonInterface messagePerson1, PersonInterface messagePerson2) {
+    public Message(int messageId, int messageSocialValue, PersonInterface messagePerson1,
+        PersonInterface messagePerson2) {
         this.id = messageId;
         this.socialValue = messageSocialValue;
         this.person1 = messagePerson1;
@@ -34,7 +35,8 @@ public class Message implements MessageInterface {
       @ ensures person1 == messagePerson1;
       @ ensures tag == messageTag;
       @*/
-    public Message(int messageId, int messageSocialValue, PersonInterface messagePerson1, TagInterface messageTag) {
+    public Message(int messageId, int messageSocialValue, PersonInterface messagePerson1,
+        TagInterface messageTag) {
         this.id = messageId;
         this.socialValue = messageSocialValue;
         this.person1 = messagePerson1;
@@ -42,7 +44,6 @@ public class Message implements MessageInterface {
         this.type = 1;
         this.person2 = null;
     }
-
 
     @Override
     public int getType() {

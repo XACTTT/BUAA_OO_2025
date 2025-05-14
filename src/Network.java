@@ -1,8 +1,38 @@
-import com.oocourse.spec3.exceptions.*;
+import com.oocourse.spec3.exceptions.EqualRelationException;
+import com.oocourse.spec3.exceptions.EqualPersonIdException;
+import com.oocourse.spec3.exceptions.PersonIdNotFoundException;
+import com.oocourse.spec3.exceptions.DeleteArticlePermissionDeniedException;
+import com.oocourse.spec3.exceptions.ContributePermissionDeniedException;
+import com.oocourse.spec3.exceptions.DeleteOfficialAccountPermissionDeniedException;
+import com.oocourse.spec3.exceptions.OfficialAccountIdNotFoundException;
+import com.oocourse.spec3.exceptions.TagIdNotFoundException;
+import com.oocourse.spec3.exceptions.RelationNotFoundException;
+import com.oocourse.spec3.exceptions.PathNotFoundException;
+import com.oocourse.spec3.exceptions.EqualOfficialAccountIdException;
+import com.oocourse.spec3.exceptions.EqualTagIdException;
+import com.oocourse.spec3.exceptions.AcquaintanceNotFoundException;
+import com.oocourse.spec3.exceptions.EqualArticleIdException;
+import com.oocourse.spec3.exceptions.ArticleIdNotFoundException;
+import com.oocourse.spec3.exceptions.EqualEmojiIdException;
+import com.oocourse.spec3.exceptions.EqualMessageIdException;
+import com.oocourse.spec3.exceptions.EmojiIdNotFoundException;
+import com.oocourse.spec3.exceptions.MessageIdNotFoundException;
 
-import com.oocourse.spec3.main.*;
+import com.oocourse.spec3.main.NetworkInterface;
+import com.oocourse.spec3.main.OfficialAccountInterface;
+import com.oocourse.spec3.main.PersonInterface;
+import com.oocourse.spec3.main.TagInterface;
+import com.oocourse.spec3.main.EmojiMessageInterface;
+import com.oocourse.spec3.main.ForwardMessageInterface;
+import com.oocourse.spec3.main.MessageInterface;
+import com.oocourse.spec3.main.RedEnvelopeMessageInterface;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class Network implements NetworkInterface {
     private HashMap<Integer, PersonInterface> persons = new HashMap<>();
@@ -307,25 +337,33 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void addMessage(MessageInterface message) throws EqualMessageIdException, EmojiIdNotFoundException, EqualPersonIdException, ArticleIdNotFoundException {
+    public void addMessage(MessageInterface message) throws EqualMessageIdException,
+            EmojiIdNotFoundException, EqualPersonIdException, ArticleIdNotFoundException {
         if (containsMessage(message.getId())) {
             throw new EqualMessageIdException(message.getId());
         }
-        if ((message instanceof EmojiMessageInterface) && !containsEmojiId(((EmojiMessageInterface) message).getEmojiId())) {
+        if ((message instanceof EmojiMessageInterface) &&
+                !containsEmojiId(((EmojiMessageInterface) message).getEmojiId())) {
             throw new EmojiIdNotFoundException(((EmojiMessageInterface) message).getEmojiId());
         }
-        if ((message instanceof ForwardMessageInterface) && !containsArticle(((ForwardMessageInterface) message).getArticleId())) {
-            throw new ArticleIdNotFoundException(((ForwardMessageInterface) message).getArticleId());
+        if ((message instanceof ForwardMessageInterface) &&
+                !containsArticle(((ForwardMessageInterface) message).getArticleId())) {
+            throw new ArticleIdNotFoundException(((ForwardMessageInterface) message).
+                    getArticleId());
         }
-        if ((message instanceof ForwardMessageInterface) && containsArticle(((ForwardMessageInterface) message).getArticleId()) && !(message.getPerson1().getReceivedArticles().contains(((ForwardMessageInterface) message).getArticleId()))) {
-            throw new ArticleIdNotFoundException(((ForwardMessageInterface) message).getArticleId());
+        if ((message instanceof ForwardMessageInterface) &&
+                containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
+                !(message.getPerson1().getReceivedArticles().
+            contains(((ForwardMessageInterface) message).getArticleId()))) {
+            throw new ArticleIdNotFoundException(((ForwardMessageInterface) message).
+                    getArticleId());
         }
         if ((!(message instanceof EmojiMessageInterface) ||
                 containsEmojiId(((EmojiMessageInterface) message).getEmojiId())) &&
                 (!(message instanceof ForwardMessageInterface) ||
-                        (containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
-                                (message.getPerson1().getReceivedArticles().
-                                        contains(((ForwardMessageInterface) message).getArticleId()))))
+            (containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
+            (message.getPerson1().getReceivedArticles().
+            contains(((ForwardMessageInterface) message).getArticleId()))))
                 && message.getType() == 0 && message.getPerson1().equals(message.getPerson2())
         ) {
             throw new EqualPersonIdException(message.getPerson1().getId());
@@ -346,14 +384,18 @@ public class Network implements NetworkInterface {
     }
 
     @Override
-    public void sendMessage(int id) throws RelationNotFoundException, MessageIdNotFoundException, TagIdNotFoundException {
+    public void sendMessage(int id) throws RelationNotFoundException,
+            MessageIdNotFoundException, TagIdNotFoundException {
         if (!containsMessage(id)) {
             throw new MessageIdNotFoundException(id);
         }
-        if (getMessage(id).getType() == 0 && !(getMessage(id).getPerson1().isLinked(getMessage(id).getPerson2()))) {
-            throw new RelationNotFoundException(getMessage(id).getPerson1().getId(), getMessage(id).getPerson2().getId());
+        if (getMessage(id).getType() == 0 && !(getMessage(id).getPerson1().
+                isLinked(getMessage(id).getPerson2()))) {
+            throw new RelationNotFoundException(getMessage(id).getPerson1().getId(),
+                    getMessage(id).getPerson2().getId());
         }
-        if (getMessage(id).getType() == 1 && !getMessage(id).getPerson1().containsTag(getMessage(id).getTag().getId())) {
+        if (getMessage(id).getType() == 1 && !getMessage(id).getPerson1().
+                containsTag(getMessage(id).getTag().getId())) {
             throw new TagIdNotFoundException(getMessage(id).getTag().getId());
         }
 
@@ -365,7 +407,8 @@ public class Network implements NetworkInterface {
                 getMessage(id).getPerson1().addMoney(-money);
                 getMessage(id).getPerson2().addMoney(money);
             } else if (getMessage(id) instanceof ForwardMessageInterface) {
-                ((Person) getMessage(id).getPerson2()).insertArticle(((ForwardMessageInterface) getMessage(id)).getArticleId());
+                ((Person) getMessage(id).getPerson2()).
+                        insertArticle(((ForwardMessageInterface) getMessage(id)).getArticleId());
             } else if (getMessage(id) instanceof EmojiMessageInterface) {
                 int old = emojiHeatList.get(((EmojiMessageInterface) getMessage(id)).getEmojiId());
                 emojiHeatList.remove(((EmojiMessageInterface) getMessage(id)).getEmojiId());
@@ -373,19 +416,23 @@ public class Network implements NetworkInterface {
             }
             ((Person) getMessage(id).getPerson2()).insertMessage(getMessage(id));
             messages.remove(id);
-        } else if (getMessage(id).getType() == 1 && getMessage(id).getPerson1().containsTag(getMessage(id).getTag().getId())) {
+        } else if (getMessage(id).getType() == 1 && getMessage(id).
+                getPerson1().containsTag(getMessage(id).getTag().getId())) {
             getMessage(id).getPerson1().addSocialValue(getMessage(id).getSocialValue());
             ((Tag) getMessage(id).getTag()).addSocialValue(getMessage(id).getSocialValue());
 
-            if (getMessage(id) instanceof RedEnvelopeMessageInterface && getMessage(id).getTag().getSize() > 0) {
+            if (getMessage(id) instanceof RedEnvelopeMessageInterface &&
+                    getMessage(id).getTag().getSize() > 0) {
                 int size = getMessage(id).getTag().getSize();
                 int i = ((RedEnvelopeMessageInterface) (getMessage(id))).getMoney() / size;
 
                 getMessage(id).getPerson1().addMoney(-i * size);
                 ((Tag) getMessage(id).getTag()).addMoney(i);
 
-            } else if (getMessage(id) instanceof ForwardMessageInterface && getMessage(id).getTag().getSize() > 0) {
-                ((Tag) getMessage(id).getTag()).insertArticle(((ForwardMessageInterface) getMessage(id)).getArticleId());
+            } else if (getMessage(id) instanceof ForwardMessageInterface &&
+                    getMessage(id).getTag().getSize() > 0) {
+                ((Tag) getMessage(id).getTag()).
+                        insertArticle(((ForwardMessageInterface) getMessage(id)).getArticleId());
             } else if (getMessage(id) instanceof EmojiMessageInterface) {
                 int old = emojiHeatList.get(((EmojiMessageInterface) getMessage(id)).getEmojiId());
                 emojiHeatList.remove(((EmojiMessageInterface) getMessage(id)).getEmojiId());
@@ -489,9 +536,9 @@ public class Network implements NetworkInterface {
         for (PersonInterface person1 : persons.values()) {
             if (!((Person) person1).getAcquaintance().isEmpty() &&
                     !((Person) getPerson(((Person) person1).chooseMaxValueId())).
-                            getAcquaintance().isEmpty() &&
+            getAcquaintance().isEmpty() &&
                     person1.getId() == ((Person) getPerson(((Person) person1).
-                            chooseMaxValueId())).chooseMaxValueId()) {
+            chooseMaxValueId())).chooseMaxValueId()) {
                 ans++;
             }
         }
