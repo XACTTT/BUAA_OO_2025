@@ -50,6 +50,18 @@ public class Network implements NetworkInterface {
     public Network() {
     }
 
+    public MessageInterface[] getMessages() {
+        return messages.values().toArray(new MessageInterface[0]);
+    }
+
+    public int[] getEmojiIdList() {
+        return null;
+    }
+
+    public int[] getEmojiHeatList() {
+        return null;
+    }
+
     public PersonInterface[] getPersons() {
         ArrayList<PersonInterface> personList = new ArrayList<>(persons.values());
         return personList.toArray(new PersonInterface[0]);
@@ -157,9 +169,7 @@ public class Network implements NetworkInterface {
             ((Person) getPerson(id2)).delAcquaintance(id1);
             ((Person) getPerson(id1)).delValue(id2);
             ((Person) getPerson(id2)).delValue(id1);
-
         }
-
     }
 
     @Override
@@ -175,7 +185,6 @@ public class Network implements NetworkInterface {
                 !getPerson(id1).isLinked(getPerson(id2))) {
             throw new RelationNotFoundException(id1, id2);
         }
-
         return getPerson(id1).queryValue(getPerson(id2));
     }
 
@@ -191,23 +200,16 @@ public class Network implements NetworkInterface {
         if (id1 == id2) {
             return true;
         }
-
-
         Queue<Person> queuePersons = new LinkedList<>();
         HashSet<Integer> visitedId = new HashSet<>();
-
-
         queuePersons.add((Person) getPerson(id1));
         visitedId.add(id1);
         int level = 0; // 初始化层级为0
-
         while (!queuePersons.isEmpty()) {
             int levelSize = queuePersons.size(); // 当前层的节点数
             level++; // 进入下一层
-
             for (int i = 0; i < levelSize; i++) {
                 Person current = queuePersons.poll();
-
                 for (Person person : current.getAcquaintance().values()) {
                     if (person.getId() == id2) {
                         length = level;
@@ -354,16 +356,16 @@ public class Network implements NetworkInterface {
         if ((message instanceof ForwardMessageInterface) &&
                 containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
                 !(message.getPerson1().getReceivedArticles().
-            contains(((ForwardMessageInterface) message).getArticleId()))) {
+                        contains(((ForwardMessageInterface) message).getArticleId()))) {
             throw new ArticleIdNotFoundException(((ForwardMessageInterface) message).
                     getArticleId());
         }
         if ((!(message instanceof EmojiMessageInterface) ||
                 containsEmojiId(((EmojiMessageInterface) message).getEmojiId())) &&
                 (!(message instanceof ForwardMessageInterface) ||
-            (containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
-            (message.getPerson1().getReceivedArticles().
-            contains(((ForwardMessageInterface) message).getArticleId()))))
+                        (containsArticle(((ForwardMessageInterface) message).getArticleId()) &&
+                                (message.getPerson1().getReceivedArticles().
+                                        contains(((ForwardMessageInterface) message).getArticleId()))))
                 && message.getType() == 0 && message.getPerson1().equals(message.getPerson2())
         ) {
             throw new EqualPersonIdException(message.getPerson1().getId());
@@ -536,9 +538,9 @@ public class Network implements NetworkInterface {
         for (PersonInterface person1 : persons.values()) {
             if (!((Person) person1).getAcquaintance().isEmpty() &&
                     !((Person) getPerson(((Person) person1).chooseMaxValueId())).
-            getAcquaintance().isEmpty() &&
+                            getAcquaintance().isEmpty() &&
                     person1.getId() == ((Person) getPerson(((Person) person1).
-            chooseMaxValueId())).chooseMaxValueId()) {
+                            chooseMaxValueId())).chooseMaxValueId()) {
                 ans++;
             }
         }
