@@ -191,7 +191,7 @@ public class Person implements PersonInterface {
     }
 
     public void removeArticle(int id) {
-        receivedArticles.remove((Integer) id);
+        receivedArticles.removeIf(e -> e.equals(id));
     }
 
 }
