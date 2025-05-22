@@ -10,7 +10,6 @@ import com.oocourse.library1.LibraryBookIsbn;
 import java.time.LocalDate;
 import java.util.Map;
 
-
 public class MainClass {
     private static Library library = new Library();
 
@@ -45,21 +44,21 @@ public class MainClass {
         LibraryReqCmd.Type type = req.getType(); // 指令对应的类型（查询/阅读/借阅/预约/还书/取书/归还）
         switch (type) {
             case QUERIED:
-                library.queryTrace(req,date);
+                library.queryTrace(req);
                 break;
             case BORROWED:
-                library.borrowBook(req, date);
+                library.borrowBook(req);
                 break;
             case ORDERED:
-                library.orderBook(req, date);
+                library.orderBook(req);
                 break;
             case RETURNED:
                 library.returnBook(req, date);
                 break;
             case PICKED:
-                library.pickBook(req, date);
+                library.pickBook(req);
                 break;
-
+            default:
         }
     }
 

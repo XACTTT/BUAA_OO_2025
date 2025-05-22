@@ -1,4 +1,9 @@
-import com.oocourse.library1.*;
+import com.oocourse.library1.LibraryBookId;
+import com.oocourse.library1.LibraryTrace;
+import com.oocourse.library1.LibraryMoveInfo;
+import com.oocourse.library1.LibraryReqCmd;
+import com.oocourse.library1.LibraryBookState;
+import com.oocourse.library1.LibraryBookIsbn;
 
 import static com.oocourse.library1.LibraryIO.PRINTER;
 
@@ -83,7 +88,8 @@ public class Library {
         ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
         for (LibraryBookId bookId : reservedBooks.keySet()) {
             LibraryMoveInfo info = new LibraryMoveInfo(bookId,
-                    LibraryBookState.BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE, reservedBooks.get(bookId));
+                    LibraryBookState.BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
+                    reservedBooks.get(bookId));
             infos.add(info);
         }
         appointmentOffice.receiveOrderedBooks(reservedBooks, date);
@@ -105,7 +111,7 @@ public class Library {
         return reservedBooks;
     }
 
-    public void queryTrace(LibraryReqCmd req, LocalDate date) {
+    public void queryTrace(LibraryReqCmd req) {
         PRINTER.info(req.getDate(), req.getBookId(), traceMap.get(req.getBookId()));
     }
 
@@ -113,29 +119,35 @@ public class Library {
         List<LibraryTrace> traces = traceMap.get(bookId);
         LibraryTrace newTrace = null;
         if (type == 1) {
-            newTrace = new LibraryTrace(date, LibraryBookState.BOOKSHELF, LibraryBookState.USER);
+            newTrace = new LibraryTrace(date, LibraryBookState.BOOKSHELF,
+                    LibraryBookState.USER);
         } else if (type == 2) {
-            newTrace = new LibraryTrace(date, LibraryBookState.BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE);
+            newTrace = new LibraryTrace(date, LibraryBookState.BOOKSHELF,
+                    LibraryBookState.APPOINTMENT_OFFICE);
         } else if (type == 3) {
-            newTrace = new LibraryTrace(date, LibraryBookState.USER, LibraryBookState.BORROW_RETURN_OFFICE);
+            newTrace = new LibraryTrace(date, LibraryBookState.USER,
+                    LibraryBookState.BORROW_RETURN_OFFICE);
         } else if (type == 4) {
-            newTrace = new LibraryTrace(date, LibraryBookState.APPOINTMENT_OFFICE, LibraryBookState.BOOKSHELF);
+            newTrace = new LibraryTrace(date, LibraryBookState.APPOINTMENT_OFFICE,
+                    LibraryBookState.BOOKSHELF);
         } else if (type == 5) {
-            newTrace = new LibraryTrace(date, LibraryBookState.BORROW_RETURN_OFFICE, LibraryBookState.BOOKSHELF);
+            newTrace = new LibraryTrace(date, LibraryBookState.BORROW_RETURN_OFFICE,
+                    LibraryBookState.BOOKSHELF);
         } else if (type == 6) {
-            newTrace = new LibraryTrace(date, LibraryBookState.APPOINTMENT_OFFICE, LibraryBookState.USER);
+            newTrace = new LibraryTrace(date, LibraryBookState.APPOINTMENT_OFFICE,
+                    LibraryBookState.USER);
         }
         traces.add(newTrace);
         traceMap.put(bookId, traces);
     }
 
-    public void borrowBook(LibraryReqCmd req, LocalDate date) {
+    public void borrowBook(LibraryReqCmd req) {
         if (req.getBookIsbn().isTypeA()) {
             PRINTER.reject(req);
         } else if (req.getBookIsbn().isTypeB()) {
-            this.borrowB(req, date);
+            this.borrowB(req);
         } else if (req.getBookIsbn().isTypeC()) {
-            this.borrowC(req, date);
+            this.borrowC(req);
         }
     }
 
@@ -143,10 +155,10 @@ public class Library {
         students.get(req.getStudentId()).returnBook(req.getBookId());
         borrowOffice.receiveBook(req.getBookId());
         updateTrace(req.getBookId(), date, 3);
-        PRINTER.accept(req, req.getBookId());
+        PRINTER.accept(req);
     }
 
-    public void borrowB(LibraryReqCmd req, LocalDate date) {
+    public void borrowB(LibraryReqCmd req) {
         if (!libBookShelf.containsBook(req.getBookIsbn())) {
             PRINTER.reject(req);
         } else {
@@ -165,7 +177,7 @@ public class Library {
         }
     }
 
-    public void borrowC(LibraryReqCmd req, LocalDate date) {
+    public void borrowC(LibraryReqCmd req) {
         if (!libBookShelf.containsBook(req.getBookIsbn())) {
             PRINTER.reject(req);
         } else {
@@ -199,15 +211,15 @@ public class Library {
         libBookShelf.getBooks().put(isbn, books);
     }
 
-    public void orderBook(LibraryReqCmd req, LocalDate date) {
-        if (checkPermisson(req)) {
+    public void orderBook(LibraryReqCmd req) {
+        if (checkPermission(req)) {
             orderBooks.put(req.getBookIsbn(), req.getStudentId());
             students.get(req.getStudentId()).orderBook(req.getBookIsbn());
             PRINTER.accept(req);
         }
     }
 
-    private boolean checkPermisson(LibraryReqCmd req) {
+    private boolean checkPermission(LibraryReqCmd req) {
         LibraryBookIsbn isbn = req.getBookIsbn();
         Student student;
         if (students.containsKey(req.getStudentId())) {
@@ -241,9 +253,8 @@ public class Library {
         }
     }
 
-    public void pickBook(LibraryReqCmd req, LocalDate date) {
+    public void pickBook(LibraryReqCmd req) {
         appointmentOffice.pickBook(req);
     }
-
 
 }
