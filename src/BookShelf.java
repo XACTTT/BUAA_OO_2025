@@ -52,7 +52,7 @@ public class BookShelf {
         for (LibraryBookId bookId : books) {
             LibraryBookIsbn isbn = new LibraryBookIsbn(bookId.getType(), bookId.getUid());
             ArrayList<String> copyIds = libraryBooks.get(isbn);
-            copyIds.add(bookId.getUid());
+            copyIds.add(bookId.getCopyId());
             libraryBooks.put(isbn, copyIds);
         }
 

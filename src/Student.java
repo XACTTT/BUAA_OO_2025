@@ -21,6 +21,10 @@ public class Student {
         this.order = isbn;
     }
 
+    public void failOrder(){
+        this.order = null;
+    }
+
     public void pickBook(LibraryBookId bookId) {
         this.order = null;
         this.borrowBook(bookId);

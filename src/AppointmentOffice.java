@@ -45,6 +45,7 @@ public class AppointmentOffice {
             }
         }
         for (String studentId : removeStudents) {
+            students.get(studentId).failOrder();
             keptBooksByStu.remove(studentId);
         }
 
