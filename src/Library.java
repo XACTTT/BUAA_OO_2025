@@ -19,7 +19,7 @@ public class Library {
     private AppointmentOffice appointmentOffice;
     private HashMap<LibraryBookId, List<LibraryTrace>> traceMap;
     private HashMap<String, Student> students;
-    private HashMap<LibraryBookIsbn, String> orderBooks;
+    private HashMap<String, LibraryBookIsbn> orderBooks;
 
     public Library() {
         this.traceMap = new HashMap<>();
@@ -99,13 +99,14 @@ public class Library {
 
     private HashMap<LibraryBookId, String> getOrderedBooksId() {
         HashMap<LibraryBookId, String> reservedBooks = new HashMap<>();
-        for (LibraryBookIsbn isbn : orderBooks.keySet()) {
+        for (String studentId : orderBooks.keySet()) {
+            LibraryBookIsbn isbn = orderBooks.get(studentId);
             if (libBookShelf.containsBook(isbn)) {
                 ArrayList<String> books = libBookShelf.getBooks().get(isbn);
                 String copyId = books.remove(0);
                 LibraryBookId book = new LibraryBookId(isbn.getType(),
                         isbn.getUid(), copyId);
-                reservedBooks.put(book, orderBooks.get(isbn));
+                reservedBooks.put(book, studentId);
             }
         }
         return reservedBooks;
@@ -213,7 +214,7 @@ public class Library {
 
     public void orderBook(LibraryReqCmd req) {
         if (checkPermission(req)) {
-            orderBooks.put(req.getBookIsbn(), req.getStudentId());
+            orderBooks.put(req.getStudentId(),req.getBookIsbn());
             students.get(req.getStudentId()).orderBook(req.getBookIsbn());
             PRINTER.accept(req);
         }
@@ -229,6 +230,7 @@ public class Library {
             students.put(req.getStudentId(), student);
         }
         if (student.hasBookToPick()) {
+            PRINTER.reject(req);
             return false;
         } else {
             if (isbn.isTypeA()) {
