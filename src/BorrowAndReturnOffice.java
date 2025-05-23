@@ -1,17 +1,12 @@
 import com.oocourse.library1.LibraryBookId;
-import com.oocourse.library1.LibraryTrace;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class BorrowAndReturnOffice {
     private ArrayList<LibraryBookId> returnedBooks;
-    private HashMap<LibraryBookId, List<LibraryTrace>> traceMap;
 
-    public BorrowAndReturnOffice(HashMap<LibraryBookId, List<LibraryTrace>> traceMap) {
+    public BorrowAndReturnOffice() {
         this.returnedBooks = new ArrayList<>();
-        this.traceMap = traceMap;
     }
 
     public void receiveBook(LibraryBookId bookId) {

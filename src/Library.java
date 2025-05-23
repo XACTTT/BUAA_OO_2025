@@ -26,7 +26,7 @@ public class Library {
         this.students = new HashMap<>();
         this.orderBooks = new HashMap<>();
         this.appointmentOffice = new AppointmentOffice(students, traceMap);
-        this.borrowOffice = new BorrowAndReturnOffice(traceMap);
+        this.borrowOffice = new BorrowAndReturnOffice();
         this.libBookShelf = new BookShelf(traceMap);
     }
 
@@ -159,7 +159,7 @@ public class Library {
         PRINTER.accept(req);
     }
 
-    public void borrowB(LibraryReqCmd req) {
+    private void borrowB(LibraryReqCmd req) {
         if (!libBookShelf.containsBook(req.getBookIsbn())) {
             PRINTER.reject(req);
         } else {
@@ -178,7 +178,7 @@ public class Library {
         }
     }
 
-    public void borrowC(LibraryReqCmd req) {
+    private void borrowC(LibraryReqCmd req) {
         if (!libBookShelf.containsBook(req.getBookIsbn())) {
             PRINTER.reject(req);
         } else {
@@ -208,7 +208,7 @@ public class Library {
         PRINTER.accept(req, book);
     }
 
-    public void updateBook(LibraryBookIsbn isbn, ArrayList<String> books) {
+    private void updateBook(LibraryBookIsbn isbn, ArrayList<String> books) {
         libBookShelf.getBooks().put(isbn, books);
     }
 
