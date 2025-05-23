@@ -21,7 +21,7 @@ public class Student {
         this.order = isbn;
     }
 
-    public void failOrder(){
+    public void failOrder() {
         this.order = null;
     }
 
