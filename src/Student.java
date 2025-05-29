@@ -60,7 +60,7 @@ public class Student {
         readingBook = bid;
     }
 
-    public void restoreBook(LibraryBookId bid) {
+    public void restoreBook() {
         readingBook = null;
     }
 

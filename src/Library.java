@@ -47,6 +47,9 @@ public class Library {
         infos.addAll(arrangeHotBooks(date));
         hotBooks.clear();
         PRINTER.move(date, infos);
+        for (Student student : students.values()) {
+            student.restoreBook();
+        }
     }
 
     public void arrangeClose(LocalDate date) {
@@ -143,42 +146,8 @@ public class Library {
     }
 
     public ArrayList<LibraryMoveInfo> arrangeOrderedBooks(LocalDate date) {
-        HashMap<LibraryBookId, String> reservedBooks = getOrderedBooksId();
-        HashMap<LibraryBookId, String> hotReservedBooks = new HashMap<>();
-        HashMap<LibraryBookId, String> normalReservedBooks = new HashMap<>();
-        for (LibraryBookId book : reservedBooks.keySet()) {
-            if(hotBooks.contains(book.getBookIsbn())) {
-                hotReservedBooks.put(book, reservedBooks.get(book));
-            }else {
-                normalReservedBooks.put(book, reservedBooks.get(book));
-            }
-        }
-        for (LibraryBookId bookId : normalReservedBooks.keySet()) {
-            updateTrace(bookId, date, 2);
-        }
-        ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
-        for (LibraryBookId bookId : normalReservedBooks.keySet()) {
-            LibraryMoveInfo info = new LibraryMoveInfo(bookId,
-                    LibraryBookState.BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
-                    normalReservedBooks.get(bookId));
-            infos.add(info);
-        }
-        for (LibraryBookId bookId : hotReservedBooks.keySet()) {
-            updateTrace(bookId, date, 10);
-        }
-        for (LibraryBookId bookId : normalReservedBooks.keySet()) {
-            LibraryMoveInfo info = new LibraryMoveInfo(bookId,
-                    LibraryBookState.HOT_BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
-                    hotReservedBooks.get(bookId));
-            infos.add(info);
-        }
-        appointmentOffice.receiveOrderedBooks(reservedBooks, date);
-        orderBooks.clear();
-        return infos;
-    }
-
-    private HashMap<LibraryBookId, String> getOrderedBooksId() {
         HashMap<LibraryBookId, String> reservedBooks = new HashMap<>();
+        ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
         for (String studentId : orderBooks.keySet()) {
             LibraryBookIsbn isbn = orderBooks.get(studentId);
             if (libBookShelf.containsBook(isbn)) {
@@ -187,15 +156,27 @@ public class Library {
                 LibraryBookId book = new LibraryBookId(isbn.getType(),
                         isbn.getUid(), copyId);
                 reservedBooks.put(book, studentId);
+                updateTrace(book, date, 2);
+                LibraryMoveInfo info = new LibraryMoveInfo(book,
+                        LibraryBookState.BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
+                        reservedBooks.get(book));
+                infos.add(info);
             } else if (hotBookShelf.containsBook(isbn)) {
                 ArrayList<String> books = hotBookShelf.getBooks().get(isbn);
                 String copyId = books.remove(0);
                 LibraryBookId book = new LibraryBookId(isbn.getType(),
                         isbn.getUid(), copyId);
                 reservedBooks.put(book, studentId);
+                updateTrace(book, date, 10);
+                LibraryMoveInfo info = new LibraryMoveInfo(book,
+                        LibraryBookState.HOT_BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
+                        reservedBooks.get(book));
+                infos.add(info);
             }
         }
-        return reservedBooks;
+        appointmentOffice.receiveOrderedBooks(reservedBooks, date);
+        orderBooks.clear();
+        return infos;
     }
 
     public void queryTrace(LibraryReqCmd req) {
@@ -438,7 +419,7 @@ public class Library {
     }
 
     public void restoreBook(LibraryReqCmd req, LocalDate date) {
-        students.get(req.getStudentId()).restoreBook(req.getBookId());
+        students.get(req.getStudentId()).restoreBook();
         readingroom.restoreBook(req.getBookId());
         borrowOffice.receiveBook(req.getBookId());
         updateTrace(req.getBookId(), date, 13);
