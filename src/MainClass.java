@@ -58,6 +58,12 @@ public class MainClass {
             case PICKED:
                 library.pickBook(req);
                 break;
+            case READ:
+                library.readBook(req);
+                break;
+            case RESTORED:
+                library.restoreBook(req,date);
+                break;
             default:
         }
     }

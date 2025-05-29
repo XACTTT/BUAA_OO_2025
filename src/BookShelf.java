@@ -36,6 +36,14 @@ public class BookShelf {
         }
     }
 
+    public void initHotBookShelf(Map<LibraryBookIsbn, Integer> libraryBookIsbnMap) {
+        for (LibraryBookIsbn isbn : libraryBookIsbnMap.keySet()) {
+            ArrayList<String> list = new ArrayList<>();
+            libraryBooks.put(isbn, list);
+        }
+
+    }
+
     public Map<LibraryBookIsbn, ArrayList<String>> getBooks() {
         return libraryBooks;
     }

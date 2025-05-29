@@ -18,4 +18,8 @@ public class Readingroom {
         this.books.clear();
         return returnedBooks;
     }
+
+    public void restoreBook(LibraryBookId bookId) {
+        this.books.remove(bookId);
+    }
 }

@@ -6,7 +6,7 @@ public class Student {
     private String studentId;
     private ArrayList<LibraryBookId> borrowBooks;
     private LibraryBookIsbn order;
-
+    private LibraryBookId readingBook;
     public Student(String id) {
         this.studentId = id;
         this.borrowBooks = new ArrayList<>();
@@ -54,5 +54,17 @@ public class Student {
 
     public void returnBook(LibraryBookId bid) {
         borrowBooks.remove(bid);
+    }
+
+    public void readBook(LibraryBookId bid) {
+        readingBook = bid;
+    }
+
+    public void restoreBook(LibraryBookId bid) {
+        readingBook = null;
+    }
+
+    public boolean isReading(){
+        return (readingBook != null);
     }
 }

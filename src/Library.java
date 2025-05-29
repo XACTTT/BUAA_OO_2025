@@ -8,18 +8,18 @@ import com.oocourse.library2.LibraryBookIsbn;
 import static com.oocourse.library2.LibraryIO.PRINTER;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Library {
     private BookShelf libBookShelf;
+    private BookShelf hotBookShelf;
     private BorrowAndReturnOffice borrowOffice;
+    private Readingroom readingroom;
     private AppointmentOffice appointmentOffice;
     private HashMap<LibraryBookId, List<LibraryTrace>> traceMap;
     private HashMap<String, Student> students;
     private HashMap<String, LibraryBookIsbn> orderBooks;
+    private HashSet<LibraryBookIsbn> hotBooks;
 
     public Library() {
         this.traceMap = new HashMap<>();
@@ -28,10 +28,14 @@ public class Library {
         this.appointmentOffice = new AppointmentOffice(students, traceMap);
         this.borrowOffice = new BorrowAndReturnOffice();
         this.libBookShelf = new BookShelf(traceMap);
+        this.hotBookShelf = new BookShelf(traceMap);
+        this.readingroom = new Readingroom();
+        this.hotBooks = new HashSet<>();
     }
 
     public void init(Map<LibraryBookIsbn, Integer> libraryBookIsbnMap) {
         libBookShelf.init(libraryBookIsbnMap);
+        hotBookShelf.initHotBookShelf(libraryBookIsbnMap);
     }
 
     public void addBooks(List<LibraryBookId> books) {
@@ -40,18 +44,60 @@ public class Library {
 
     public void arrangeOpen(LocalDate date) {
         ArrayList<LibraryMoveInfo> infos = arrangeOverdueBooks(date);
+        infos.addAll(arrangeHotBooks(date));
+        hotBooks.clear();
         PRINTER.move(date, infos);
     }
 
     public void arrangeClose(LocalDate date) {
         ArrayList<LibraryMoveInfo> infos = arrangeOverdueBooks(date);
         infos.addAll(arrangeReturnedBooks(date));
+        infos.addAll(arrangeReadBooks(date));
         infos.addAll(arrangeOrderedBooks(date));
         PRINTER.move(date, infos);
     }
 
+    public ArrayList<LibraryMoveInfo> arrangeHotBooks(LocalDate date) {
+        ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
+        for (LibraryBookIsbn isbn : hotBookShelf.getBooks().keySet()) {
+            if(hotBookShelf.containsBook(isbn)&&!hotBooks.contains(isbn)) {
+                ArrayList<String>copyIds=hotBookShelf.getBooks().get(isbn);
+                ArrayList<LibraryBookId>bookIds=new ArrayList<>();
+                for (String id : copyIds) {
+                   LibraryBookId book = new LibraryBookId(isbn.getType(),isbn.getUid(),id);
+                   LibraryMoveInfo info = new LibraryMoveInfo(book,LibraryBookState.HOT_BOOKSHELF,
+                           LibraryBookState.BOOKSHELF);
+                   updateTrace(book,date,7);
+                   bookIds.add(book);
+                   infos.add(info);
+                }
+                libBookShelf.addBooks(bookIds);
+                hotBookShelf.getBooks().put(isbn,new ArrayList<>());
+
+            }
+        }
+        for (LibraryBookIsbn isbn : libBookShelf.getBooks().keySet()) {
+            if(libBookShelf.containsBook(isbn)&&hotBooks.contains(isbn)) {
+                ArrayList<String>copyIds=libBookShelf.getBooks().get(isbn);
+                ArrayList<LibraryBookId>bookIds=new ArrayList<>();
+                for (String id : copyIds) {
+                    LibraryBookId book = new LibraryBookId(isbn.getType(),isbn.getUid(),id);
+                    LibraryMoveInfo info = new LibraryMoveInfo(book,LibraryBookState.BOOKSHELF,
+                            LibraryBookState.HOT_BOOKSHELF);
+                    updateTrace(book,date,8);
+                    bookIds.add(book);
+                    infos.add(info);
+                }
+                hotBookShelf.addBooks(bookIds);
+                libBookShelf.getBooks().put(isbn,new ArrayList<>());
+            }
+        }
+        return infos;
+    }
+
     public ArrayList<LibraryMoveInfo> arrangeOverdueBooks(LocalDate date) {
         ArrayList<LibraryBookId> removeBooks = appointmentOffice.arrangeOverdueBooks(date);
+
         addBooks(removeBooks);
         for (LibraryBookId bookId : removeBooks) {
             updateTrace(bookId, date, 4);
@@ -67,6 +113,7 @@ public class Library {
 
     public ArrayList<LibraryMoveInfo> arrangeReturnedBooks(LocalDate date) {
         ArrayList<LibraryBookId> returnedBooks = borrowOffice.arrangeReturnedBooks();
+
         addBooks(returnedBooks);
         for (LibraryBookId bookId : returnedBooks) {
             updateTrace(bookId, date, 5);
@@ -80,16 +127,49 @@ public class Library {
         return infos;
     }
 
+    public ArrayList<LibraryMoveInfo> arrangeReadBooks(LocalDate date) {
+        ArrayList<LibraryBookId> readBooks = readingroom.arrangeBooks();
+        addBooks(readBooks);
+        for (LibraryBookId bookId : readBooks) {
+            updateTrace(bookId, date, 14);
+        }
+        ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
+        for (LibraryBookId bookId : readBooks) {
+            LibraryMoveInfo info = new LibraryMoveInfo(bookId,
+                    LibraryBookState.READING_ROOM, LibraryBookState.BOOKSHELF);
+            infos.add(info);
+        }
+        return infos;
+    }
+
     public ArrayList<LibraryMoveInfo> arrangeOrderedBooks(LocalDate date) {
         HashMap<LibraryBookId, String> reservedBooks = getOrderedBooksId();
-        for (LibraryBookId bookId : reservedBooks.keySet()) {
+        HashMap<LibraryBookId, String> hotReservedBooks = new HashMap<>();
+        HashMap<LibraryBookId, String> normalReservedBooks = new HashMap<>();
+        for (LibraryBookId book : reservedBooks.keySet()) {
+            if(hotBooks.contains(book.getBookIsbn())) {
+                hotReservedBooks.put(book, reservedBooks.get(book));
+            }else {
+                normalReservedBooks.put(book, reservedBooks.get(book));
+            }
+        }
+        for (LibraryBookId bookId : normalReservedBooks.keySet()) {
             updateTrace(bookId, date, 2);
         }
         ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
-        for (LibraryBookId bookId : reservedBooks.keySet()) {
+        for (LibraryBookId bookId : normalReservedBooks.keySet()) {
             LibraryMoveInfo info = new LibraryMoveInfo(bookId,
                     LibraryBookState.BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
-                    reservedBooks.get(bookId));
+                    normalReservedBooks.get(bookId));
+            infos.add(info);
+        }
+        for (LibraryBookId bookId : hotReservedBooks.keySet()) {
+            updateTrace(bookId, date, 10);
+        }
+        for (LibraryBookId bookId : normalReservedBooks.keySet()) {
+            LibraryMoveInfo info = new LibraryMoveInfo(bookId,
+                    LibraryBookState.HOT_BOOKSHELF, LibraryBookState.APPOINTMENT_OFFICE,
+                    hotReservedBooks.get(bookId));
             infos.add(info);
         }
         appointmentOffice.receiveOrderedBooks(reservedBooks, date);
@@ -103,6 +183,12 @@ public class Library {
             LibraryBookIsbn isbn = orderBooks.get(studentId);
             if (libBookShelf.containsBook(isbn)) {
                 ArrayList<String> books = libBookShelf.getBooks().get(isbn);
+                String copyId = books.remove(0);
+                LibraryBookId book = new LibraryBookId(isbn.getType(),
+                        isbn.getUid(), copyId);
+                reservedBooks.put(book, studentId);
+            } else if (hotBookShelf.containsBook(isbn)) {
+                ArrayList<String> books = hotBookShelf.getBooks().get(isbn);
                 String copyId = books.remove(0);
                 LibraryBookId book = new LibraryBookId(isbn.getType(),
                         isbn.getUid(), copyId);
@@ -137,6 +223,30 @@ public class Library {
         } else if (type == 6) {
             newTrace = new LibraryTrace(date, LibraryBookState.APPOINTMENT_OFFICE,
                     LibraryBookState.USER);
+        } else if (type == 7) {
+            newTrace = new LibraryTrace(date, LibraryBookState.HOT_BOOKSHELF,
+                    LibraryBookState.BOOKSHELF);
+        } else if (type == 8) {
+            newTrace = new LibraryTrace(date, LibraryBookState.BOOKSHELF,
+                    LibraryBookState.HOT_BOOKSHELF);
+        } else if (type == 9) {
+            newTrace = new LibraryTrace(date, LibraryBookState.HOT_BOOKSHELF,
+                    LibraryBookState.USER);
+        } else if (type == 10) {
+            newTrace = new LibraryTrace(date, LibraryBookState.HOT_BOOKSHELF,
+                    LibraryBookState.APPOINTMENT_OFFICE);
+        } else if (type == 11) {
+            newTrace = new LibraryTrace(date, LibraryBookState.HOT_BOOKSHELF,
+                    LibraryBookState.READING_ROOM);
+        } else if (type == 12) {
+            newTrace = new LibraryTrace(date, LibraryBookState.BOOKSHELF,
+                    LibraryBookState.READING_ROOM);
+        } else if (type == 13) {
+            newTrace = new LibraryTrace(date, LibraryBookState.READING_ROOM,
+                    LibraryBookState.BORROW_RETURN_OFFICE);
+        }else if (type == 14) {
+            newTrace = new LibraryTrace(date, LibraryBookState.READING_ROOM,
+                    LibraryBookState.BOOKSHELF);
         }
         traces.add(newTrace);
         traceMap.put(bookId, traces);
@@ -160,7 +270,8 @@ public class Library {
     }
 
     private void borrowB(LibraryReqCmd req) {
-        if (!libBookShelf.containsBook(req.getBookIsbn())) {
+        if (!libBookShelf.containsBook(req.getBookIsbn()) &&
+                !hotBookShelf.containsBook(req.getBookIsbn())) {
             PRINTER.reject(req);
         } else {
             String studentId = req.getStudentId();
@@ -169,17 +280,20 @@ public class Library {
                     PRINTER.reject(req);
                 } else {
                     exchangeBook(req, studentId);
+                    hotBooks.add(req.getBookIsbn());
                 }
 
             } else {
                 students.put(studentId, new Student(studentId));
                 exchangeBook(req, studentId);
+                hotBooks.add(req.getBookIsbn());
             }
         }
     }
 
     private void borrowC(LibraryReqCmd req) {
-        if (!libBookShelf.containsBook(req.getBookIsbn())) {
+        if (!libBookShelf.containsBook(req.getBookIsbn()) &&
+                !hotBookShelf.containsBook(req.getBookIsbn())) {
             PRINTER.reject(req);
         } else {
             String studentId = req.getStudentId();
@@ -188,33 +302,52 @@ public class Library {
                     PRINTER.reject(req);
                 } else {
                     exchangeBook(req, studentId);
+                    hotBooks.add(req.getBookIsbn());
                 }
 
             } else {
                 students.put(studentId, new Student(studentId));
                 exchangeBook(req, studentId);
+                hotBooks.add(req.getBookIsbn());
             }
         }
     }
 
     private void exchangeBook(LibraryReqCmd req, String studentId) {
-        ArrayList<String> books = libBookShelf.getBooks().get(req.getBookIsbn());
-        String copyId = books.remove(0);
-        LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
-                req.getBookIsbn().getUid(), copyId);
-        students.get(studentId).borrowBook(book);
-        updateBook(req.getBookIsbn(), books);
-        updateTrace(book, req.getDate(), 1);
-        PRINTER.accept(req, book);
+        ArrayList<String> books;
+        if (libBookShelf.containsBook(req.getBookIsbn())) {
+            books = libBookShelf.getBooks().get(req.getBookIsbn());
+            String copyId = books.remove(0);
+            LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
+                    req.getBookIsbn().getUid(), copyId);
+            students.get(studentId).borrowBook(book);
+            updateBook(req.getBookIsbn(), books);
+            updateTrace(book, req.getDate(), 1);
+            PRINTER.accept(req, book);
+        } else {
+            books = hotBookShelf.getBooks().get(req.getBookIsbn());
+            String copyId = books.remove(0);
+            LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
+                    req.getBookIsbn().getUid(), copyId);
+            students.get(studentId).borrowBook(book);
+            updateHotBook(req.getBookIsbn(), books);
+            updateTrace(book, req.getDate(), 9);
+            PRINTER.accept(req, book);
+        }
+
     }
 
     private void updateBook(LibraryBookIsbn isbn, ArrayList<String> books) {
         libBookShelf.getBooks().put(isbn, books);
     }
 
+    private void updateHotBook(LibraryBookIsbn isbn, ArrayList<String> books) {
+        hotBookShelf.getBooks().put(isbn, books);
+    }
+
     public void orderBook(LibraryReqCmd req) {
         if (checkPermission(req)) {
-            orderBooks.put(req.getStudentId(),req.getBookIsbn());
+            orderBooks.put(req.getStudentId(), req.getBookIsbn());
             students.get(req.getStudentId()).orderBook(req.getBookIsbn());
             PRINTER.accept(req);
         }
@@ -257,6 +390,59 @@ public class Library {
 
     public void pickBook(LibraryReqCmd req) {
         appointmentOffice.pickBook(req);
+    }
+
+    public void readBook(LibraryReqCmd req) {
+        if (!libBookShelf.containsBook(req.getBookIsbn()) &&
+                !hotBookShelf.containsBook(req.getBookIsbn())) {
+            PRINTER.reject(req);
+        } else {
+            String studentId = req.getStudentId();
+            if (students.containsKey(studentId)) {
+                if (students.get(studentId).isReading()) {
+                    PRINTER.reject(req);
+                } else {
+                    readingBook(req, studentId);
+                }
+            } else {
+                students.put(studentId, new Student(studentId));
+                readingBook(req, studentId);
+            }
+        }
+    }
+
+    private void readingBook(LibraryReqCmd req, String studentId) {
+        ArrayList<String> books;
+        if (libBookShelf.containsBook(req.getBookIsbn())) {
+            books = libBookShelf.getBooks().get(req.getBookIsbn());
+            String copyId = books.remove(0);
+            LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
+                    req.getBookIsbn().getUid(), copyId);
+            students.get(studentId).readBook(book);
+            readingroom.receiveBook(book);
+            updateBook(req.getBookIsbn(), books);
+            updateTrace(book, req.getDate(), 12);
+            PRINTER.accept(req, book);
+        } else {
+            books = hotBookShelf.getBooks().get(req.getBookIsbn());
+            String copyId = books.remove(0);
+            LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
+                    req.getBookIsbn().getUid(), copyId);
+            students.get(studentId).readBook(book);
+            readingroom.receiveBook(book);
+            updateHotBook(req.getBookIsbn(), books);
+            updateTrace(book, req.getDate(), 11);
+            PRINTER.accept(req, book);
+        }
+        hotBooks.add(req.getBookIsbn());
+    }
+
+    public void restoreBook(LibraryReqCmd req, LocalDate date) {
+        students.get(req.getStudentId()).restoreBook(req.getBookId());
+        readingroom.restoreBook(req.getBookId());
+        borrowOffice.receiveBook(req.getBookId());
+        updateTrace(req.getBookId(), date, 13);
+        PRINTER.accept(req);
     }
 
 }
