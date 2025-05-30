@@ -4,11 +4,16 @@ import com.oocourse.library2.LibraryMoveInfo;
 import com.oocourse.library2.LibraryReqCmd;
 import com.oocourse.library2.LibraryBookState;
 import com.oocourse.library2.LibraryBookIsbn;
+import com.oocourse.library2.annotation.Trigger;
 
 import static com.oocourse.library2.LibraryIO.PRINTER;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Library {
     private BookShelf libBookShelf;
@@ -60,6 +65,8 @@ public class Library {
         PRINTER.move(date, infos);
     }
 
+    @Trigger(from = "hbs", to = "bs")
+    @Trigger(from = "bs", to = "hbs")
     public ArrayList<LibraryMoveInfo> arrangeHotBooks(LocalDate date) {
         ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
         for (LibraryBookIsbn isbn : hotBookShelf.getBooks().keySet()) {
@@ -67,12 +74,12 @@ public class Library {
                 ArrayList<String>copyIds=hotBookShelf.getBooks().get(isbn);
                 ArrayList<LibraryBookId>bookIds=new ArrayList<>();
                 for (String id : copyIds) {
-                   LibraryBookId book = new LibraryBookId(isbn.getType(),isbn.getUid(),id);
-                   LibraryMoveInfo info = new LibraryMoveInfo(book,LibraryBookState.HOT_BOOKSHELF,
-                           LibraryBookState.BOOKSHELF);
-                   updateTrace(book,date,7);
-                   bookIds.add(book);
-                   infos.add(info);
+                    LibraryBookId book = new LibraryBookId(isbn.getType(),isbn.getUid(),id);
+                    LibraryMoveInfo info = new LibraryMoveInfo(book,LibraryBookState.HOT_BOOKSHELF,
+                            LibraryBookState.BOOKSHELF);
+                    updateTrace(book,date,7);
+                    bookIds.add(book);
+                    infos.add(info);
                 }
                 libBookShelf.addBooks(bookIds);
                 hotBookShelf.getBooks().put(isbn,new ArrayList<>());
@@ -97,7 +104,7 @@ public class Library {
         }
         return infos;
     }
-
+    @Trigger(from = "ao", to = "bs")
     public ArrayList<LibraryMoveInfo> arrangeOverdueBooks(LocalDate date) {
         ArrayList<LibraryBookId> removeBooks = appointmentOffice.arrangeOverdueBooks(date);
 
@@ -114,6 +121,7 @@ public class Library {
         return infos;
     }
 
+    @Trigger(from = "bro", to = "bs")
     public ArrayList<LibraryMoveInfo> arrangeReturnedBooks(LocalDate date) {
         ArrayList<LibraryBookId> returnedBooks = borrowOffice.arrangeReturnedBooks();
 
@@ -130,6 +138,7 @@ public class Library {
         return infos;
     }
 
+    @Trigger(from = "rr", to = "bs")
     public ArrayList<LibraryMoveInfo> arrangeReadBooks(LocalDate date) {
         ArrayList<LibraryBookId> readBooks = readingroom.arrangeBooks();
         addBooks(readBooks);
@@ -145,6 +154,8 @@ public class Library {
         return infos;
     }
 
+    @Trigger(from = "bs", to = "ao")
+    @Trigger(from = "hbs", to = "ao")
     public ArrayList<LibraryMoveInfo> arrangeOrderedBooks(LocalDate date) {
         HashMap<LibraryBookId, String> reservedBooks = new HashMap<>();
         ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
@@ -233,6 +244,8 @@ public class Library {
         traceMap.put(bookId, traces);
     }
 
+    @Trigger(from = "bs", to = "user")
+    @Trigger(from = "hbs", to = "user")
     public void borrowBook(LibraryReqCmd req) {
         if (req.getBookIsbn().isTypeA()) {
             PRINTER.reject(req);
@@ -243,6 +256,7 @@ public class Library {
         }
     }
 
+    @Trigger(from = "user", to = "bro")
     public void returnBook(LibraryReqCmd req, LocalDate date) {
         students.get(req.getStudentId()).returnBook(req.getBookId());
         borrowOffice.receiveBook(req.getBookId());
@@ -369,10 +383,13 @@ public class Library {
         }
     }
 
+    @Trigger(from = "ao", to = "user")
     public void pickBook(LibraryReqCmd req) {
         appointmentOffice.pickBook(req);
     }
 
+    @Trigger(from = "bs", to = "rr")
+    @Trigger(from = "hbs", to = "rr")
     public void readBook(LibraryReqCmd req) {
         if (!libBookShelf.containsBook(req.getBookIsbn()) &&
                 !hotBookShelf.containsBook(req.getBookIsbn())) {
@@ -418,6 +435,7 @@ public class Library {
         hotBooks.add(req.getBookIsbn());
     }
 
+    @Trigger(from = "rr", to = "bro")
     public void restoreBook(LibraryReqCmd req, LocalDate date) {
         students.get(req.getStudentId()).restoreBook();
         readingroom.restoreBook(req.getBookId());
