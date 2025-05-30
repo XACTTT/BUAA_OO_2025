@@ -70,40 +70,41 @@ public class Library {
     public ArrayList<LibraryMoveInfo> arrangeHotBooks(LocalDate date) {
         ArrayList<LibraryMoveInfo> infos = new ArrayList<>();
         for (LibraryBookIsbn isbn : hotBookShelf.getBooks().keySet()) {
-            if(hotBookShelf.containsBook(isbn)&&!hotBooks.contains(isbn)) {
-                ArrayList<String>copyIds=hotBookShelf.getBooks().get(isbn);
-                ArrayList<LibraryBookId>bookIds=new ArrayList<>();
+            if (hotBookShelf.containsBook(isbn) && !hotBooks.contains(isbn)) {
+                ArrayList<String> copyIds = hotBookShelf.getBooks().get(isbn);
+                ArrayList<LibraryBookId> bookIds = new ArrayList<>();
                 for (String id : copyIds) {
-                    LibraryBookId book = new LibraryBookId(isbn.getType(),isbn.getUid(),id);
-                    LibraryMoveInfo info = new LibraryMoveInfo(book,LibraryBookState.HOT_BOOKSHELF,
+                    LibraryBookId book = new LibraryBookId(isbn.getType(), isbn.getUid(), id);
+                    LibraryMoveInfo info = new LibraryMoveInfo(book, LibraryBookState.HOT_BOOKSHELF,
                             LibraryBookState.BOOKSHELF);
-                    updateTrace(book,date,7);
+                    updateTrace(book, date, 7);
                     bookIds.add(book);
                     infos.add(info);
                 }
                 libBookShelf.addBooks(bookIds);
-                hotBookShelf.getBooks().put(isbn,new ArrayList<>());
+                hotBookShelf.getBooks().put(isbn, new ArrayList<>());
 
             }
         }
         for (LibraryBookIsbn isbn : libBookShelf.getBooks().keySet()) {
-            if(libBookShelf.containsBook(isbn)&&hotBooks.contains(isbn)) {
-                ArrayList<String>copyIds=libBookShelf.getBooks().get(isbn);
-                ArrayList<LibraryBookId>bookIds=new ArrayList<>();
+            if (libBookShelf.containsBook(isbn) && hotBooks.contains(isbn)) {
+                ArrayList<String> copyIds = libBookShelf.getBooks().get(isbn);
+                ArrayList<LibraryBookId> bookIds = new ArrayList<>();
                 for (String id : copyIds) {
-                    LibraryBookId book = new LibraryBookId(isbn.getType(),isbn.getUid(),id);
-                    LibraryMoveInfo info = new LibraryMoveInfo(book,LibraryBookState.BOOKSHELF,
+                    LibraryBookId book = new LibraryBookId(isbn.getType(), isbn.getUid(), id);
+                    LibraryMoveInfo info = new LibraryMoveInfo(book, LibraryBookState.BOOKSHELF,
                             LibraryBookState.HOT_BOOKSHELF);
-                    updateTrace(book,date,8);
+                    updateTrace(book, date, 8);
                     bookIds.add(book);
                     infos.add(info);
                 }
                 hotBookShelf.addBooks(bookIds);
-                libBookShelf.getBooks().put(isbn,new ArrayList<>());
+                libBookShelf.getBooks().put(isbn, new ArrayList<>());
             }
         }
         return infos;
     }
+
     @Trigger(from = "ao", to = "bs")
     public ArrayList<LibraryMoveInfo> arrangeOverdueBooks(LocalDate date) {
         ArrayList<LibraryBookId> removeBooks = appointmentOffice.arrangeOverdueBooks(date);
@@ -236,7 +237,7 @@ public class Library {
         } else if (type == 13) {
             newTrace = new LibraryTrace(date, LibraryBookState.READING_ROOM,
                     LibraryBookState.BORROW_RETURN_OFFICE);
-        }else if (type == 14) {
+        } else if (type == 14) {
             newTrace = new LibraryTrace(date, LibraryBookState.READING_ROOM,
                     LibraryBookState.BOOKSHELF);
         }
