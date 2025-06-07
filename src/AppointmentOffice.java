@@ -46,6 +46,7 @@ public class AppointmentOffice {
         }
         for (String studentId : removeStudents) {
             students.get(studentId).failOrder();
+            students.get(studentId).changeCreditScore(-15);
             keptBooksByStu.remove(studentId);
         }
 
@@ -86,7 +87,7 @@ public class AppointmentOffice {
         LibraryBookId bookId = keptBooksByStu.get(studentId);
         keptBooksByStu.remove(studentId);
         keptBooksByDate.remove(bookId);
-        students.get(studentId).pickBook(bookId);
+        students.get(studentId).pickBook(bookId,req.getDate());
         updateTrace(bookId, req.getDate(), 6);
         PRINTER.accept(req, bookId);
     }

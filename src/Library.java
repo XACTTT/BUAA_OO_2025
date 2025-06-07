@@ -1,9 +1,4 @@
-import com.oocourse.library3.LibraryBookId;
-import com.oocourse.library3.LibraryTrace;
-import com.oocourse.library3.LibraryMoveInfo;
-import com.oocourse.library3.LibraryReqCmd;
-import com.oocourse.library3.LibraryBookState;
-import com.oocourse.library3.LibraryBookIsbn;
+import com.oocourse.library3.*;
 import com.oocourse.library3.annotation.Trigger;
 
 import static com.oocourse.library3.LibraryIO.PRINTER;
@@ -53,6 +48,10 @@ public class Library {
         hotBooks.clear();
         PRINTER.move(date, infos);
         for (Student student : students.values()) {
+            student.updateCs(date);
+            if (student.isReading()) {
+                student.changeCreditScore(-10);
+            }
             student.restoreBook();
         }
     }
@@ -245,6 +244,11 @@ public class Library {
         traceMap.put(bookId, traces);
     }
 
+    public void queryCs(LibraryQcsCmd req) {
+        int value = students.get(req.getStudentId()).getCreditScore();
+        PRINTER.info(req, value);
+    }
+
     @Trigger(from = "bs", to = "user")
     @Trigger(from = "hbs", to = "user")
     public void borrowBook(LibraryReqCmd req) {
@@ -259,10 +263,20 @@ public class Library {
 
     @Trigger(from = "user", to = "bro")
     public void returnBook(LibraryReqCmd req, LocalDate date) {
+        int overdueSign = 1;
+        if (students.get(req.getStudentId()).checkDate(req.getBookId(), date)) {
+            overdueSign = 0;
+        }
         students.get(req.getStudentId()).returnBook(req.getBookId());
         borrowOffice.receiveBook(req.getBookId());
         updateTrace(req.getBookId(), date, 3);
-        PRINTER.accept(req);
+        if (overdueSign == 0) {
+            PRINTER.accept(req, "not overdue");
+            students.get(req.getStudentId()).changeCreditScore(10);
+        } else {
+            PRINTER.accept(req, "overdue");
+        }
+
     }
 
     private void borrowB(LibraryReqCmd req) {
@@ -275,8 +289,13 @@ public class Library {
                 if (students.get(studentId).hasB()) {
                     PRINTER.reject(req);
                 } else {
-                    exchangeBook(req, studentId);
-                    hotBooks.add(req.getBookIsbn());
+                    if (!students.get(req.getStudentId()).checkBorrowPerm()) {
+                        PRINTER.reject(req);
+                    } else {
+                        exchangeBook(req, studentId);
+                        hotBooks.add(req.getBookIsbn());
+                    }
+
                 }
 
             } else {
@@ -297,8 +316,13 @@ public class Library {
                 if (students.get(studentId).hasC(req.getBookIsbn())) {
                     PRINTER.reject(req);
                 } else {
-                    exchangeBook(req, studentId);
-                    hotBooks.add(req.getBookIsbn());
+                    if (!students.get(req.getStudentId()).checkBorrowPerm()) {
+                        PRINTER.reject(req);
+                    } else {
+                        exchangeBook(req, studentId);
+                        hotBooks.add(req.getBookIsbn());
+                    }
+
                 }
 
             } else {
@@ -316,7 +340,7 @@ public class Library {
             String copyId = books.remove(0);
             LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
                     req.getBookIsbn().getUid(), copyId);
-            students.get(studentId).borrowBook(book);
+            students.get(studentId).borrowBook(book, req.getDate());
             updateBook(req.getBookIsbn(), books);
             updateTrace(book, req.getDate(), 1);
             PRINTER.accept(req, book);
@@ -325,7 +349,7 @@ public class Library {
             String copyId = books.remove(0);
             LibraryBookId book = new LibraryBookId(req.getBookIsbn().getType(),
                     req.getBookIsbn().getUid(), copyId);
-            students.get(studentId).borrowBook(book);
+            students.get(studentId).borrowBook(book, req.getDate());
             updateHotBook(req.getBookIsbn(), books);
             updateTrace(book, req.getDate(), 9);
             PRINTER.accept(req, book);
@@ -362,25 +386,30 @@ public class Library {
             PRINTER.reject(req);
             return false;
         } else {
-            if (isbn.isTypeA()) {
-                PRINTER.reject(req);
-                return false;
-            } else if (isbn.isTypeB()) {
-                if (student.hasB()) {
+            if (student.checkOrderPerm()) {
+
+                if (isbn.isTypeA()) {
                     PRINTER.reject(req);
                     return false;
+                } else if (isbn.isTypeB()) {
+                    if (student.hasB()) {
+                        PRINTER.reject(req);
+                        return false;
+                    } else {
+                        return true;
+                    }
                 } else {
-                    return true;
+                    if (student.hasC(isbn)) {
+                        PRINTER.reject(req);
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
             } else {
-                if (student.hasC(isbn)) {
-                    PRINTER.reject(req);
-                    return false;
-                } else {
-                    return true;
-                }
+                PRINTER.reject(req);
+                return false;
             }
-
         }
     }
 
@@ -398,10 +427,14 @@ public class Library {
         } else {
             String studentId = req.getStudentId();
             if (students.containsKey(studentId)) {
-                if (students.get(studentId).isReading()) {
+                if (students.get(studentId).checkReadPerm(req.getBookIsbn())) {
+                    if (students.get(studentId).isReading()) {
+                        PRINTER.reject(req);
+                    } else {
+                        readingBook(req, studentId);
+                    }
+                }else {
                     PRINTER.reject(req);
-                } else {
-                    readingBook(req, studentId);
                 }
             } else {
                 students.put(studentId, new Student(studentId));
@@ -439,6 +472,7 @@ public class Library {
     @Trigger(from = "rr", to = "bro")
     public void restoreBook(LibraryReqCmd req, LocalDate date) {
         students.get(req.getStudentId()).restoreBook();
+        students.get(req.getStudentId()).changeCreditScore(10);//
         readingroom.restoreBook(req.getBookId());
         borrowOffice.receiveBook(req.getBookId());
         updateTrace(req.getBookId(), date, 13);

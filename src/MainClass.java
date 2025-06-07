@@ -1,11 +1,6 @@
-import com.oocourse.library3.LibraryCommand;
-import com.oocourse.library3.LibraryOpenCmd;
-import com.oocourse.library3.LibraryCloseCmd;
+import com.oocourse.library3.*;
 
 import static com.oocourse.library3.LibraryIO.SCANNER;
-
-import com.oocourse.library3.LibraryReqCmd;
-import com.oocourse.library3.LibraryBookIsbn;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -29,7 +24,11 @@ public class MainClass {
             } else if (command instanceof LibraryCloseCmd) {
                 // 在闭馆时做点什么
                 library.arrangeClose(today);
-            } else {
+            }else if(command instanceof LibraryQcsCmd){
+                LibraryQcsCmd req = (LibraryQcsCmd) command;
+                library.queryCs(req);
+            }
+            else {
                 LibraryReqCmd req = (LibraryReqCmd) command;
 
                 // 对指令进行处理
