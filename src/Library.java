@@ -245,8 +245,15 @@ public class Library {
     }
 
     public void queryCs(LibraryQcsCmd req) {
-        int value = students.get(req.getStudentId()).getCreditScore();
-        PRINTER.info(req, value);
+        if (students.containsKey(req.getStudentId())) {
+            int value = students.get(req.getStudentId()).getCreditScore();
+            PRINTER.info(req, value);
+        }else {
+            students.put(req.getStudentId(), new Student(req.getStudentId()));
+            int value = students.get(req.getStudentId()).getCreditScore();
+            PRINTER.info(req, value);
+        }
+
     }
 
     @Trigger(from = "bs", to = "user")
@@ -433,7 +440,7 @@ public class Library {
                     } else {
                         readingBook(req, studentId);
                     }
-                }else {
+                } else {
                     PRINTER.reject(req);
                 }
             } else {
