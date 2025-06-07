@@ -1,11 +1,11 @@
-import com.oocourse.library2.LibraryCommand;
-import com.oocourse.library2.LibraryOpenCmd;
-import com.oocourse.library2.LibraryCloseCmd;
+import com.oocourse.library3.LibraryCommand;
+import com.oocourse.library3.LibraryOpenCmd;
+import com.oocourse.library3.LibraryCloseCmd;
 
-import static com.oocourse.library2.LibraryIO.SCANNER;
+import static com.oocourse.library3.LibraryIO.SCANNER;
 
-import com.oocourse.library2.LibraryReqCmd;
-import com.oocourse.library2.LibraryBookIsbn;
+import com.oocourse.library3.LibraryReqCmd;
+import com.oocourse.library3.LibraryBookIsbn;
 
 import java.time.LocalDate;
 import java.util.Map;

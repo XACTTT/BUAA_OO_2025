@@ -1,6 +1,6 @@
-import com.oocourse.library2.LibraryBookId;
-import com.oocourse.library2.LibraryBookIsbn;
-import com.oocourse.library2.LibraryTrace;
+import com.oocourse.library3.LibraryBookId;
+import com.oocourse.library3.LibraryBookIsbn;
+import com.oocourse.library3.LibraryTrace;
 
 import java.util.ArrayList;
 import java.util.HashMap;

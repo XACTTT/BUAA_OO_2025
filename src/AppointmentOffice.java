@@ -1,15 +1,15 @@
-import com.oocourse.library2.LibraryBookId;
-import com.oocourse.library2.LibraryTrace;
-import com.oocourse.library2.LibraryMoveInfo;
-import com.oocourse.library2.LibraryReqCmd;
-import com.oocourse.library2.LibraryBookState;
+import com.oocourse.library3.LibraryBookId;
+import com.oocourse.library3.LibraryTrace;
+import com.oocourse.library3.LibraryMoveInfo;
+import com.oocourse.library3.LibraryReqCmd;
+import com.oocourse.library3.LibraryBookState;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.oocourse.library2.LibraryIO.PRINTER;
+import static com.oocourse.library3.LibraryIO.PRINTER;
 
 public class AppointmentOffice {
 
