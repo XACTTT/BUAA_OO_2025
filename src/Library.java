@@ -1,4 +1,10 @@
-import com.oocourse.library3.*;
+import com.oocourse.library3.LibraryBookId;
+import com.oocourse.library3.LibraryBookIsbn;
+import com.oocourse.library3.LibraryTrace;
+import com.oocourse.library3.LibraryMoveInfo;
+import com.oocourse.library3.LibraryBookState;
+import com.oocourse.library3.LibraryReqCmd;
+import com.oocourse.library3.LibraryQcsCmd;
 import com.oocourse.library3.annotation.Trigger;
 
 import static com.oocourse.library3.LibraryIO.PRINTER;
@@ -248,7 +254,7 @@ public class Library {
         if (students.containsKey(req.getStudentId())) {
             int value = students.get(req.getStudentId()).getCreditScore();
             PRINTER.info(req, value);
-        }else {
+        } else {
             students.put(req.getStudentId(), new Student(req.getStudentId()));
             int value = students.get(req.getStudentId()).getCreditScore();
             PRINTER.info(req, value);

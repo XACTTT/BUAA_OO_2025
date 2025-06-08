@@ -1,4 +1,9 @@
-import com.oocourse.library3.*;
+import com.oocourse.library3.LibraryReqCmd;
+import com.oocourse.library3.LibraryQcsCmd;
+import com.oocourse.library3.LibraryBookIsbn;
+import com.oocourse.library3.LibraryCommand;
+import com.oocourse.library3.LibraryOpenCmd;
+import com.oocourse.library3.LibraryCloseCmd;
 
 import static com.oocourse.library3.LibraryIO.SCANNER;
 
@@ -24,22 +29,21 @@ public class MainClass {
             } else if (command instanceof LibraryCloseCmd) {
                 // 在闭馆时做点什么
                 library.arrangeClose(today);
-            }else if(command instanceof LibraryQcsCmd){
+            } else if (command instanceof LibraryQcsCmd) {
                 LibraryQcsCmd req = (LibraryQcsCmd) command;
                 library.queryCs(req);
-            }
-            else {
+            } else {
                 LibraryReqCmd req = (LibraryReqCmd) command;
 
                 // 对指令进行处理
-                handle(req,today);
+                handle(req, today);
             }
         }
 
 
     }
 
-    private static void handle(LibraryReqCmd req,LocalDate date) {
+    private static void handle(LibraryReqCmd req, LocalDate date) {
         LibraryReqCmd.Type type = req.getType(); // 指令对应的类型（查询/阅读/借阅/预约/还书/取书/归还）
         switch (type) {
             case QUERIED:
@@ -61,7 +65,7 @@ public class MainClass {
                 library.readBook(req);
                 break;
             case RESTORED:
-                library.restoreBook(req,date);
+                library.restoreBook(req, date);
                 break;
             default:
         }
