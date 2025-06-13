@@ -1,0 +1,6 @@
+./datainput_student_darwin_x86_64 | java -jar ./JAR/standard.jar > result.txt
+
+Jud = Judger()
+Jud.judge(data_filename="stdin.txt",
+          result_filename="result.txt",
+          judge_filename="judge.txt")
